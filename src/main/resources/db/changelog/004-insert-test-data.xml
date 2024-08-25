@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="003-insert-test-data" author="Murad">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty tableName="organization"/>
+        </preConditions>
+        <insert tableName="organization">
+            <column name="full_name" value="ООО Рога и Копыта"/>
+            <column name="short_name" value="Рога и Копыта"/>
+            <column name="inn" value="1234567890"/>
+            <column name="ogrn" value="0987654321"/>
+            <column name="postal_address" value="г. Москва, ул. Пушкина, д. Колотушкина"/>
+            <column name="legal_address" value="г. Москва, ул. Ленина, д. Сталина"/>
+            <column name="ceo_full_name" value="Иванов Иван Иванович"/>
+            <column name="ceo_birth_date" valueDate="1975-05-15"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="АО Быстро и Серьезно"/>
+            <column name="short_name" value="Быстро и Серьезно"/>
+            <column name="inn" value="9876543210"/>
+            <column name="ogrn" value="0123456789"/>
+            <column name="postal_address" value="г. Санкт-Петербург, ул. Комсомольская, д. 1"/>
+            <column name="legal_address" value="г. Санкт-Петербург, ул. Красноармейская, д. 10"/>
+            <column name="ceo_full_name" value="Петров Петр Петрович"/>
+            <column name="ceo_birth_date" valueDate="1980-10-20"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 3"/>
+            <column name="short_name" value="Org 3"/>
+            <column name="inn" value="123456789003"/>
+            <column name="ogrn" value="1234567890003"/>
+            <column name="postal_address" value="123 Main St"/>
+            <column name="legal_address" value="453 Elm St"/>
+            <column name="ceo_full_name" value="CEO 3"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 4"/>
+            <column name="short_name" value="Org 4"/>
+            <column name="inn" value="123456789004"/>
+            <column name="ogrn" value="1234567890004"/>
+            <column name="postal_address" value="124 Main St"/>
+            <column name="legal_address" value="454 Elm St"/>
+            <column name="ceo_full_name" value="CEO 4"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 5"/>
+            <column name="short_name" value="Org 5"/>
+            <column name="inn" value="123456789005"/>
+            <column name="ogrn" value="1234567890005"/>
+            <column name="postal_address" value="125 Main St"/>
+            <column name="legal_address" value="455 Elm St"/>
+            <column name="ceo_full_name" value="CEO 5"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 6"/>
+            <column name="short_name" value="Org 6"/>
+            <column name="inn" value="123456789006"/>
+            <column name="ogrn" value="1234567890006"/>
+            <column name="postal_address" value="126 Main St"/>
+            <column name="legal_address" value="456 Elm St"/>
+            <column name="ceo_full_name" value="CEO 6"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 7"/>
+            <column name="short_name" value="Org 7"/>
+            <column name="inn" value="123456789007"/>
+            <column name="ogrn" value="1234567890007"/>
+            <column name="postal_address" value="127 Main St"/>
+            <column name="legal_address" value="457 Elm St"/>
+            <column name="ceo_full_name" value="CEO 7"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 8"/>
+            <column name="short_name" value="Org 8"/>
+            <column name="inn" value="123456789008"/>
+            <column name="ogrn" value="1234567890008"/>
+            <column name="postal_address" value="128 Main St"/>
+            <column name="legal_address" value="458 Elm St"/>
+            <column name="ceo_full_name" value="CEO 8"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 9"/>
+            <column name="short_name" value="Org 9"/>
+            <column name="inn" value="123456789009"/>
+            <column name="ogrn" value="1234567890009"/>
+            <column name="postal_address" value="129 Main St"/>
+            <column name="legal_address" value="459 Elm St"/>
+            <column name="ceo_full_name" value="CEO 9"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 10"/>
+            <column name="short_name" value="Org 10"/>
+            <column name="inn" value="123456789010"/>
+            <column name="ogrn" value="1234567890010"/>
+            <column name="postal_address" value="130 Main St"/>
+            <column name="legal_address" value="460 Elm St"/>
+            <column name="ceo_full_name" value="CEO 10"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 11"/>
+            <column name="short_name" value="Org 11"/>
+            <column name="inn" value="123456789011"/>
+            <column name="ogrn" value="1234567890011"/>
+            <column name="postal_address" value="131 Main St"/>
+            <column name="legal_address" value="461 Elm St"/>
+            <column name="ceo_full_name" value="CEO 11"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 12"/>
+            <column name="short_name" value="Org 12"/>
+            <column name="inn" value="123456789012"/>
+            <column name="ogrn" value="1234567890012"/>
+            <column name="postal_address" value="132 Main St"/>
+            <column name="legal_address" value="462 Elm St"/>
+            <column name="ceo_full_name" value="CEO 12"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 13"/>
+            <column name="short_name" value="Org 13"/>
+            <column name="inn" value="123456789013"/>
+            <column name="ogrn" value="1234567890013"/>
+            <column name="postal_address" value="133 Main St"/>
+            <column name="legal_address" value="463 Elm St"/>
+            <column name="ceo_full_name" value="CEO 13"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 14"/>
+            <column name="short_name" value="Org 14"/>
+            <column name="inn" value="123456789014"/>
+            <column name="ogrn" value="1234567890014"/>
+            <column name="postal_address" value="134 Main St"/>
+            <column name="legal_address" value="464 Elm St"/>
+            <column name="ceo_full_name" value="CEO 14"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 15"/>
+            <column name="short_name" value="Org 15"/>
+            <column name="inn" value="123456789015"/>
+            <column name="ogrn" value="1234567890015"/>
+            <column name="postal_address" value="135 Main St"/>
+            <column name="legal_address" value="465 Elm St"/>
+            <column name="ceo_full_name" value="CEO 15"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 16"/>
+            <column name="short_name" value="Org 16"/>
+            <column name="inn" value="123456789016"/>
+            <column name="ogrn" value="1234567890016"/>
+            <column name="postal_address" value="136 Main St"/>
+            <column name="legal_address" value="466 Elm St"/>
+            <column name="ceo_full_name" value="CEO 16"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 17"/>
+            <column name="short_name" value="Org 17"/>
+            <column name="inn" value="123456789017"/>
+            <column name="ogrn" value="1234567890017"/>
+            <column name="postal_address" value="137 Main St"/>
+            <column name="legal_address" value="467 Elm St"/>
+            <column name="ceo_full_name" value="CEO 17"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 18"/>
+            <column name="short_name" value="Org 18"/>
+            <column name="inn" value="123456789018"/>
+            <column name="ogrn" value="1234567890018"/>
+            <column name="postal_address" value="138 Main St"/>
+            <column name="legal_address" value="468 Elm St"/>
+            <column name="ceo_full_name" value="CEO 18"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 19"/>
+            <column name="short_name" value="Org 19"/>
+            <column name="inn" value="123456789019"/>
+            <column name="ogrn" value="1234567890019"/>
+            <column name="postal_address" value="139 Main St"/>
+            <column name="legal_address" value="469 Elm St"/>
+            <column name="ceo_full_name" value="CEO 19"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 20"/>
+            <column name="short_name" value="Org 20"/>
+            <column name="inn" value="123456789020"/>
+            <column name="ogrn" value="1234567890020"/>
+            <column name="postal_address" value="140 Main St"/>
+            <column name="legal_address" value="470 Elm St"/>
+            <column name="ceo_full_name" value="CEO 20"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 21"/>
+            <column name="short_name" value="Org 21"/>
+            <column name="inn" value="123456789021"/>
+            <column name="ogrn" value="1234567890021"/>
+            <column name="postal_address" value="141 Main St"/>
+            <column name="legal_address" value="471 Elm St"/>
+            <column name="ceo_full_name" value="CEO 21"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 22"/>
+            <column name="short_name" value="Org 22"/>
+            <column name="inn" value="123456789022"/>
+            <column name="ogrn" value="1234567890022"/>
+            <column name="postal_address" value="142 Main St"/>
+            <column name="legal_address" value="472 Elm St"/>
+            <column name="ceo_full_name" value="CEO 22"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 23"/>
+            <column name="short_name" value="Org 23"/>
+            <column name="inn" value="123456789023"/>
+            <column name="ogrn" value="1234567890023"/>
+            <column name="postal_address" value="143 Main St"/>
+            <column name="legal_address" value="473 Elm St"/>
+            <column name="ceo_full_name" value="CEO 23"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 24"/>
+            <column name="short_name" value="Org 24"/>
+            <column name="inn" value="123456789024"/>
+            <column name="ogrn" value="1234567890024"/>
+            <column name="postal_address" value="144 Main St"/>
+            <column name="legal_address" value="474 Elm St"/>
+            <column name="ceo_full_name" value="CEO 24"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 25"/>
+            <column name="short_name" value="Org 25"/>
+            <column name="inn" value="123456789025"/>
+            <column name="ogrn" value="1234567890025"/>
+            <column name="postal_address" value="145 Main St"/>
+            <column name="legal_address" value="475 Elm St"/>
+            <column name="ceo_full_name" value="CEO 25"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 26"/>
+            <column name="short_name" value="Org 26"/>
+            <column name="inn" value="123456789026"/>
+            <column name="ogrn" value="1234567890026"/>
+            <column name="postal_address" value="146 Main St"/>
+            <column name="legal_address" value="476 Elm St"/>
+            <column name="ceo_full_name" value="CEO 26"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 27"/>
+            <column name="short_name" value="Org 27"/>
+            <column name="inn" value="123456789027"/>
+            <column name="ogrn" value="1234567890027"/>
+            <column name="postal_address" value="147 Main St"/>
+            <column name="legal_address" value="477 Elm St"/>
+            <column name="ceo_full_name" value="CEO 27"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 28"/>
+            <column name="short_name" value="Org 28"/>
+            <column name="inn" value="123456789028"/>
+            <column name="ogrn" value="1234567890028"/>
+            <column name="postal_address" value="148 Main St"/>
+            <column name="legal_address" value="478 Elm St"/>
+            <column name="ceo_full_name" value="CEO 28"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 29"/>
+            <column name="short_name" value="Org 29"/>
+            <column name="inn" value="123456789029"/>
+            <column name="ogrn" value="1234567890029"/>
+            <column name="postal_address" value="149 Main St"/>
+            <column name="legal_address" value="479 Elm St"/>
+            <column name="ceo_full_name" value="CEO 29"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 30"/>
+            <column name="short_name" value="Org 30"/>
+            <column name="inn" value="123456789030"/>
+            <column name="ogrn" value="1234567890030"/>
+            <column name="postal_address" value="150 Main St"/>
+            <column name="legal_address" value="480 Elm St"/>
+            <column name="ceo_full_name" value="CEO 30"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 31"/>
+            <column name="short_name" value="Org 31"/>
+            <column name="inn" value="123456789031"/>
+            <column name="ogrn" value="1234567890031"/>
+            <column name="postal_address" value="151 Main St"/>
+            <column name="legal_address" value="481 Elm St"/>
+            <column name="ceo_full_name" value="CEO 31"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 32"/>
+            <column name="short_name" value="Org 32"/>
+            <column name="inn" value="123456789032"/>
+            <column name="ogrn" value="1234567890032"/>
+            <column name="postal_address" value="152 Main St"/>
+            <column name="legal_address" value="482 Elm St"/>
+            <column name="ceo_full_name" value="CEO 32"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 33"/>
+            <column name="short_name" value="Org 33"/>
+            <column name="inn" value="123456789033"/>
+            <column name="ogrn" value="1234567890033"/>
+            <column name="postal_address" value="153 Main St"/>
+            <column name="legal_address" value="483 Elm St"/>
+            <column name="ceo_full_name" value="CEO 33"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 34"/>
+            <column name="short_name" value="Org 34"/>
+            <column name="inn" value="123456789034"/>
+            <column name="ogrn" value="1234567890034"/>
+            <column name="postal_address" value="154 Main St"/>
+            <column name="legal_address" value="484 Elm St"/>
+            <column name="ceo_full_name" value="CEO 34"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 35"/>
+            <column name="short_name" value="Org 35"/>
+            <column name="inn" value="123456789035"/>
+            <column name="ogrn" value="1234567890035"/>
+            <column name="postal_address" value="155 Main St"/>
+            <column name="legal_address" value="485 Elm St"/>
+            <column name="ceo_full_name" value="CEO 35"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 36"/>
+            <column name="short_name" value="Org 36"/>
+            <column name="inn" value="123456789036"/>
+            <column name="ogrn" value="1234567890036"/>
+            <column name="postal_address" value="156 Main St"/>
+            <column name="legal_address" value="486 Elm St"/>
+            <column name="ceo_full_name" value="CEO 36"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 37"/>
+            <column name="short_name" value="Org 37"/>
+            <column name="inn" value="123456789037"/>
+            <column name="ogrn" value="1234567890037"/>
+            <column name="postal_address" value="157 Main St"/>
+            <column name="legal_address" value="487 Elm St"/>
+            <column name="ceo_full_name" value="CEO 37"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 38"/>
+            <column name="short_name" value="Org 38"/>
+            <column name="inn" value="123456789038"/>
+            <column name="ogrn" value="1234567890038"/>
+            <column name="postal_address" value="158 Main St"/>
+            <column name="legal_address" value="488 Elm St"/>
+            <column name="ceo_full_name" value="CEO 38"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 39"/>
+            <column name="short_name" value="Org 39"/>
+            <column name="inn" value="123456789039"/>
+            <column name="ogrn" value="1234567890039"/>
+            <column name="postal_address" value="159 Main St"/>
+            <column name="legal_address" value="489 Elm St"/>
+            <column name="ceo_full_name" value="CEO 39"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 40"/>
+            <column name="short_name" value="Org 40"/>
+            <column name="inn" value="123456789040"/>
+            <column name="ogrn" value="1234567890040"/>
+            <column name="postal_address" value="160 Main St"/>
+            <column name="legal_address" value="490 Elm St"/>
+            <column name="ceo_full_name" value="CEO 40"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 41"/>
+            <column name="short_name" value="Org 41"/>
+            <column name="inn" value="123456789041"/>
+            <column name="ogrn" value="1234567890041"/>
+            <column name="postal_address" value="161 Main St"/>
+            <column name="legal_address" value="491 Elm St"/>
+            <column name="ceo_full_name" value="CEO 41"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 42"/>
+            <column name="short_name" value="Org 42"/>
+            <column name="inn" value="123456789042"/>
+            <column name="ogrn" value="1234567890042"/>
+            <column name="postal_address" value="162 Main St"/>
+            <column name="legal_address" value="492 Elm St"/>
+            <column name="ceo_full_name" value="CEO 42"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 43"/>
+            <column name="short_name" value="Org 43"/>
+            <column name="inn" value="123456789043"/>
+            <column name="ogrn" value="1234567890043"/>
+            <column name="postal_address" value="163 Main St"/>
+            <column name="legal_address" value="493 Elm St"/>
+            <column name="ceo_full_name" value="CEO 43"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 44"/>
+            <column name="short_name" value="Org 44"/>
+            <column name="inn" value="123456789044"/>
+            <column name="ogrn" value="1234567890044"/>
+            <column name="postal_address" value="164 Main St"/>
+            <column name="legal_address" value="494 Elm St"/>
+            <column name="ceo_full_name" value="CEO 44"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 45"/>
+            <column name="short_name" value="Org 45"/>
+            <column name="inn" value="123456789045"/>
+            <column name="ogrn" value="1234567890045"/>
+            <column name="postal_address" value="165 Main St"/>
+            <column name="legal_address" value="495 Elm St"/>
+            <column name="ceo_full_name" value="CEO 45"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 46"/>
+            <column name="short_name" value="Org 46"/>
+            <column name="inn" value="123456789046"/>
+            <column name="ogrn" value="1234567890046"/>
+            <column name="postal_address" value="166 Main St"/>
+            <column name="legal_address" value="496 Elm St"/>
+            <column name="ceo_full_name" value="CEO 46"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 47"/>
+            <column name="short_name" value="Org 47"/>
+            <column name="inn" value="123456789047"/>
+            <column name="ogrn" value="1234567890047"/>
+            <column name="postal_address" value="167 Main St"/>
+            <column name="legal_address" value="497 Elm St"/>
+            <column name="ceo_full_name" value="CEO 47"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 48"/>
+            <column name="short_name" value="Org 48"/>
+            <column name="inn" value="123456789048"/>
+            <column name="ogrn" value="1234567890048"/>
+            <column name="postal_address" value="168 Main St"/>
+            <column name="legal_address" value="498 Elm St"/>
+            <column name="ceo_full_name" value="CEO 48"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 49"/>
+            <column name="short_name" value="Org 49"/>
+            <column name="inn" value="123456789049"/>
+            <column name="ogrn" value="1234567890049"/>
+            <column name="postal_address" value="169 Main St"/>
+            <column name="legal_address" value="499 Elm St"/>
+            <column name="ceo_full_name" value="CEO 49"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="organization">
+            <column name="full_name" value="Organization 50"/>
+            <column name="short_name" value="Org 50"/>
+            <column name="inn" value="123456789050"/>
+            <column name="ogrn" value="1234567890050"/>
+            <column name="postal_address" value="170 Main St"/>
+            <column name="legal_address" value="500 Elm St"/>
+            <column name="ceo_full_name" value="CEO 50"/>
+            <column name="ceo_birth_date" value="1970-01-01"/>
+        </insert>
+
+        <insert tableName="branch">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Филиал 1"/>
+            <column name="postal_address" value="г. Москва, ул. Лермонтова, д. 12"/>
+            <column name="ceo_full_name" value="Сидоров Сидор Сидорович"/>
+            <column name="ceo_birth_date" valueDate="1978-07-20"/>
+            <column name="organization_id" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="branch">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Филиал 2"/>
+            <column name="postal_address" value="г. Санкт-Петербург, ул. Невская, д. 14"/>
+            <column name="ceo_full_name" value="Кузнецов Кузьма Кузьмич"/>
+            <column name="ceo_birth_date" valueDate="1985-11-30"/>
+            <column name="organization_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
