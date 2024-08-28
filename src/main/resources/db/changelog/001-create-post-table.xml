@@ -25,10 +25,8 @@
             <column name="title" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="type" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="post_text" type="text"/>
+            <column name="type" type="varchar(255)"/>
+            <column name="post_text" type="varchar(255)"/>
             <column name="is_blocked" type="boolean" defaultValueBoolean="false"/>
             <column name="is_delete" type="boolean" defaultValueBoolean="false"/>
             <column name="comments_count" type="int" defaultValueNumeric="0"/>

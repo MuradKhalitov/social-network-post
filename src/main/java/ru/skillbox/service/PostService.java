@@ -1,12 +1,16 @@
 package ru.skillbox.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.PostDto;
+import ru.skillbox.exception.PostNotFoundException;
+import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import ru.skillbox.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,19 +21,36 @@ public class PostService {
     private PostRepository postRepository;
 
     public List<PostDto> getPostsByAuthorId(Long authorId) {
-        return postRepository.findByAuthorId(authorId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        if (!(authorId == null)) {
+            return postRepository.findByAuthorId(authorId).stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+//        return postRepository.findByAuthorId(authorId).stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
     }
 
     public PostDto getPostById(Long id) {
         Optional<Post> post = postRepository.findById(id);
         return post.map(this::convertToDto).orElse(null);
+//        Optional<Post> postOptional = postRepository.findById(id);
+//        if (postOptional.isPresent()) {
+//            Post post = postOptional.get();
+//            PostDto postDto = convertToDto(post);
+//            return postDto;
+//        } else {
+//            throw new PostNotFoundException("Post not found with id: " + id);
+//        }
+        //Post post = postRepository.findById(id)
+        //  .orElseThrow(() -> new PostNotFoundException("News with id " + id + " not found"));
     }
 
     public PostDto createPost(PostDto postDto) {
+        postDto.setTime(LocalDateTime.now());
+        postDto.setTimeChanged(LocalDateTime.now());
         Post post = convertToEntity(postDto);
-        post.setTime(LocalDateTime.now());
         post = postRepository.save(post);
         return convertToDto(post);
     }

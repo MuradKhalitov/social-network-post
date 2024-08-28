@@ -29,8 +29,10 @@ public class CommentService {
     }
 
     public CommentDto createComment(CommentDto commentDto) {
+        commentDto.setTime(LocalDateTime.now());
+        commentDto.setTimeChanged(LocalDateTime.now());
         Comment comment = convertToEntity(commentDto);
-        comment.setTime(LocalDateTime.now());
+
         comment = commentRepository.save(comment);
         return convertToDto(comment);
     }

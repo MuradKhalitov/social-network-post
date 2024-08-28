@@ -5,22 +5,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "likes")
 @Getter
 @Setter
+@Table(name = "like")
 public class Like {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(name = "post_id")
     private Long postId;
 
-    @Column(nullable = false)
+    @Column(name = "comment_id")
     private Long commentId;
 
 }

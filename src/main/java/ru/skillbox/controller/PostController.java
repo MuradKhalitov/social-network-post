@@ -24,8 +24,9 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable Long id) {
-        PostDto post = postService.getPostById(id);
-        return post != null ? ResponseEntity.ok(post) : ResponseEntity.notFound().build();
+        PostDto postDto = postService.getPostById(id);
+        return postDto != null ? ResponseEntity.ok(postDto) : ResponseEntity.notFound().build();
+        //return new ResponseEntity<>(postDto, HttpStatus.OK);
     }
 
     @PostMapping
