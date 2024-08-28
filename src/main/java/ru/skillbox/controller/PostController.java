@@ -17,33 +17,29 @@ public class PostController {
     private PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostDto>> getPostsByAuthorId(@RequestParam Long authorId) {
-        List<PostDto> posts = postService.getPostsByAuthorId(authorId);
-        return ResponseEntity.ok(posts);
+    public List<PostDto> getPostsByAuthorId(@RequestParam Long authorId) {
+        return postService.getPostsByAuthorId(authorId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Long id) {
-        PostDto post = postService.getPostById(id);
-        return post != null ? ResponseEntity.ok(post) : ResponseEntity.notFound().build();
+    public PostDto getPostById(@PathVariable Long id) {
+        return postService.getPostById(id);
     }
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
-        PostDto createdPost = postService.createPost(postDto);
-        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+    public PostDto createPost(@RequestBody PostDto postDto) {
+        return postService.createPost(postDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable Long id, @RequestBody PostDto postDto) {
-        PostDto updatedPost = postService.updatePost(id, postDto);
-        return updatedPost != null ? ResponseEntity.ok(updatedPost) : ResponseEntity.notFound().build();
+    public PostDto updatePost(@PathVariable Long id, @RequestBody PostDto postDto) {
+        return postService.updatePost(id, postDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
 

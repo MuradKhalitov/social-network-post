@@ -27,26 +27,26 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint
-                baseTableName="like"
-                baseColumnNames="user_id"
-                referencedTableName="user"
-                referencedColumnNames="id"
-                constraintName="fk_like_user"/>
+<!--        <addForeignKeyConstraint-->
+<!--                baseTableName="like"-->
+<!--                baseColumnNames="user_id"-->
+<!--                referencedTableName="user"-->
+<!--                referencedColumnNames="id"-->
+<!--                constraintName="fk_like_user"/>-->
 
-        <addForeignKeyConstraint
-                baseTableName="like"
-                baseColumnNames="post_id"
-                referencedTableName="post"
-                referencedColumnNames="id"
-                constraintName="fk_like_post"/>
+<!--        <addForeignKeyConstraint-->
+<!--                baseTableName="like"-->
+<!--                baseColumnNames="post_id"-->
+<!--                referencedTableName="post"-->
+<!--                referencedColumnNames="id"-->
+<!--                constraintName="fk_like_post"/>-->
 
-        <addForeignKeyConstraint
-                baseTableName="like"
-                baseColumnNames="comment_id"
-                referencedTableName="comment"
-                referencedColumnNames="id"
-                constraintName="fk_like_comment"/>
+<!--        <addForeignKeyConstraint-->
+<!--                baseTableName="like"-->
+<!--                baseColumnNames="comment_id"-->
+<!--                referencedTableName="comment"-->
+<!--                referencedColumnNames="id"-->
+<!--                constraintName="fk_like_comment"/>-->
     </changeSet>
 </databaseChangeLog>
 
