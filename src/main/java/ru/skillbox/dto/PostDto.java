@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -26,5 +27,6 @@ public class PostDto {
     private boolean myLike;
     private String imagePath;
     private LocalDateTime publishDate;
+    private List<CommentDto> comments = new ArrayList<>();
 }
 

@@ -17,21 +17,18 @@ public class LikeController {
     private LikeService likeService;
 
     @GetMapping
-    public ResponseEntity<List<LikeDto>> getLikesByPostId(@PathVariable Long postId) {
-        List<LikeDto> likes = likeService.getLikesByPostId(postId);
-        return ResponseEntity.ok(likes);
+    public List<LikeDto> getLikesByPostId(@PathVariable Long postId) {
+        return likeService.getLikesByPostId(postId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LikeDto> getLikeById(@PathVariable Long id) {
-        LikeDto like = likeService.getLikeById(id);
-        return like != null ? ResponseEntity.ok(like) : ResponseEntity.notFound().build();
+    public LikeDto getLikeById(@PathVariable Long id) {
+        return likeService.getLikeById(id);
     }
 
     @PostMapping
-    public ResponseEntity<LikeDto> createLike(@RequestBody LikeDto likeDto) {
-        LikeDto createdLike = likeService.createLike(likeDto);
-        return new ResponseEntity<>(createdLike, HttpStatus.CREATED);
+    public LikeDto createLike(@RequestBody LikeDto likeDto) {
+        return likeService.createLike(likeDto);
     }
 
     @DeleteMapping("/{id}")

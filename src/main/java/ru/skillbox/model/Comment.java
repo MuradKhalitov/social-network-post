@@ -23,8 +23,8 @@ public class Comment {
     private Long parentId;
     @Column(name = "comment_text")
     private String commentText;
-    @Column(name = "post_id")
-    private Long postId;
+    @ManyToOne
+    private Post post;
     @Column(name = "is_blocked")
     private boolean isBlocked;
     @Column(name = "is_delete")

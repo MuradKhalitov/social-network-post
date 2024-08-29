@@ -38,6 +38,8 @@ public class Post {
     private String imagePath;
     @Column(name = "publish_date")
     private LocalDateTime publishDate;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
     private String tags;
 }

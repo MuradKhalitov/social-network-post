@@ -1,5 +1,7 @@
 package ru.skillbox.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.PostDto;
 import ru.skillbox.exception.PostNotFoundException;
@@ -34,7 +36,16 @@ public class PostService {
 
     public PostDto getPostById(Long id) {
         Optional<Post> post = postRepository.findById(id);
-        return post.map(this::convertToDto).orElseThrow(() -> new PostNotFoundException("Post with id: " + id + " not found"));//orElse(null);
+        return post.map(this::convertToDto)
+                .orElseThrow(() -> new PostNotFoundException("Post with id: " + id + " not found"));
+    }
+
+    public List<PostDto> getAllPost() {
+        List<Post> postList = postRepository.findAll();
+        List<PostDto> postDtoList = postList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return postDtoList;
     }
 
     public PostDto createPost(PostDto postDto) {

@@ -18,27 +18,23 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping
-    public ResponseEntity<List<CommentDto>> getCommentsByPostId(@PathVariable Long postId) {
-        List<CommentDto> comments = commentService.getCommentsByPostId(postId);
-        return ResponseEntity.ok(comments);
+    public List<CommentDto> getCommentsByPostId(@PathVariable Long postId) {
+        return commentService.getCommentsByPostId(postId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id) {
-        CommentDto comment = commentService.getCommentById(id);
-        return comment != null ? ResponseEntity.ok(comment) : ResponseEntity.notFound().build();
+    public CommentDto getCommentById(@PathVariable Long id) {
+        return commentService.getCommentById(id);
     }
 
     @PostMapping
-    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto commentDto) {
-        CommentDto createdComment = commentService.createComment(commentDto);
-        return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
+    public CommentDto createComment(@RequestBody CommentDto commentDto) {
+        return commentService.createComment(commentDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable Long id, @RequestBody CommentDto commentDto) {
-        CommentDto updatedComment = commentService.updateComment(id, commentDto);
-        return updatedComment != null ? ResponseEntity.ok(updatedComment) : ResponseEntity.notFound().build();
+    public CommentDto updateComment(@PathVariable Long id, @RequestBody CommentDto commentDto) {
+        return commentService.updateComment(id, commentDto);
     }
 
     @DeleteMapping("/{id}")

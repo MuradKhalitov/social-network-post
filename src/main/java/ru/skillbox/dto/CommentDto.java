@@ -24,4 +24,6 @@ public class CommentDto {
     private boolean myLike;
     private int commentsCount;
     private String imagePath;
+    private Long post;
+
 }
