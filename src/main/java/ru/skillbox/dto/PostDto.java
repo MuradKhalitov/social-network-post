@@ -1,32 +1,29 @@
 package ru.skillbox.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 public class PostDto {
     private Long id;
+    private String title;
+    private String postText;
+    private Long authorId;
     private LocalDateTime time;
     private LocalDateTime timeChanged;
-    private Long authorId;
-    private String title;
+    private List<CommentDTO> comments = new ArrayList<>();
     private String type;
-    private String postText;
     private boolean isBlocked;
     private boolean isDelete;
-    private int commentsCount;
+    private Integer commentsCount;
     private String tags;
     private int likeAmount;
     private boolean myLike;
     private String imagePath;
     private LocalDateTime publishDate;
-    private List<CommentDto> comments = new ArrayList<>();
 }
-

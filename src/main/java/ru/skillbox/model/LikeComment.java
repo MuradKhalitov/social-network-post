@@ -7,21 +7,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "like")
-public class Like {
+@Table(name = "like_comment")
+public class LikeComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "user_id")
-    private Long userId;
-
-    @Column(name = "post_id")
-    private Long postId;
-
-    @Column(name = "comment_id")
-    private Long commentId;
+    @ManyToOne
+    private User author;
+    @ManyToOne
+    private Comment comment;
 
 }
 

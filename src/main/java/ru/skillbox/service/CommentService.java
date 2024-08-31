@@ -1,85 +1,99 @@
 package ru.skillbox.service;
 
-import ru.skillbox.dto.CommentDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import ru.skillbox.dto.CommentDTO;
+import ru.skillbox.exception.CommentNotFoundException;
+import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.model.Comment;
+import ru.skillbox.model.Post;
+import ru.skillbox.model.User;
 import ru.skillbox.repository.CommentRepository;
+import ru.skillbox.repository.NewsRepository;
+import ru.skillbox.repository.UserRepository;
+import ru.skillbox.util.CurrentUsers;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CommentService {
 
-    @Autowired
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final NewsRepository newsRepository;
+    private final CommentMapper commentMapper;
+    private final UserService userService;
 
-    public List<CommentDto> getCommentsByPostId(Long postId) {
-        return commentRepository.findByPostId(postId).stream()
-                .map(this::convertToDto)
+
+    @Autowired
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, NewsRepository newsRepository, CommentMapper commentMapper, UserService userService) {
+        this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
+        this.newsRepository = newsRepository;
+        this.commentMapper = commentMapper;
+        this.userService = userService;
+    }
+
+    public CommentDTO createComment(Long postId, CommentDTO commentDTO) {
+        Comment comment = commentMapper.convertToEntity(commentDTO);
+        String currentUsername = CurrentUsers.getCurrentUsername();
+        User user = userRepository.findByUsername(currentUsername).get();
+        Optional<Post> post = newsRepository.findById(postId);
+        comment.setAuthor(user);
+        comment.setPost(post.get());
+        log.info("Пользователь: {}, добавил комментарий", currentUsername);
+        return commentMapper.convertToDTO(commentRepository.save(comment));
+    }
+
+    public List<CommentDTO> getCommentsByNewsId(Long newsId, PageRequest pageRequest) {
+        Page<Comment> page = commentRepository.findAll(pageRequest);
+
+        return page.getContent().stream()
+                .map(commentMapper::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public CommentDto getCommentById(Long id) {
-        Optional<Comment> comment = commentRepository.findById(id);
-        return comment.map(this::convertToDto).orElse(null);
+    public CommentDTO getCommentById(Long id) {
+        return commentRepository.findById(id)
+                .map(commentMapper::convertToDTO)
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found"));
     }
 
-    public CommentDto createComment(CommentDto commentDto) {
-        commentDto.setTime(LocalDateTime.now());
-        commentDto.setTimeChanged(LocalDateTime.now());
-        Comment comment = convertToEntity(commentDto);
+    public CommentDTO updateComment(Long id, CommentDTO updatedCommentDTO) {
+        String currentUsername = CurrentUsers.getCurrentUsername();
+        User currentUser = userService.findByUsername(currentUsername);
 
-        comment = commentRepository.save(comment);
-        return convertToDto(comment);
-    }
+        Comment oldComment = commentMapper.convertToEntity(getCommentById(id));
+        User authorComment = oldComment.getAuthor();
 
-    public CommentDto updateComment(Long id, CommentDto commentDto) {
-        Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isPresent()) {
-            Comment comment = optionalComment.get();
-            comment.setCommentText(commentDto.getCommentText());
-            comment.setTimeChanged(LocalDateTime.now());
-            comment = commentRepository.save(comment);
-            return convertToDto(comment);
-        } else {
-            return null;
+        if (currentUser.getId().equals(authorComment.getId())) {
+            oldComment.setContent(updatedCommentDTO.getContent());
+
+            return commentMapper.convertToDTO(commentRepository.save(oldComment));
         }
+        return null;
     }
 
-    public void deleteComment(Long id) {
-        commentRepository.deleteById(id);
-    }
+    public ResponseEntity<Void> deleteComment(Long id) {
+        String currentUsername = CurrentUsers.getCurrentUsername();
+        User currentUser = userService.findByUsername(currentUsername);
+        Comment deletedComment = commentMapper.convertToEntity(getCommentById(id));
+        User authorComment = deletedComment.getAuthor();
 
-    // Преобразование между Entity и DTO
-    private CommentDto convertToDto(Comment comment) {
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(comment.getId());
-        commentDto.setPostId(comment.getPostId());
-        commentDto.setAuthorId(comment.getAuthorId());
-        commentDto.setCommentText(comment.getCommentText());
-        commentDto.setTime(comment.getTime());
-        commentDto.setTimeChanged(comment.getTimeChanged());
-        commentDto.setBlocked(comment.isBlocked());
-        commentDto.setDelete(comment.isDelete());
-        commentDto.setLikeAmount(comment.getLikeAmount());
-        return commentDto;
-    }
+        if (currentUser.getId().equals(authorComment.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
+            commentRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-    private Comment convertToEntity(CommentDto commentDto) {
-        Comment comment = new Comment();
-        comment.setPostId(commentDto.getPostId());
-        comment.setAuthorId(commentDto.getAuthorId());
-        comment.setCommentText(commentDto.getCommentText());
-        comment.setTime(commentDto.getTime());
-        comment.setTimeChanged(commentDto.getTimeChanged());
-        comment.setBlocked(commentDto.isBlocked());
-        comment.setDelete(commentDto.isDelete());
-        comment.setLikeAmount(commentDto.getLikeAmount());
-        return comment;
     }
 }
 

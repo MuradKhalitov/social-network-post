@@ -5,12 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LikeDto {
+public class LikePostDto {
 
     private Long id;
-    private Long userId;
+    private Long authorId;
     private Long postId;
-    private Long commentId;
 
 }
 

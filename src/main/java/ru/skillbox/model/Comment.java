@@ -1,41 +1,36 @@
 package ru.skillbox.model;
 
-import lombok.*;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-@Entity
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Setter
-@Table(name = "comment")
+@Entity
+@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "comment_type")
-    private String commentType;
-    private LocalDateTime time;
-    @Column(name = "time_changed")
-    private LocalDateTime timeChanged;
-    @Column(name = "author_id")
-    private Long authorId;
-    @Column(name = "parent_id")
-    private Long parentId;
-    @Column(name = "comment_text")
-    private String commentText;
+
+    private String content;
+
+    @ManyToOne
+    private User author;
+
     @ManyToOne
     private Post post;
-    @Column(name = "is_blocked")
-    private boolean isBlocked;
-    @Column(name = "is_delete")
-    private boolean isDelete;
-    @Column(name = "like_amount")
-    private int likeAmount;
-    @Column(name = "my_like")
-    private boolean myLike;
-    @Column(name = "comments_count")
-    private int commentsCount;
-    @Column(name = "image_path")
-    private String imagePath;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikeComment> likes;
 }
-
