@@ -3,8 +3,8 @@
 --preconditions onFail:CONTINUE onError:CONTINUE
 CREATE TABLE IF NOT EXISTS post_schema.like_comment (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT,
-    post_id BIGINT,
+    author_id BIGINT,
+    comment_id BIGINT,
     time TIMESTAMP
 );
 

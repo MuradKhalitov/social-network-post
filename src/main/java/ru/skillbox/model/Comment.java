@@ -37,11 +37,11 @@ public class Comment {
     @Column(name = "is_delete")
     private boolean isDelete;
     @Column(name = "like_amount")
-    private Integer likeAmount;
+    private int likeAmount;
     @Column(name = "my_like")
     private boolean myLike;
-    @Column(name = "comment_Count")
-    private Integer commentCount;
+    @Column(name = "comments_count")
+    private int commentsCount;
     @Column(name = "image_path")
     private String imagePath;
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
