@@ -11,6 +11,7 @@ import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.User;
 import ru.skillbox.repository.LikePostRepository;
+import ru.skillbox.repository.NewsRepository;
 import ru.skillbox.repository.UserRepository;
 import ru.skillbox.util.CurrentUsers;
 
@@ -23,21 +24,22 @@ public class LikePostService {
     private final LikePostRepository likePostRepository;
     private final UserRepository userRepository;
     private final LikePostMapper likePostMapper;
-    private final NewsService newsService;
+    private final NewsRepository newsRepository;
     private final NewsMapper newsMapper;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, NewsService newsService, NewsMapper newsMapper) {
+    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, NewsRepository newsRepository, NewsMapper newsMapper) {
         this.likePostRepository = likeRepository;
         this.userRepository = userRepository;
         this.likePostMapper = likeMapper;
-        this.newsService = newsService;
+        this.newsRepository = newsRepository;
         this.newsMapper = newsMapper;
     }
 
     public LikePostDto createLikePost(Long postId) {
         String currentUsername = CurrentUsers.getCurrentUsername();
-        User user = userRepository.findByUsername(currentUsername).get();
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
 
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, user.getId());
@@ -46,10 +48,10 @@ public class LikePostService {
         }
 
         LikePost likePost = new LikePost();
-        Post post = newsMapper.convertToEntity(newsService.getNewsById(postId));
-        likePost.setPost(post);
+        Optional<Post> post = newsRepository.findById(postId);
+        likePost.setPost(post.get());
         likePost.setAuthor(user);
-        log.info("Пользователь: {}, добавил like к посту: {}", currentUsername, post.getId());
+        log.info("Пользователь: {}, добавил like к посту: {}", currentUsername, post.get().getId());
         return likePostMapper.convertToDTO(likePostRepository.save(likePost));
     }
 
