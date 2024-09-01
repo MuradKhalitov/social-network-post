@@ -6,11 +6,6 @@ CREATE TABLE users (
     password VARCHAR(100) NOT NULL
 );
 
--- Создание таблицы категорий новостей
-CREATE TABLE categories (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL
-);
 
 -- Создание таблицы новостей
 CREATE TABLE news (
