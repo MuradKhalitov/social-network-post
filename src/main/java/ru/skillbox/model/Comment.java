@@ -17,20 +17,33 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String content;
-
+    @Column(name = "comment_type")
+    private String commentType;
+    @CreationTimestamp
+    private LocalDateTime time;
+    @UpdateTimestamp
+    @Column(name = "time_changed")
+    private LocalDateTime timeChanged;
     @ManyToOne
     private User author;
-
+    @Column(name = "parent_id")
+    private Long parentId;
+    @Column(name = "comment_text")
+    private String commentText;
     @ManyToOne
     private Post post;
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @Column(name = "is_blocked")
+    private boolean isBlocked;
+    @Column(name = "is_delete")
+    private boolean isDelete;
+    @Column(name = "like_amount")
+    private Integer likeAmount;
+    @Column(name = "my_like")
+    private boolean myLike;
+    @Column(name = "comment_Count")
+    private Integer commentCount;
+    @Column(name = "image_path")
+    private String imagePath;
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeComment> likes;
 }

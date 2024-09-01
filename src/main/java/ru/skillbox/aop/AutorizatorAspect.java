@@ -22,7 +22,7 @@ public class AutorizatorAspect {
         this.userService = userService;
     }
 
-    @Around("@annotation(com.example.NewsManager.aop.Autorizator)")
+    @Around("@annotation(ru.skillbox.aop.Autorizator)")
     public Object authAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Long updateUserId = null;
         Long oldCommentId = null;

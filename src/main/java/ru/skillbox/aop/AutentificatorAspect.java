@@ -31,7 +31,7 @@ public class AutentificatorAspect {
         this.commentMapper = commentMapper;
     }
 
-    @Around("@annotation(com.example.NewsManager.aop.Autentificator)")
+    @Around("@annotation(ru.skillbox.aop.Autentificator)")
     public Object authAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Long oldNewsId = null;
         Long oldCommentId = null;

@@ -75,7 +75,7 @@ public class CommentService {
         User authorComment = oldComment.getAuthor();
 
         if (currentUser.getId().equals(authorComment.getId())) {
-            oldComment.setContent(updatedCommentDTO.getContent());
+            oldComment.setCommentText(updatedCommentDTO.getCommentText());
 
             return commentMapper.convertToDTO(commentRepository.save(oldComment));
         }
