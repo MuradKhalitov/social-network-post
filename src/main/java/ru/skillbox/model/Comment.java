@@ -26,8 +26,14 @@ public class Comment {
     private LocalDateTime timeChanged;
     @ManyToOne
     private User author;
-    @Column(name = "parent_id")
-    private Long parentId;
+    //    @Column(name = "parent_id")
+//    private Long parentId;
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> subComments;
     @Column(name = "comment_text")
     private String commentText;
     @ManyToOne

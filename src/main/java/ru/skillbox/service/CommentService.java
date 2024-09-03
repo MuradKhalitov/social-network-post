@@ -42,8 +42,24 @@ public class CommentService {
         this.userService = userService;
     }
 
-    public CommentDTO createComment(Long postId, CommentDTO commentDTO) {
+//    public CommentDTO createComment(Long postId, CommentDTO commentDTO) {
+//        Comment comment = commentMapper.convertToEntity(commentDTO);
+//        String currentUsername = CurrentUsers.getCurrentUsername();
+//        User user = userRepository.findByUsername(currentUsername).get();
+//        Optional<Post> post = newsRepository.findById(postId);
+//        comment.setAuthor(user);
+//        comment.setPost(post.get());
+//        log.info("Пользователь: {}, добавил комментарий", currentUsername);
+//        return commentMapper.convertToDTO(commentRepository.save(comment));
+//    }
+
+    public CommentDTO createComment(Long postId, CommentDTO commentDTO, Long parentCommentId) {
         Comment comment = commentMapper.convertToEntity(commentDTO);
+        if (parentCommentId != null) {
+            Comment parentComment = commentRepository.findById(parentCommentId)
+                    .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+            comment.setParent(parentComment);
+        }
         String currentUsername = CurrentUsers.getCurrentUsername();
         User user = userRepository.findByUsername(currentUsername).get();
         Optional<Post> post = newsRepository.findById(postId);

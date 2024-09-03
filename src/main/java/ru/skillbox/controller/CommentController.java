@@ -28,11 +28,28 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+//    @PostMapping
+//    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
+//    public CommentDTO createComment(@PathVariable Long postId, @RequestBody CommentDTO commentDTO) {
+//        return commentService.createComment(postId, commentDTO);
+//    }
+
+
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
-    public CommentDTO createComment(@PathVariable Long postId, @RequestBody CommentDTO commentDTO) {
-        return commentService.createComment(postId, commentDTO);
+    public CommentDTO createComment(@PathVariable Long postId, @RequestBody CommentDTO commentDTO,
+                                    @RequestParam(required = false) Long parentCommentId) {
+        return commentService.createComment(postId, commentDTO, parentCommentId);
     }
+
+    @PostMapping("/{commentId}/subcomment")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
+    public CommentDTO createReplyComment(@PathVariable Long postId, @RequestBody CommentDTO commentDTO,
+                                         @PathVariable Long commentId) {
+        return commentService.createComment(postId, commentDTO, commentId);
+    }
+
+
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
