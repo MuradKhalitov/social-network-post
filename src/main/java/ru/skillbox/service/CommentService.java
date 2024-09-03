@@ -2,7 +2,7 @@ package ru.skillbox.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import ru.skillbox.dto.CommentDTO;
+import ru.skillbox.dto.CommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.model.Comment;
@@ -53,7 +53,7 @@ public class CommentService {
 //        return commentMapper.convertToDTO(commentRepository.save(comment));
 //    }
 
-    public CommentDTO createComment(Long postId, CommentDTO commentDTO, Long parentCommentId) {
+    public CommentDto createComment(Long postId, CommentDto commentDTO, Long parentCommentId) {
         Comment comment = commentMapper.convertToEntity(commentDTO);
         if (parentCommentId != null) {
             Comment parentComment = commentRepository.findById(parentCommentId)
@@ -69,7 +69,7 @@ public class CommentService {
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
 
-    public List<CommentDTO> getCommentsByNewsId(Long newsId, PageRequest pageRequest) {
+    public List<CommentDto> getCommentsByNewsId(Long newsId, PageRequest pageRequest) {
         Page<Comment> page = commentRepository.findAll(pageRequest);
 
         return page.getContent().stream()
@@ -77,13 +77,13 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    public CommentDTO getCommentById(Long id) {
+    public CommentDto getCommentById(Long id) {
         return commentRepository.findById(id)
                 .map(commentMapper::convertToDTO)
                 .orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found"));
     }
 
-    public CommentDTO updateComment(Long id, CommentDTO updatedCommentDTO) {
+    public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);
 
@@ -91,7 +91,7 @@ public class CommentService {
         User authorComment = oldComment.getAuthor();
 
         if (currentUser.getId().equals(authorComment.getId())) {
-            oldComment.setCommentText(updatedCommentDTO.getCommentText());
+            oldComment.setCommentText(updatedCommentDto.getCommentText());
 
             return commentMapper.convertToDTO(commentRepository.save(oldComment));
         }

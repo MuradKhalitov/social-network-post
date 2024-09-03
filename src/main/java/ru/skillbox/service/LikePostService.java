@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.LikePostDto;
 import ru.skillbox.mapper.LikePostMapper;
-import ru.skillbox.mapper.NewsMapper;
+import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.User;
@@ -25,15 +25,15 @@ public class LikePostService {
     private final UserRepository userRepository;
     private final LikePostMapper likePostMapper;
     private final NewsRepository newsRepository;
-    private final NewsMapper newsMapper;
+    private final PostMapper postMapper;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, NewsRepository newsRepository, NewsMapper newsMapper) {
+    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, NewsRepository newsRepository, PostMapper postMapper) {
         this.likePostRepository = likeRepository;
         this.userRepository = userRepository;
         this.likePostMapper = likeMapper;
         this.newsRepository = newsRepository;
-        this.newsMapper = newsMapper;
+        this.postMapper = postMapper;
     }
 
     public LikePostDto createLikePost(Long postId) {

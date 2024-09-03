@@ -10,7 +10,7 @@ import ru.skillbox.model.Tag;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class, CommentMapper.class})
-public interface NewsMapper {
+public interface PostMapper {
 
     @Mapping(source = "author.id", target = "authorId")
     @Mapping(source = "comments", target = "comments")

@@ -4,10 +4,10 @@ import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class NewsMapperDelegate implements NewsMapper {
+public abstract class PostMapperDelegate implements PostMapper {
 
     @Autowired
-    private NewsMapper delegate;
+    private PostMapper delegate;
 
     @Autowired
     private CommentMapper commentMapper;

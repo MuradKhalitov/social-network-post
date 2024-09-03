@@ -5,20 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.LikeCommentDto;
-import ru.skillbox.dto.LikePostDto;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.mapper.LikeCommentMapper;
-import ru.skillbox.mapper.LikePostMapper;
-import ru.skillbox.mapper.NewsMapper;
 import ru.skillbox.model.*;
 import ru.skillbox.repository.LikeCommentRepository;
-import ru.skillbox.repository.LikePostRepository;
 import ru.skillbox.repository.UserRepository;
 import ru.skillbox.util.CurrentUsers;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

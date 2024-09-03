@@ -1,7 +1,7 @@
 package ru.skillbox.aop;
 
 import ru.skillbox.mapper.CommentMapper;
-import ru.skillbox.mapper.NewsMapper;
+import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import ru.skillbox.service.CommentService;
@@ -21,13 +21,13 @@ import org.springframework.stereotype.Component;
 public class AutentificatorAspect {
     private final NewsService newsService;
     private final CommentService commentService;
-    private final NewsMapper newsMapper;
+    private final PostMapper postMapper;
     private final CommentMapper commentMapper;
 
-    public AutentificatorAspect(NewsService service, CommentService commentService, NewsMapper newsMapper, CommentMapper commentMapper) {
+    public AutentificatorAspect(NewsService service, CommentService commentService, PostMapper postMapper, CommentMapper commentMapper) {
         this.newsService = service;
         this.commentService = commentService;
-        this.newsMapper = newsMapper;
+        this.postMapper = postMapper;
         this.commentMapper = commentMapper;
     }
 
@@ -46,7 +46,7 @@ public class AutentificatorAspect {
             if (oldNewsId != null) {
                 String currentUsername = CurrentUsers.getCurrentUsername();
                 log.info("Пользователь: {}, делает попытку отредактировать или удалить новость", currentUsername);
-                Post post = newsMapper.convertToEntity(newsService.getNewsById(oldNewsId));
+                Post post = postMapper.convertToEntity(newsService.getNewsById(oldNewsId));
                 if (post.getAuthor().getUsername().equals(currentUsername)) {
                     log.info("У пользователя: {}, все получилось!", currentUsername);
                 } else {

@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import ru.skillbox.dto.LikePostDto;
 import ru.skillbox.model.LikePost;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, NewsMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, PostMapper.class})
 public interface LikePostMapper {
 
     @Mapping(source = "author.id", target = "authorId")

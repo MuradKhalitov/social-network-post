@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import ru.skillbox.dto.PostDto;
 import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.exception.NewsNotFoundException;
-import ru.skillbox.mapper.NewsMapper;
+import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.Tag;
 import ru.skillbox.model.User;
@@ -31,20 +31,20 @@ public class NewsService {
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
-    private final NewsMapper newsMapper;
+    private final PostMapper postMapper;
     private final UserService userService;
 
     @Autowired
-    public NewsService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, NewsMapper newsMapper, UserService userService) {
+    public NewsService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper, UserService userService) {
         this.newsRepository = newsRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
-        this.newsMapper = newsMapper;
+        this.postMapper = postMapper;
         this.userService = userService;
     }
 
     public PostDto createNews(PostDto postDto) {
-        Post post = newsMapper.convertToEntity(postDto);
+        Post post = postMapper.convertToEntity(postDto);
         String currentUsername = CurrentUsers.getCurrentUsername();
         User user = userRepository.findByUsername(currentUsername).get();
         post.setAuthor(user);
@@ -62,20 +62,20 @@ public class NewsService {
         log.info("Пользователь: {}, добавил новость", currentUsername);
         Post createdPost = newsRepository.save(post);
 
-        return newsMapper.convertToDTO(createdPost);
+        return postMapper.convertToDTO(createdPost);
     }
 
     public List<BriefPostDTO> getAllNews(PageRequest pageRequest) {
         Page<Post> page = newsRepository.findAll(pageRequest);
         List<BriefPostDTO> briefPostDTOList = page.getContent().stream()
-                .map(newsMapper::convertToBriefDTO)
+                .map(postMapper::convertToBriefDTO)
                 .collect(Collectors.toList());
         return briefPostDTOList;
     }
 
     public PostDto getNewsById(Long id) {
         return newsRepository.findById(id)
-                .map(newsMapper::convertToDTO)
+                .map(postMapper::convertToDTO)
                 .orElseThrow(() -> new NewsNotFoundException("News with id " + id + " not found"));
     }
 
@@ -83,7 +83,7 @@ public class NewsService {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);
 
-        Post oldPost = newsMapper.convertToEntity(getNewsById(id));
+        Post oldPost = postMapper.convertToEntity(getNewsById(id));
         User authorNews = oldPost.getAuthor();
 
         if (currentUser.getId().equals(authorNews.getId())) {
@@ -91,7 +91,7 @@ public class NewsService {
             oldPost.setPostText(updatePostDto.getPostText());
             Post updatedPost = newsRepository.save(oldPost);
 
-            return newsMapper.convertToDTO(updatedPost);
+            return postMapper.convertToDTO(updatedPost);
         }
         return null;
     }
@@ -100,7 +100,7 @@ public class NewsService {
     public ResponseEntity<Void> deleteNews(Long id) {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);
-        Post deletedPost = newsMapper.convertToEntity(getNewsById(id));
+        Post deletedPost = postMapper.convertToEntity(getNewsById(id));
         User authorNews = deletedPost.getAuthor();
         if (currentUser.getId().equals(authorNews.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
             newsRepository.deleteById(id);
@@ -114,7 +114,7 @@ public class NewsService {
         if (!(authorIds == null)) {
             List<Post> filterPostList = newsRepository.findByAuthorId(authorIds);
             List<BriefPostDTO> briefPostDTOList = filterPostList.stream()
-                    .map(newsMapper::convertToBriefDTO)
+                    .map(postMapper::convertToBriefDTO)
                     .collect(Collectors.toList());
             return briefPostDTOList;
         }
