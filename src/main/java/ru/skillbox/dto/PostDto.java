@@ -16,14 +16,14 @@ public class PostDto {
     private Long authorId;
     private LocalDateTime time;
     private LocalDateTime timeChanged;
-    private List<CommentDTO> comments = new ArrayList<>();
     private String type;
     private boolean isBlocked;
     private boolean isDelete;
     private Integer commentsCount;
-    private String tags;
+    private List<String> tags;
     private int likeAmount;
     private boolean myLike;
     private String imagePath;
     private LocalDateTime publishDate;
+    private List<CommentDTO> comments = new ArrayList<>();
 }

@@ -3,12 +3,14 @@ package ru.skillbox.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.skillbox.dto.PostDto;
-import ru.skillbox.dto.response.BriefNewsDTO;
+import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.NewsMapper;
 import ru.skillbox.model.Post;
+import ru.skillbox.model.Tag;
 import ru.skillbox.model.User;
 import ru.skillbox.repository.NewsRepository;
+import ru.skillbox.repository.TagRepository;
 import ru.skillbox.repository.UserRepository;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +30,15 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
+    private final TagRepository tagRepository;
     private final NewsMapper newsMapper;
     private final UserService userService;
 
     @Autowired
-    public NewsService(NewsRepository newsRepository, UserRepository userRepository, NewsMapper newsMapper, UserService userService) {
+    public NewsService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, NewsMapper newsMapper, UserService userService) {
         this.newsRepository = newsRepository;
         this.userRepository = userRepository;
+        this.tagRepository = tagRepository;
         this.newsMapper = newsMapper;
         this.userService = userService;
     }
@@ -43,17 +48,29 @@ public class NewsService {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User user = userRepository.findByUsername(currentUsername).get();
         post.setAuthor(user);
+        List<Tag> tags = new ArrayList<>();
+        for (String tagName : postDto.getTags()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> {
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName);
+                        return newTag;
+                    });
+            tags.add(tag);
+        }
+        post.setTags(tags);
         log.info("Пользователь: {}, добавил новость", currentUsername);
         Post createdPost = newsRepository.save(post);
+
         return newsMapper.convertToDTO(createdPost);
     }
 
-    public List<BriefNewsDTO> getAllNews(PageRequest pageRequest) {
+    public List<BriefPostDTO> getAllNews(PageRequest pageRequest) {
         Page<Post> page = newsRepository.findAll(pageRequest);
-        List<BriefNewsDTO> briefNewsDTOList = page.getContent().stream()
+        List<BriefPostDTO> briefPostDTOList = page.getContent().stream()
                 .map(newsMapper::convertToBriefDTO)
                 .collect(Collectors.toList());
-        return briefNewsDTOList;
+        return briefPostDTOList;
     }
 
     public PostDto getNewsById(Long id) {
@@ -93,15 +110,31 @@ public class NewsService {
 
     }
 
-    public List<BriefNewsDTO> getFilteredNewsByAuthor(Long authorIds) {
+    public List<BriefPostDTO> getFilteredNewsByAuthor(Long authorIds) {
         if (!(authorIds == null)) {
             List<Post> filterPostList = newsRepository.findByAuthorId(authorIds);
-            List<BriefNewsDTO> briefNewsDTOList = filterPostList.stream()
+            List<BriefPostDTO> briefPostDTOList = filterPostList.stream()
                     .map(newsMapper::convertToBriefDTO)
                     .collect(Collectors.toList());
-            return briefNewsDTOList;
+            return briefPostDTOList;
         }
         return new ArrayList<>();
+    }
+    public Tag createOrGetTag(String tagName) {
+        Optional<Tag> existingTag = tagRepository.findByName(tagName);
+        return existingTag.orElseGet(() -> {
+            Tag newTag = new Tag();
+            newTag.setName(tagName);
+            return tagRepository.save(newTag);
+        });
+    }
+    public Post addTagsToPost(Long postId, List<String> tagNames) {
+        Post post = newsRepository.findById(postId).orElseThrow(() -> new NewsNotFoundException("Post not found"));
+        List<Tag> tags = tagNames.stream()
+                .map(this::createOrGetTag)
+                .collect(Collectors.toList());
+        post.setTags(tags);
+        return newsRepository.save(post);
     }
 }
 

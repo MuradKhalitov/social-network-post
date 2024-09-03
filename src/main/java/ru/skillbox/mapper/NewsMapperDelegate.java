@@ -1,6 +1,6 @@
 package ru.skillbox.mapper;
 
-import ru.skillbox.dto.response.BriefNewsDTO;
+import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,12 +13,12 @@ public abstract class NewsMapperDelegate implements NewsMapper {
     private CommentMapper commentMapper;
 
     @Override
-    public BriefNewsDTO convertToBriefDTO(Post post) {
-        BriefNewsDTO briefNewsDTO = delegate.convertToBriefDTO(post);
-        briefNewsDTO.setUsername(post.getAuthor().getUsername());
-        briefNewsDTO.setComments(post.getComments().size());
+    public BriefPostDTO convertToBriefDTO(Post post) {
+        BriefPostDTO briefPostDTO = delegate.convertToBriefDTO(post);
+        briefPostDTO.setUsername(post.getAuthor().getUsername());
+        briefPostDTO.setComments(post.getComments().size());
 
-        return briefNewsDTO;
+        return briefPostDTO;
     }
 }
 

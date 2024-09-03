@@ -48,7 +48,13 @@ public class Post {
     private String imagePath;
     @Column(name = "publish_date")
     private LocalDateTime publishDate;
-    private String tags;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "post_tags",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags;
 
 }
 

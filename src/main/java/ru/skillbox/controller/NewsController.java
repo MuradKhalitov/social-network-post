@@ -2,7 +2,7 @@ package ru.skillbox.controller;
 
 import ru.skillbox.aop.Autorizator;
 import ru.skillbox.dto.PostDto;
-import ru.skillbox.dto.response.BriefNewsDTO;
+import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +25,7 @@ public class NewsController {
     }
 
     @GetMapping
-    public List<BriefNewsDTO> getFilteredNewsByAuthor(@RequestParam(required = false) Long authorIds) {
+    public List<BriefPostDTO> getFilteredNewsByAuthor(@RequestParam(required = false) Long authorIds) {
         return newsService.getFilteredNewsByAuthor(authorIds);
     }
 
@@ -37,7 +37,7 @@ public class NewsController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
-    public List<BriefNewsDTO> getAllNews(@RequestParam(required = false, defaultValue = "0") int page,
+    public List<BriefPostDTO> getAllNews(@RequestParam(required = false, defaultValue = "0") int page,
                                          @RequestParam(required = false, defaultValue = "10") int size) {
         //Sort sort = Utils.sort(sortBy, orderBy);
         return newsService.getAllNews(PageRequest.of(page, size));//, sort);
