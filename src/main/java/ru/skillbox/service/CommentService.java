@@ -2,6 +2,7 @@ package ru.skillbox.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.CommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
@@ -11,6 +12,7 @@ import ru.skillbox.model.User;
 import ru.skillbox.repository.CommentRepository;
 import ru.skillbox.repository.NewsRepository;
 import ru.skillbox.repository.UserRepository;
+import ru.skillbox.util.CopyUtils;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +71,8 @@ public class CommentService {
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
 
-    public List<CommentDto> getCommentsByNewsId(Long newsId, PageRequest pageRequest) {
-        Page<Comment> page = commentRepository.findAll(pageRequest);
+    public List<CommentDto> getCommentsByNewsId(Long postId, PageRequest pageRequest) {
+        Page<Comment> page = commentRepository.findByPostId(postId, pageRequest);
 
         return page.getContent().stream()
                 .map(commentMapper::convertToDTO)
@@ -83,6 +85,7 @@ public class CommentService {
                 .orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found"));
     }
 
+    @Transactional
     public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);

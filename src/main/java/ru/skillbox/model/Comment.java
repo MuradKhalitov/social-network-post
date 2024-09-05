@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,10 +25,9 @@ public class Comment {
     @UpdateTimestamp
     @Column(name = "time_changed")
     private LocalDateTime timeChanged;
-    @ManyToOne
+    @ManyToOne()
     private User author;
-    //    @Column(name = "parent_id")
-//    private Long parentId;
+
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Comment parent;
@@ -51,5 +51,15 @@ public class Comment {
     @Column(name = "image_path")
     private String imagePath;
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LikeComment> likes;
+    private List<LikeComment> likes = new ArrayList<>();
+
+    public void addLike(LikeComment like) {
+        likes.add(like);
+        like.setComment(this);
+    }
+
+    public void removeLike(LikeComment like) {
+        likes.remove(like);
+        like.setComment(null);
+    }
 }

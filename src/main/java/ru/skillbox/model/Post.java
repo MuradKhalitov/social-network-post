@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -30,9 +31,9 @@ public class Post {
     private LocalDateTime timeChanged;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    private List<Comment> comments =  new ArrayList<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LikePost> likes;
+    private List<LikePost> likes= new ArrayList<>();
     private String type;
     @Column(name = "is_blocked")
     private boolean isBlocked;
@@ -55,6 +56,21 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags;
+
+    public void addLike(LikePost like) {
+        if (!likes.contains(like)) {
+            likes.add(like);
+            like.setPost(this);
+        }
+    }
+
+    public void removeLike(LikePost like) {
+        if (likes.contains(like)) {
+            likes.remove(like);
+            like.setPost(null);
+        }
+    }
+
 
 }
 

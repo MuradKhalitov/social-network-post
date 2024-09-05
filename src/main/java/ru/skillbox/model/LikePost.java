@@ -16,6 +16,7 @@ public class LikePost {
     @ManyToOne
     private User author;
     @ManyToOne
+    @JoinColumn(name = "post_id")
     private Post post;
 
 }

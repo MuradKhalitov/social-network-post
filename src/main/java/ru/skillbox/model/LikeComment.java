@@ -16,6 +16,7 @@ public class LikeComment {
     @ManyToOne
     private User author;
     @ManyToOne
+    @JoinColumn(name = "comment_id")
     private Comment comment;
 
 }

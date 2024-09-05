@@ -21,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
-//        UserDetails admin = User.builder().username("admin").password(encoder.encode("admin")).build();
+//        UserDetails admin = User.builder().username("admin").password(encoder.encode("111")).build();
 //        UserDetails user = User.builder().username("user").password(encoder.encode("user")).build();
 //        UserDetails moderator = User.builder().username("moderator").password(encoder.encode("moderator")).build();
 //        return new InMemoryUserDetailsManager(admin, user, moderator);

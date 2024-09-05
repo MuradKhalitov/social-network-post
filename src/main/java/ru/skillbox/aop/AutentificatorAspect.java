@@ -5,7 +5,7 @@ import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import ru.skillbox.service.CommentService;
-import ru.skillbox.service.NewsService;
+import ru.skillbox.service.PostService;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -19,13 +19,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class AutentificatorAspect {
-    private final NewsService newsService;
+    private final PostService postService;
     private final CommentService commentService;
     private final PostMapper postMapper;
     private final CommentMapper commentMapper;
 
-    public AutentificatorAspect(NewsService service, CommentService commentService, PostMapper postMapper, CommentMapper commentMapper) {
-        this.newsService = service;
+    public AutentificatorAspect(PostService service, CommentService commentService, PostMapper postMapper, CommentMapper commentMapper) {
+        this.postService = service;
         this.commentService = commentService;
         this.postMapper = postMapper;
         this.commentMapper = commentMapper;
@@ -46,7 +46,7 @@ public class AutentificatorAspect {
             if (oldNewsId != null) {
                 String currentUsername = CurrentUsers.getCurrentUsername();
                 log.info("Пользователь: {}, делает попытку отредактировать или удалить новость", currentUsername);
-                Post post = postMapper.convertToEntity(newsService.getNewsById(oldNewsId));
+                Post post = postMapper.convertToEntity(postService.getPostById(oldNewsId));
                 if (post.getAuthor().getUsername().equals(currentUsername)) {
                     log.info("У пользователя: {}, все получилось!", currentUsername);
                 } else {

@@ -1,7 +1,6 @@
 package ru.skillbox.service;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.PostDto;
 import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.exception.NewsNotFoundException;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class NewsService {
+public class PostService {
 
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
@@ -35,7 +34,7 @@ public class NewsService {
     private final UserService userService;
 
     @Autowired
-    public NewsService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper, UserService userService) {
+    public PostService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper, UserService userService) {
         this.newsRepository = newsRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
@@ -73,23 +72,26 @@ public class NewsService {
         return briefPostDTOList;
     }
 
-    public PostDto getNewsById(Long id) {
+    public PostDto getPostById(Long id) {
         return newsRepository.findById(id)
                 .map(postMapper::convertToDTO)
                 .orElseThrow(() -> new NewsNotFoundException("News with id " + id + " not found"));
     }
 
+    @Transactional
     public PostDto updateNews(Long id, PostDto updatePostDto) {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);
 
-        Post oldPost = postMapper.convertToEntity(getNewsById(id));
+        Post oldPost = newsRepository.findById(id)
+                .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + "not found"));
         User authorNews = oldPost.getAuthor();
 
         if (currentUser.getId().equals(authorNews.getId())) {
             oldPost.setTitle(updatePostDto.getTitle());
             oldPost.setPostText(updatePostDto.getPostText());
-            Post updatedPost = newsRepository.save(oldPost);
+            oldPost.setImagePath(updatePostDto.getImagePath());
+            Post updatedPost = newsRepository.saveAndFlush(oldPost);
 
             return postMapper.convertToDTO(updatedPost);
         }
@@ -100,7 +102,7 @@ public class NewsService {
     public void deleteNews(Long id) {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);
-        Post deletedPost = postMapper.convertToEntity(getNewsById(id));
+        Post deletedPost = postMapper.convertToEntity(getPostById(id));
         User authorNews = deletedPost.getAuthor();
         if (currentUser.getId().equals(authorNews.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
             newsRepository.deleteById(id);
@@ -118,6 +120,7 @@ public class NewsService {
         }
         return new ArrayList<>();
     }
+
     public Tag createOrGetTag(String tagName) {
         Optional<Tag> existingTag = tagRepository.findByName(tagName);
         return existingTag.orElseGet(() -> {
@@ -126,6 +129,7 @@ public class NewsService {
             return tagRepository.save(newTag);
         });
     }
+
     public Post addTagsToPost(Long postId, List<String> tagNames) {
         Post post = newsRepository.findById(postId).orElseThrow(() -> new NewsNotFoundException("Post not found"));
         List<Tag> tags = tagNames.stream()

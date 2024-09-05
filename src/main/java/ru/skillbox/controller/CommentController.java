@@ -5,7 +5,6 @@ import ru.skillbox.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,9 +46,10 @@ public class CommentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
-    public List<CommentDto> getCommentsByNewsId(@PathVariable Long postId,
+    public List<CommentDto> getCommentsByPostId(@PathVariable Long postId,
                                                 @RequestParam(required = false, defaultValue = "0") int page,
-                                                @RequestParam(required = false, defaultValue = "10") int size) {
+                                                @RequestParam(required = false, defaultValue = "10") int size)
+    {
         List<CommentDto> commentDtoList = commentService.getCommentsByNewsId(postId, PageRequest.of(page, size));
 
         return commentDtoList;
