@@ -97,16 +97,14 @@ public class NewsService {
     }
 
 
-    public ResponseEntity<Void> deleteNews(Long id) {
+    public void deleteNews(Long id) {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);
         Post deletedPost = postMapper.convertToEntity(getNewsById(id));
         User authorNews = deletedPost.getAuthor();
         if (currentUser.getId().equals(authorNews.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
             newsRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else new NewsNotFoundException("News with id " + id + " not found");
 
     }
 

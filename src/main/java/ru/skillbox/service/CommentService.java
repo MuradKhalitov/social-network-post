@@ -98,7 +98,7 @@ public class CommentService {
         return null;
     }
 
-    public ResponseEntity<Void> deleteComment(Long id) {
+    public void deleteComment(Long id) {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userService.findByUsername(currentUsername);
         Comment deletedComment = commentMapper.convertToEntity(getCommentById(id));
@@ -106,9 +106,7 @@ public class CommentService {
 
         if (currentUser.getId().equals(authorComment.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
             commentRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else new CommentNotFoundException("Comment with id " + id + " not found");
 
     }
 }

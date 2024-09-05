@@ -56,11 +56,9 @@ public class NewsController {
 
     @DeleteMapping("/{id}")
     @Autorizator
-    public ResponseEntity<Void> deleteNews(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteNews(@PathVariable Long id) {
         newsService.deleteNews(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-
     }
 }
 
