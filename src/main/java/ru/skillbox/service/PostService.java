@@ -42,8 +42,8 @@ public class PostService {
 
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
-        String currentUsername = CurrentUsers.getCurrentUsername();
-        User user = userRepository.findByUsername(currentUsername).get();
+        Long userId = CurrentUsers.getCurrentUserId();
+        User user = userRepository.findById(userId).get();
         post.setAuthor(user);
         List<Tag> tags = new ArrayList<>();
         for (String tagName : postDto.getTags()) {
@@ -56,7 +56,7 @@ public class PostService {
             tags.add(tag);
         }
         post.setTags(tags);
-        log.info("Пользователь: {}, добавил новость", currentUsername);
+        log.info("Пользователь: {}, добавил новость", user.getUsername());
         Post createdPost = newsRepository.save(post);
 
         return postMapper.convertToDTO(createdPost);

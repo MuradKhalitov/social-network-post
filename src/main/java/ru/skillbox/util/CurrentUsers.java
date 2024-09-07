@@ -5,7 +5,10 @@ package ru.skillbox.util;
 //import org.springframework.security.core.userdetails.UserDetails;
 
 public class CurrentUsers {
-//    public static String getCurrentUsername() {
+    private static JwtTokenUtil jwtTokenUtil;
+
+
+    //    public static String getCurrentUsername() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication != null && authentication.isAuthenticated()) {
 //            Object principal = authentication.getPrincipal();
@@ -18,16 +21,20 @@ public class CurrentUsers {
 //        }
 //        return null;
 //    }
-
-    public static String getCurrentUsername() {
-     return "admin";
-    }
-    public static boolean hasRole(String role) {
-        return true;
-    }
-
-//    public static boolean hasRole(String role) {
+    //    public static boolean hasRole(String role) {
 //        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 //                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
 //    }
+
+    public static Long getCurrentUserId() {
+        return jwtTokenUtil.getUserIdFromToken();//"tagir";
+    }
+
+    public static String getCurrentUsername() {
+        return jwtTokenUtil.getUsernameFromToken();//"tagir";
+    }
+
+    public static boolean hasRole(String role) {
+        return (jwtTokenUtil.getRoleFromToken().equals(role));//true;
+    }
 }
