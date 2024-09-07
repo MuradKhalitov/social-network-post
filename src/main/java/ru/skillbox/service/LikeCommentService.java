@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.LikeCommentDto;
+import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.mapper.LikeCommentMapper;
 import ru.skillbox.model.*;
+import ru.skillbox.repository.CommentRepository;
 import ru.skillbox.repository.LikeCommentRepository;
 import ru.skillbox.repository.UserRepository;
 import ru.skillbox.util.CurrentUsers;
@@ -20,14 +22,16 @@ public class LikeCommentService {
 
     private final LikeCommentRepository likeCommentRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final LikeCommentMapper likeCommentMapper;
     private final CommentService commentService;
     private final CommentMapper commentMapper;
 
     @Autowired
-    public LikeCommentService(LikeCommentRepository likeRepository, UserRepository userRepository, LikeCommentMapper likeMapper, CommentService commentService, CommentMapper commentMapper) {
+    public LikeCommentService(LikeCommentRepository likeRepository, UserRepository userRepository, CommentRepository commentRepository, LikeCommentMapper likeMapper, CommentService commentService, CommentMapper commentMapper) {
         this.likeCommentRepository = likeRepository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
         this.likeCommentMapper = likeMapper;
         this.commentService = commentService;
         this.commentMapper = commentMapper;
@@ -43,7 +47,9 @@ public class LikeCommentService {
         }
 
         LikeComment likeComment = new LikeComment();
-        Comment comment = commentMapper.convertToEntity(commentService.getCommentById(commentId));
+        //Comment comment = commentMapper.convertToEntity(commentService.getCommentById(commentId));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found"));
         likeComment.setComment(comment);
         likeComment.setAuthor(user);
         log.info("Пользователь: {}, добавил like к комментарию: {}", currentUsername, comment.getId());

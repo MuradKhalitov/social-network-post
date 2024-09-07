@@ -88,7 +88,7 @@ public class CommentService {
     @Transactional
     public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
         String currentUsername = CurrentUsers.getCurrentUsername();
-        User currentUser = userService.findByUsername(currentUsername);
+        User currentUser = userRepository.findByUsername(currentUsername).get();
 
         Comment oldComment = commentMapper.convertToEntity(getCommentById(id));
         User authorComment = oldComment.getAuthor();
@@ -103,7 +103,7 @@ public class CommentService {
 
     public void deleteComment(Long id) {
         String currentUsername = CurrentUsers.getCurrentUsername();
-        User currentUser = userService.findByUsername(currentUsername);
+        User currentUser = userRepository.findByUsername(currentUsername).get();
         Comment deletedComment = commentMapper.convertToEntity(getCommentById(id));
         User authorComment = deletedComment.getAuthor();
 

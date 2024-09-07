@@ -1,6 +1,5 @@
 package ru.skillbox.controller;
 
-import ru.skillbox.aop.Autorizator;
 import ru.skillbox.dto.PostDto;
 import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.service.PostService;
@@ -29,7 +28,7 @@ public class PostController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
+    //@PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
     public PostDto createNews(@RequestBody PostDto postDto) {
         return postService.createNews(postDto);
     }
@@ -54,7 +53,6 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    @Autorizator
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteNews(@PathVariable Long id) {
         postService.deleteNews(id);

@@ -6,11 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     //List<Comment> findByPostId(Long newsId);
     Page<Comment> findByPostId(Long postId, Pageable pageable);
+    Optional<Comment> findById(Long id);
 //    @Query("SELECT c FROM Category c WHERE c.name = ?1")
 //    Page<Category> findAllByCategory(String name, Pageable pageable);
 }

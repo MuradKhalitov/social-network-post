@@ -81,7 +81,7 @@ public class PostService {
     @Transactional
     public PostDto updateNews(Long id, PostDto updatePostDto) {
         String currentUsername = CurrentUsers.getCurrentUsername();
-        User currentUser = userService.findByUsername(currentUsername);
+        User currentUser = userRepository.findByUsername(currentUsername).get();
 
         Post oldPost = newsRepository.findById(id)
                 .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + "not found"));
@@ -101,7 +101,7 @@ public class PostService {
 
     public void deleteNews(Long id) {
         String currentUsername = CurrentUsers.getCurrentUsername();
-        User currentUser = userService.findByUsername(currentUsername);
+        User currentUser = userRepository.findByUsername(currentUsername).get();
         Post deletedPost = postMapper.convertToEntity(getPostById(id));
         User authorNews = deletedPost.getAuthor();
         if (currentUser.getId().equals(authorNews.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
