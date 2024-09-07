@@ -70,8 +70,6 @@ public class Post {
             like.setPost(null);
         }
     }
-
-
 }
 
 

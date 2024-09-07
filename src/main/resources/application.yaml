@@ -8,6 +8,7 @@ spring:
     name: social-network-dialog
   datasource:
     url: jdbc:postgresql://localhost:5432/social-network-post
+#    url: jdbc:postgresql://89.111.174.153:5432/social-network-post
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -19,7 +20,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:

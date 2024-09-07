@@ -6,7 +6,6 @@ import ru.skillbox.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,13 +27,11 @@ public class PostController {
     }
 
     @PostMapping
-    //@PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
     public PostDto createNews(@RequestBody PostDto postDto) {
         return postService.createNews(postDto);
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
     public List<BriefPostDTO> getAllNews(@RequestParam(required = false, defaultValue = "0") int page,
                                          @RequestParam(required = false, defaultValue = "10") int size) {
         //Sort sort = Utils.sort(sortBy, orderBy);
@@ -42,7 +39,6 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') || hasAuthority('MODERATOR')")
     public PostDto getNewsById(@PathVariable Long id) {
         return postService.getPostById(id);
     }

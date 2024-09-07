@@ -32,28 +32,15 @@ public class CommentService {
     private final UserRepository userRepository;
     private final NewsRepository newsRepository;
     private final CommentMapper commentMapper;
-    private final UserService userService;
 
 
     @Autowired
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, NewsRepository newsRepository, CommentMapper commentMapper, UserService userService) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, NewsRepository newsRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.newsRepository = newsRepository;
         this.commentMapper = commentMapper;
-        this.userService = userService;
     }
-
-//    public CommentDTO createComment(Long postId, CommentDTO commentDTO) {
-//        Comment comment = commentMapper.convertToEntity(commentDTO);
-//        String currentUsername = CurrentUsers.getCurrentUsername();
-//        User user = userRepository.findByUsername(currentUsername).get();
-//        Optional<Post> post = newsRepository.findById(postId);
-//        comment.setAuthor(user);
-//        comment.setPost(post.get());
-//        log.info("Пользователь: {}, добавил комментарий", currentUsername);
-//        return commentMapper.convertToDTO(commentRepository.save(comment));
-//    }
 
     public CommentDto createComment(Long postId, CommentDto commentDTO, Long parentCommentId) {
         Comment comment = commentMapper.convertToEntity(commentDTO);

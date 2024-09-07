@@ -9,5 +9,4 @@
     <include file="db/changelog/002-create-comment-table.sql"/>
     <include file="db/changelog/003-create-like_post-table.sql"/>
     <include file="db/changelog/004-create-like_comment-table.sql"/>
-    <include file="db/changelog/005-create-user-and-role-table.sql"/>
 </databaseChangeLog>

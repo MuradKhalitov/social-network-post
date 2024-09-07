@@ -1,31 +1,38 @@
 package ru.skillbox.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.dto.JwtAuthenticationResponse;
-import ru.skillbox.dto.SignUpRequest;
-import ru.skillbox.security.AuthenticationService;
-import ru.skillbox.dto.SignInRequest;
+import ru.skillbox.dto.AuthenticateRq;
+import ru.skillbox.dto.LoginResponse;
 
-@RestController
-@RequestMapping("/auth")
+@Controller
 @RequiredArgsConstructor
-@Tag(name = "Аутентификация")
+@Slf4j
+@RequestMapping("/api/v1/auth/login")
+
+//Класс-заглушка для доступа в фронт
 public class AuthController {
-    private final AuthenticationService authenticationService;
 
-    @Operation(summary = "Регистрация пользователя")
-    @PostMapping("/sign-up")
-    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
-        return authenticationService.signUp(request);
+    @CrossOrigin(origins = "http://localhost:8080")
+    @PostMapping
+    public ResponseEntity<LoginResponse> getAllDialogs(@RequestBody AuthenticateRq request) {
+        LoginResponse response = new LoginResponse();
+        response.setData("asdasd");
+        response.setTimestamp(234234L);
+
+        return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Авторизация пользователя")
-    @PostMapping("/sign-in")
-    public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
-        return authenticationService.signIn(request);
+    @GetMapping
+    public ResponseEntity<LoginResponse> getkek() {
+        LoginResponse response = new LoginResponse();
+        response.setData("asdasd");
+        response.setTimestamp(234234L);
+
+        return ResponseEntity.ok(response);
     }
+
 }

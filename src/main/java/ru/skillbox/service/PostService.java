@@ -31,15 +31,13 @@ public class PostService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final PostMapper postMapper;
-    private final UserService userService;
 
     @Autowired
-    public PostService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper, UserService userService) {
+    public PostService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper) {
         this.newsRepository = newsRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
-        this.userService = userService;
     }
 
     public PostDto createNews(PostDto postDto) {
