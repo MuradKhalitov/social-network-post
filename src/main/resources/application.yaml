@@ -5,7 +5,7 @@ token:
     key: 53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855
 spring:
   application:
-    name: social-network-dialog
+    name: social-network-post
   datasource:
     url: jdbc:postgresql://localhost:5432/social-network-post
 #    url: jdbc:postgresql://89.111.174.153:5432/social-network-post
