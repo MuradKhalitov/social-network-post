@@ -1,14 +1,18 @@
 package ru.skillbox.service;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.PostDto;
+import ru.skillbox.dto.SearchDto;
 import ru.skillbox.dto.response.BriefPostDTO;
+import ru.skillbox.dto.response.PostResponse;
 import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.Tag;
 import ru.skillbox.model.User;
-import ru.skillbox.repository.NewsRepository;
+import ru.skillbox.repository.PostRepository;
+import ru.skillbox.repository.PostSpecification;
 import ru.skillbox.repository.TagRepository;
 import ru.skillbox.repository.UserRepository;
 import ru.skillbox.util.CurrentUsers;
@@ -27,14 +31,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PostService {
 
-    private final NewsRepository newsRepository;
+    private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final PostMapper postMapper;
 
     @Autowired
-    public PostService(NewsRepository newsRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper) {
-        this.newsRepository = newsRepository;
+    public PostService(PostRepository postRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper) {
+        this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
@@ -57,21 +61,70 @@ public class PostService {
         }
         post.setTags(tags);
         log.info("Пользователь: {}, добавил новость", user.getUsername());
-        Post createdPost = newsRepository.save(post);
+        Post createdPost = postRepository.save(post);
 
         return postMapper.convertToDTO(createdPost);
     }
 
-    public List<BriefPostDTO> getAllNews(PageRequest pageRequest) {
-        Page<Post> page = newsRepository.findAll(pageRequest);
-        List<BriefPostDTO> briefPostDTOList = page.getContent().stream()
-                .map(postMapper::convertToBriefDTO)
-                .collect(Collectors.toList());
-        return briefPostDTOList;
+    public PostResponse searchPosts(SearchDto searchDto, Pageable pageable) {
+        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(searchDto), pageable);
+
+        // Формирование PostResponse
+        PostResponse postResponse = new PostResponse();
+        postResponse.setTotalElements(postPage.getTotalElements());
+        postResponse.setTotalPages(postPage.getTotalPages());
+        postResponse.setNumber(postPage.getNumber());
+        postResponse.setSize(postPage.getSize());
+        postResponse.setFirst(postPage.isFirst());
+        postResponse.setLast(postPage.isLast());
+        postResponse.setNumberOfElements(postPage.getNumberOfElements());
+        postResponse.setPageable(pageable);
+        postResponse.setEmpty(postPage.isEmpty());
+
+        // Маппим Post в PostContent
+        List<PostResponse.PostContent> content = postPage.getContent().stream().map(post -> new PostResponse.PostContent(
+                post.getId(),
+                post.getTime(),
+                post.getTimeChanged(),
+                post.getAuthor().getId(),
+                post.getTitle(),
+                "POSTED",  // Тип можно изменить на основе логики
+                post.getPostText(),
+                post.isBlocked(),
+                post.isDelete(),
+                post.getCommentsCount() != null ? post.getCommentsCount() : 0,
+                post.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
+                post.getLikeAmount() != null ? post.getLikeAmount() : 0,
+                false,  // Здесь можно добавить логику для определения, поставил ли пользователь лайк
+                post.getImagePath(),
+                post.getPublishDate()
+        )).collect(Collectors.toList());
+
+        postResponse.setContent(content);
+        return postResponse;
     }
 
+//    public List<BriefPostDTO> getAllNews(PageRequest pageRequest) {
+//        Page<Post> page = postRepository.findAll(pageRequest);
+//        List<BriefPostDTO> briefPostDTOList = page.getContent().stream()
+//                .map(postMapper::convertToBriefDTO)
+//                .collect(Collectors.toList());
+//        return briefPostDTOList;
+//    }
+//    public ResponseList<PostResponse> filter(SearchDto request) {
+//        Page<Post> page = postRepository.findAll(
+//                HotelSpecification.withRequest(request),
+//                PageRequest.of(request.getPageNumber(), request.getPageSize())
+//        );
+//        ResponseList<PostResponse> response = new ResponseList<>();
+//        response.setItems(page.getContent().stream().map(this::hotelToResponse).toList());
+//        response.setTotalCount(page.getTotalElements());
+//        return response;
+//    }
+
+
     public PostDto getPostById(Long id) {
-        return newsRepository.findById(id)
+        return postRepository.findById(id)
                 .map(postMapper::convertToDTO)
                 .orElseThrow(() -> new NewsNotFoundException("News with id " + id + " not found"));
     }
@@ -81,7 +134,7 @@ public class PostService {
         String currentUsername = CurrentUsers.getCurrentUsername();
         User currentUser = userRepository.findByUsername(currentUsername).get();
 
-        Post oldPost = newsRepository.findById(id)
+        Post oldPost = postRepository.findById(id)
                 .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + "not found"));
         User authorNews = oldPost.getAuthor();
 
@@ -89,7 +142,7 @@ public class PostService {
             oldPost.setTitle(updatePostDto.getTitle());
             oldPost.setPostText(updatePostDto.getPostText());
             oldPost.setImagePath(updatePostDto.getImagePath());
-            Post updatedPost = newsRepository.saveAndFlush(oldPost);
+            Post updatedPost = postRepository.saveAndFlush(oldPost);
 
             return postMapper.convertToDTO(updatedPost);
         }
@@ -103,20 +156,9 @@ public class PostService {
         Post deletedPost = postMapper.convertToEntity(getPostById(id));
         User authorNews = deletedPost.getAuthor();
         if (currentUser.getId().equals(authorNews.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
-            newsRepository.deleteById(id);
+            postRepository.deleteById(id);
         } else new NewsNotFoundException("News with id " + id + " not found");
 
-    }
-
-    public List<BriefPostDTO> getFilteredNewsByAuthor(Long authorIds) {
-        if (!(authorIds == null)) {
-            List<Post> filterPostList = newsRepository.findByAuthorId(authorIds);
-            List<BriefPostDTO> briefPostDTOList = filterPostList.stream()
-                    .map(postMapper::convertToBriefDTO)
-                    .collect(Collectors.toList());
-            return briefPostDTOList;
-        }
-        return new ArrayList<>();
     }
 
     public Tag createOrGetTag(String tagName) {
@@ -129,12 +171,12 @@ public class PostService {
     }
 
     public Post addTagsToPost(Long postId, List<String> tagNames) {
-        Post post = newsRepository.findById(postId).orElseThrow(() -> new NewsNotFoundException("Post not found"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NewsNotFoundException("Post not found"));
         List<Tag> tags = tagNames.stream()
                 .map(this::createOrGetTag)
                 .collect(Collectors.toList());
         post.setTags(tags);
-        return newsRepository.save(post);
+        return postRepository.save(post);
     }
 }
 

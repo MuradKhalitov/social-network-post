@@ -1,7 +1,5 @@
 package ru.skillbox.service;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.CommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
@@ -10,9 +8,8 @@ import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.User;
 import ru.skillbox.repository.CommentRepository;
-import ru.skillbox.repository.NewsRepository;
+import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.UserRepository;
-import ru.skillbox.util.CopyUtils;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +27,15 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-    private final NewsRepository newsRepository;
+    private final PostRepository postRepository;
     private final CommentMapper commentMapper;
 
 
     @Autowired
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, NewsRepository newsRepository, CommentMapper commentMapper) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
-        this.newsRepository = newsRepository;
+        this.postRepository = postRepository;
         this.commentMapper = commentMapper;
     }
 
@@ -51,7 +48,7 @@ public class CommentService {
         }
         String currentUsername = CurrentUsers.getCurrentUsername();
         User user = userRepository.findByUsername(currentUsername).get();
-        Optional<Post> post = newsRepository.findById(postId);
+        Optional<Post> post = postRepository.findById(postId);
         comment.setAuthor(user);
         comment.setPost(post.get());
         log.info("Пользователь: {}, добавил комментарий", currentUsername);

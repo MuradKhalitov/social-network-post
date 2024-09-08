@@ -11,7 +11,7 @@ import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.User;
 import ru.skillbox.repository.LikePostRepository;
-import ru.skillbox.repository.NewsRepository;
+import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.UserRepository;
 import ru.skillbox.util.CurrentUsers;
 
@@ -24,15 +24,15 @@ public class LikePostService {
     private final LikePostRepository likePostRepository;
     private final UserRepository userRepository;
     private final LikePostMapper likePostMapper;
-    private final NewsRepository newsRepository;
+    private final PostRepository postRepository;
     private final PostMapper postMapper;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, NewsRepository newsRepository, PostMapper postMapper) {
+    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper) {
         this.likePostRepository = likeRepository;
         this.userRepository = userRepository;
         this.likePostMapper = likeMapper;
-        this.newsRepository = newsRepository;
+        this.postRepository = postRepository;
         this.postMapper = postMapper;
     }
 
@@ -48,7 +48,7 @@ public class LikePostService {
         }
 
         LikePost likePost = new LikePost();
-        Optional<Post> post = newsRepository.findById(postId);
+        Optional<Post> post = postRepository.findById(postId);
         likePost.setPost(post.get());
         likePost.setAuthor(user);
         log.info("Пользователь: {}, добавил like к посту: {}", currentUsername, post.get().getId());

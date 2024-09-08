@@ -42,7 +42,7 @@ public class Post {
     @Column(name = "comments_count")
     private Integer commentsCount;
     @Column(name = "like_amount")
-    private int likeAmount;
+    private Integer likeAmount;
     @Column(name = "my_like")
     private boolean myLike;
     @Column(name = "image_path")

@@ -1,7 +1,10 @@
 package ru.skillbox.controller;
 
+import org.springframework.data.domain.Pageable;
 import ru.skillbox.dto.PostDto;
+import ru.skillbox.dto.SearchDto;
 import ru.skillbox.dto.response.BriefPostDTO;
+import ru.skillbox.dto.response.PostResponse;
 import ru.skillbox.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -21,23 +24,6 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping
-    public List<BriefPostDTO> getFilteredNewsByAuthor(@RequestParam(required = false) Long authorIds) {
-        return postService.getFilteredNewsByAuthor(authorIds);
-    }
-
-    @PostMapping
-    public PostDto createNews(@RequestBody PostDto postDto) {
-        return postService.createNews(postDto);
-    }
-
-    @GetMapping("/all")
-    public List<BriefPostDTO> getAllNews(@RequestParam(required = false, defaultValue = "0") int page,
-                                         @RequestParam(required = false, defaultValue = "10") int size) {
-        //Sort sort = Utils.sort(sortBy, orderBy);
-        return postService.getAllNews(PageRequest.of(page, size));//, sort);
-    }
-
     @GetMapping("/{id}")
     public PostDto getNewsById(@PathVariable Long id) {
         return postService.getPostById(id);
@@ -47,12 +33,27 @@ public class PostController {
     public PostDto updateNews(@PathVariable Long id, @RequestBody PostDto postDto) {
         return postService.updateNews(id, postDto);
     }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteNews(@PathVariable Long id) {
         postService.deleteNews(id);
     }
+
+
+
+    @GetMapping()
+    public PostResponse searchPosts(SearchDto searchDto, Pageable pageable) {
+        return postService.searchPosts(searchDto, pageable);
+    }
+
+    @PostMapping
+    public PostDto createNews(@RequestBody PostDto postDto) {
+        return postService.createNews(postDto);
+    }
 }
+
+
+
+
 
 
