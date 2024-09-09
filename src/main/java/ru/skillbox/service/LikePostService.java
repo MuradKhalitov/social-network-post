@@ -26,20 +26,21 @@ public class LikePostService {
     private final LikePostMapper likePostMapper;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+    private final CurrentUsers currentUsers;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper) {
+    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
         this.likePostRepository = likeRepository;
         this.userRepository = userRepository;
         this.likePostMapper = likeMapper;
         this.postRepository = postRepository;
         this.postMapper = postMapper;
+        this.currentUsers = currentUsers;
     }
 
     public LikePostDto createLikePost(Long postId) {
-        String currentUsername = CurrentUsers.getCurrentUsername();
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Long userId = currentUsers.getCurrentUserId();
+        User user = userRepository.findById(userId).get();
 
 
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, user.getId());
@@ -48,19 +49,22 @@ public class LikePostService {
         }
 
         LikePost likePost = new LikePost();
-        Optional<Post> post = postRepository.findById(postId);
-        likePost.setPost(post.get());
+        Post post = postRepository.findById(postId).get();
+        post.setLikeAmount(post.getLikeAmount() + 1);
+        likePost.setPost(post);
         likePost.setAuthor(user);
-        log.info("Пользователь: {}, добавил like к посту: {}", currentUsername, post.get().getId());
+        log.info("Пользователь: {}, добавил like к посту: {}", user.getUsername(), post.getId());
         return likePostMapper.convertToDTO(likePostRepository.save(likePost));
     }
 
     public ResponseEntity<Void> deleteLike(Long postId) {
-        String currentUsername = CurrentUsers.getCurrentUsername();
-        User user = userRepository.findByUsername(currentUsername).get();
+        Long userId = currentUsers.getCurrentUserId();
+        User user = userRepository.findById(userId).get();
 
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, user.getId());
         if (existingLike.isPresent()) {
+            Post post = postRepository.findById(postId).get();
+            post.setLikeAmount(post.getLikeAmount() - 1);
             likePostRepository.deleteById(existingLike.get().getId());
         }
 

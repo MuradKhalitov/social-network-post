@@ -16,7 +16,7 @@ public class JwtTokenUtil {
 //            "iat": 1725694564,
 //            "exp": 1725838564
 //    }
-    private String token = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoidGFnaXJAZ21haWwuY29tIiwic3ViIjoidGFnaXIiLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6MTcyNTgzODU2NH0.Qpv-N___6Dr6g9AXRrYA3FkTF44qk-dP1bDLzRGtZt0";
+    private String token = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoidGFnaXJAZ21haWwuY29tIiwic3ViIjoidGFnaXIiLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.mn6iTtPxENZMioPUSDYfiIMqtzXPONxI9VKfxsLUTbU";
 
     public Claims getAllClaimsFromToken() {
         return Jwts.parser()
@@ -26,7 +26,16 @@ public class JwtTokenUtil {
     }
 
     public Long getUserIdFromToken() {
-        return (Long) getAllClaimsFromToken().get("id");
+        Object id = getAllClaimsFromToken().get("id");
+
+        if (id instanceof Integer) {
+            return ((Integer) id).longValue(); // Преобразование Integer в Long
+        } else if (id instanceof Long) {
+            return (Long) id; // Если уже Long
+        } else {
+            throw new IllegalArgumentException("ID is not of type Integer or Long");
+        }
+        //return (Long) getAllClaimsFromToken().get("id");
     }
     public String getRoleFromToken() {
         return (String) getAllClaimsFromToken().get("role");

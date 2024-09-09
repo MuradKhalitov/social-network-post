@@ -4,8 +4,16 @@ package ru.skillbox.util;
 //import org.springframework.security.core.context.SecurityContextHolder;
 //import org.springframework.security.core.userdetails.UserDetails;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class CurrentUsers {
-    private static JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
+@Autowired
+    public CurrentUsers(JwtTokenUtil jwtTokenUtil) {
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
 
     //    public static String getCurrentUsername() {
@@ -26,15 +34,15 @@ public class CurrentUsers {
 //                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
 //    }
 
-    public static Long getCurrentUserId() {
+    public Long getCurrentUserId() {
         return jwtTokenUtil.getUserIdFromToken();//"tagir";
     }
 
-    public static String getCurrentUsername() {
+    public String getCurrentUsername() {
         return jwtTokenUtil.getUsernameFromToken();//"tagir";
     }
 
-    public static boolean hasRole(String role) {
+    public boolean hasRole(String role) {
         return (jwtTokenUtil.getRoleFromToken().equals(role));//true;
     }
 }

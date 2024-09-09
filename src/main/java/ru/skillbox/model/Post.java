@@ -57,18 +57,12 @@ public class Post {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    public void addLike(LikePost like) {
-        if (!likes.contains(like)) {
-            likes.add(like);
-            like.setPost(this);
-        }
+    public void updateCommentsCount() {
+        this.commentsCount = comments.size();
     }
 
-    public void removeLike(LikePost like) {
-        if (likes.contains(like)) {
-            likes.remove(like);
-            like.setPost(null);
-        }
+    private void updateLikeAmount() {
+        this.likeAmount = likes.size();
     }
 }
 

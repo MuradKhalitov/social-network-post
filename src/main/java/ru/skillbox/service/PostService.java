@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.PostDto;
 import ru.skillbox.dto.SearchDto;
-import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.dto.response.PostResponse;
 import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.PostMapper;
@@ -19,7 +18,6 @@ import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,18 +33,20 @@ public class PostService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final PostMapper postMapper;
+    private final CurrentUsers currentUsers;
 
     @Autowired
-    public PostService(PostRepository postRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
+        this.currentUsers = currentUsers;
     }
 
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
-        Long userId = CurrentUsers.getCurrentUserId();
+        Long userId = currentUsers.getCurrentUserId();
         User user = userRepository.findById(userId).get();
         post.setAuthor(user);
         List<Tag> tags = new ArrayList<>();
@@ -131,7 +131,7 @@ public class PostService {
 
     @Transactional
     public PostDto updateNews(Long id, PostDto updatePostDto) {
-        String currentUsername = CurrentUsers.getCurrentUsername();
+        String currentUsername = currentUsers.getCurrentUsername();
         User currentUser = userRepository.findByUsername(currentUsername).get();
 
         Post oldPost = postRepository.findById(id)
@@ -151,11 +151,11 @@ public class PostService {
 
 
     public void deleteNews(Long id) {
-        String currentUsername = CurrentUsers.getCurrentUsername();
+        String currentUsername = currentUsers.getCurrentUsername();
         User currentUser = userRepository.findByUsername(currentUsername).get();
         Post deletedPost = postMapper.convertToEntity(getPostById(id));
         User authorNews = deletedPost.getAuthor();
-        if (currentUser.getId().equals(authorNews.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
+        if (currentUser.getId().equals(authorNews.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             postRepository.deleteById(id);
         } else new NewsNotFoundException("News with id " + id + " not found");
 

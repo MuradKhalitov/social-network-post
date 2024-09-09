@@ -1,6 +1,8 @@
 package ru.skillbox.mapper;
+
 import ru.skillbox.dto.PostDto;
-import ru.skillbox.dto.response.BriefPostDTO;
+import ru.skillbox.dto.SearchDto;
+import ru.skillbox.dto.response.PostResponse;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import org.mapstruct.Mapper;
@@ -16,9 +18,10 @@ public interface PostMapper {
     @Mapping(source = "comments", target = "comments")
     @Mapping(source = "tags", target = "tags")
     PostDto convertToDTO(Post post);
+
     @Mapping(source = "author.id", target = "authorId")
-    @Mapping(source = "comments", target = "comments")
-    BriefPostDTO convertToBriefDTO(Post post);
+    @Mapping(source = "tags", target = "tags")
+    PostResponse.PostContent convertToPostContent(Post post);
 
     @Mapping(source = "authorId", target = "author.id")
     @Mapping(source = "comments", target = "comments")
@@ -42,6 +45,7 @@ public interface PostMapper {
                 })
                 .toList();
     }
+
     default Integer mapComments(List<Comment> comments) {
         return comments.size();
     }

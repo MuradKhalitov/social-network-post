@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,14 +28,16 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentMapper commentMapper;
+    private final CurrentUsers currentUsers;
 
 
     @Autowired
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository, CommentMapper commentMapper) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository, CommentMapper commentMapper, CurrentUsers currentUsers) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.commentMapper = commentMapper;
+        this.currentUsers = currentUsers;
     }
 
     public CommentDto createComment(Long postId, CommentDto commentDTO, Long parentCommentId) {
@@ -46,12 +47,14 @@ public class CommentService {
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
             comment.setParent(parentComment);
         }
-        String currentUsername = CurrentUsers.getCurrentUsername();
-        User user = userRepository.findByUsername(currentUsername).get();
-        Optional<Post> post = postRepository.findById(postId);
+        Long userId = currentUsers.getCurrentUserId();
+        User user = userRepository.findById(userId).get();
+        Post post = postRepository.findById(postId).get();
         comment.setAuthor(user);
-        comment.setPost(post.get());
-        log.info("Пользователь: {}, добавил комментарий", currentUsername);
+        post.setCommentsCount(post.getCommentsCount() + 1);
+        comment.setPost(post);
+        //post.updateCommentsCount();
+        log.info("Пользователь: {}, добавил комментарий", user.getUsername());
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
 
@@ -71,7 +74,7 @@ public class CommentService {
 
     @Transactional
     public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
-        String currentUsername = CurrentUsers.getCurrentUsername();
+        String currentUsername = currentUsers.getCurrentUsername();
         User currentUser = userRepository.findByUsername(currentUsername).get();
 
         Comment oldComment = commentMapper.convertToEntity(getCommentById(id));
@@ -86,12 +89,12 @@ public class CommentService {
     }
 
     public void deleteComment(Long id) {
-        String currentUsername = CurrentUsers.getCurrentUsername();
+        String currentUsername = currentUsers.getCurrentUsername();
         User currentUser = userRepository.findByUsername(currentUsername).get();
         Comment deletedComment = commentMapper.convertToEntity(getCommentById(id));
         User authorComment = deletedComment.getAuthor();
 
-        if (currentUser.getId().equals(authorComment.getId()) || CurrentUsers.hasRole("ADMIN") || CurrentUsers.hasRole("MODERATOR")) {
+        if (currentUser.getId().equals(authorComment.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             commentRepository.deleteById(id);
         } else new CommentNotFoundException("Comment with id " + id + " not found");
 

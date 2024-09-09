@@ -3,15 +3,11 @@ package ru.skillbox.controller;
 import org.springframework.data.domain.Pageable;
 import ru.skillbox.dto.PostDto;
 import ru.skillbox.dto.SearchDto;
-import ru.skillbox.dto.response.BriefPostDTO;
 import ru.skillbox.dto.response.PostResponse;
 import ru.skillbox.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/post")
