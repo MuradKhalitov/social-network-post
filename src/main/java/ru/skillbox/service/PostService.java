@@ -2,9 +2,9 @@ package ru.skillbox.service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import ru.skillbox.dto.PostDto;
-import ru.skillbox.dto.SearchDto;
-import ru.skillbox.dto.response.PostResponse;
+import ru.skillbox.dto.post.request.PostDto;
+import ru.skillbox.dto.post.request.PostSearchDto;
+import ru.skillbox.dto.post.response.PagePostDto;
 import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.Post;
@@ -67,23 +67,23 @@ public class PostService {
         return postMapper.convertToDTO(createdPost);
     }
 
-    public PostResponse searchPosts(SearchDto searchDto, Pageable pageable) {
-        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(searchDto), pageable);
+    public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
+        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
 
         // Формирование PostResponse
-        PostResponse postResponse = new PostResponse();
-        postResponse.setTotalElements(postPage.getTotalElements());
-        postResponse.setTotalPages(postPage.getTotalPages());
-        postResponse.setNumber(postPage.getNumber());
-        postResponse.setSize(postPage.getSize());
-        postResponse.setFirst(postPage.isFirst());
-        postResponse.setLast(postPage.isLast());
-        postResponse.setNumberOfElements(postPage.getNumberOfElements());
-        postResponse.setPageable(pageable);
-        postResponse.setEmpty(postPage.isEmpty());
+        PagePostDto pagePostDto = new PagePostDto();
+        pagePostDto.setTotalElements(postPage.getTotalElements());
+        pagePostDto.setTotalPages(postPage.getTotalPages());
+        pagePostDto.setNumber(postPage.getNumber());
+        pagePostDto.setSize(postPage.getSize());
+        pagePostDto.setFirst(postPage.isFirst());
+        pagePostDto.setLast(postPage.isLast());
+        pagePostDto.setNumberOfElements(postPage.getNumberOfElements());
+        pagePostDto.setPageable(pageable);
+        pagePostDto.setEmpty(postPage.isEmpty());
 
         // Маппим Post в PostContent
-        List<PostResponse.PostContent> content = postPage.getContent().stream().map(post -> new PostResponse.PostContent(
+        List<PagePostDto.PostContent> content = postPage.getContent().stream().map(post -> new PagePostDto.PostContent(
                 post.getId(),
                 post.getTime(),
                 post.getTimeChanged(),
@@ -101,8 +101,8 @@ public class PostService {
                 post.getPublishDate()
         )).collect(Collectors.toList());
 
-        postResponse.setContent(content);
-        return postResponse;
+        pagePostDto.setContent(content);
+        return pagePostDto;
     }
 
 //    public List<BriefPostDTO> getAllNews(PageRequest pageRequest) {

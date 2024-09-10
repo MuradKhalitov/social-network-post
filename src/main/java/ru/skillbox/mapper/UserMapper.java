@@ -1,6 +1,6 @@
 package ru.skillbox.mapper;
 
-import ru.skillbox.dto.UserDTO;
+import ru.skillbox.dto.user.UserDTO;
 import ru.skillbox.model.User;
 import org.mapstruct.*;
 

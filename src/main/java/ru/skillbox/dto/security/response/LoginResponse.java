@@ -1,4 +1,4 @@
-package ru.skillbox.dto;
+package ru.skillbox.dto.security.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

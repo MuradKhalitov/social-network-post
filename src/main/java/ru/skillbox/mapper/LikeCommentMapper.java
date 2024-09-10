@@ -2,10 +2,8 @@ package ru.skillbox.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.skillbox.dto.LikeCommentDto;
-import ru.skillbox.dto.LikePostDto;
+import ru.skillbox.dto.likeComment.LikeCommentDto;
 import ru.skillbox.model.LikeComment;
-import ru.skillbox.model.LikePost;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class, CommentMapper.class})
 public interface LikeCommentMapper {

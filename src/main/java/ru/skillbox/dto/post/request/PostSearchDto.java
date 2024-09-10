@@ -1,4 +1,4 @@
-package ru.skillbox.dto;
+package ru.skillbox.dto.post.request;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.util.List;
 @Getter
 @Setter
-public class SearchDto {
+public class PostSearchDto {
     private List<Long> ids;
     private List<Long> accountIds;
     private List<Long> blockedIds;

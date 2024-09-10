@@ -1,4 +1,4 @@
-package ru.skillbox.dto;
+package ru.skillbox.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

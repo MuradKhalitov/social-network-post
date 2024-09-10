@@ -1,8 +1,7 @@
 package ru.skillbox.mapper;
 
-import ru.skillbox.dto.PostDto;
-import ru.skillbox.dto.SearchDto;
-import ru.skillbox.dto.response.PostResponse;
+import ru.skillbox.dto.post.request.PostDto;
+import ru.skillbox.dto.post.response.PagePostDto;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import org.mapstruct.Mapper;
@@ -21,7 +20,7 @@ public interface PostMapper {
 
     @Mapping(source = "author.id", target = "authorId")
     @Mapping(source = "tags", target = "tags")
-    PostResponse.PostContent convertToPostContent(Post post);
+    PagePostDto.PostContent convertToPostContent(Post post);
 
     @Mapping(source = "authorId", target = "author.id")
     @Mapping(source = "comments", target = "comments")

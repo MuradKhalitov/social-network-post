@@ -1,15 +1,15 @@
-package ru.skillbox.dto;
+package ru.skillbox.dto.likeComment;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class LikePostDto {
+public class LikeCommentDto {
 
     private Long id;
     private Long authorId;
-    private Long postId;
+    private Long commentId;
 
 }
 

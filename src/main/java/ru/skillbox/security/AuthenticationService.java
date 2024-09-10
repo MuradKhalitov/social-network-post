@@ -5,9 +5,9 @@
 //import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.stereotype.Service;
-//import ru.skillbox.dto.JwtAuthenticationResponse;
-//import ru.skillbox.dto.SignInRequest;
-//import ru.skillbox.dto.SignUpRequest;
+//import ru.skillbox.dto.security.response.JwtAuthenticationResponse;
+//import ru.skillbox.dto.security.request.SignInRequest;
+//import ru.skillbox.dto.security.request.SignUpRequest;
 //import ru.skillbox.model.Role;
 //import ru.skillbox.model.User;
 //import ru.skillbox.service.UserService;

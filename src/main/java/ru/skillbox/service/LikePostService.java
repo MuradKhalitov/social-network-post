@@ -3,7 +3,7 @@ package ru.skillbox.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.skillbox.dto.LikePostDto;
+import ru.skillbox.dto.likePost.LikePostDto;
 import ru.skillbox.mapper.LikePostMapper;
 import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.LikePost;

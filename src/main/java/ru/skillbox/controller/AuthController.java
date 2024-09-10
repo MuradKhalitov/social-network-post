@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.dto.AuthenticateRq;
-import ru.skillbox.dto.LoginResponse;
+import ru.skillbox.dto.security.request.AuthenticateRq;
+import ru.skillbox.dto.security.response.LoginResponse;
 
 @Controller
 @RequiredArgsConstructor

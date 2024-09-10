@@ -2,7 +2,7 @@ package ru.skillbox.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.skillbox.dto.LikePostDto;
+import ru.skillbox.dto.likePost.LikePostDto;
 import ru.skillbox.model.LikePost;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class, PostMapper.class})

@@ -1,6 +1,6 @@
 package ru.skillbox.controller;
 
-import ru.skillbox.dto.CommentDto;
+import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

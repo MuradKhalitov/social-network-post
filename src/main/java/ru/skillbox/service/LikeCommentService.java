@@ -3,7 +3,7 @@ package ru.skillbox.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.skillbox.dto.LikeCommentDto;
+import ru.skillbox.dto.likeComment.LikeCommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.mapper.LikeCommentMapper;

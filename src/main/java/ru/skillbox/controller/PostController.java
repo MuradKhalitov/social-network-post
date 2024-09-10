@@ -1,9 +1,9 @@
 package ru.skillbox.controller;
 
 import org.springframework.data.domain.Pageable;
-import ru.skillbox.dto.PostDto;
-import ru.skillbox.dto.SearchDto;
-import ru.skillbox.dto.response.PostResponse;
+import ru.skillbox.dto.post.request.PostDto;
+import ru.skillbox.dto.post.request.PostSearchDto;
+import ru.skillbox.dto.post.response.PagePostDto;
 import ru.skillbox.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,8 +38,8 @@ public class PostController {
 
 
     @GetMapping()
-    public PostResponse searchPosts(SearchDto searchDto, Pageable pageable) {
-        return postService.searchPosts(searchDto, pageable);
+    public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
+        return postService.searchPosts(postSearchDto, pageable);
     }
 
     @PostMapping

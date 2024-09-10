@@ -1,4 +1,4 @@
-package ru.skillbox.dto;
+package ru.skillbox.dto.security.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

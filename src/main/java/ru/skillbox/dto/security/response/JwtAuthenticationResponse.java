@@ -1,4 +1,4 @@
-package ru.skillbox.dto;
+package ru.skillbox.dto.security.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

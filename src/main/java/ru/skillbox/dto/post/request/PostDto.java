@@ -1,7 +1,8 @@
-package ru.skillbox.dto;
+package ru.skillbox.dto.post.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.skillbox.dto.comment.request.CommentDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

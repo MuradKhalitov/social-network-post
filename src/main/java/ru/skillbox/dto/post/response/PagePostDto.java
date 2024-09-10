@@ -1,4 +1,4 @@
-package ru.skillbox.dto.response;
+package ru.skillbox.dto.post.response;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostResponse {
+public class PagePostDto {
 
     private long totalElements;
     private int totalPages;

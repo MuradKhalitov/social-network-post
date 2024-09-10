@@ -5,10 +5,10 @@
 //import jakarta.validation.Valid;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.web.bind.annotation.*;
-//import ru.skillbox.dto.JwtAuthenticationResponse;
-//import ru.skillbox.dto.SignUpRequest;
+//import ru.skillbox.dto.security.response.JwtAuthenticationResponse;
+//import ru.skillbox.dto.security.request.SignUpRequest;
 //import ru.skillbox.security.AuthenticationService;
-//import ru.skillbox.dto.SignInRequest;
+//import ru.skillbox.dto.security.request.SignInRequest;
 //
 //@RestController
 //@RequestMapping("/auth")

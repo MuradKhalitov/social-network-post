@@ -1,5 +1,5 @@
 package ru.skillbox.mapper;
-import ru.skillbox.dto.CommentDto;
+import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.model.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -2,9 +2,8 @@ package ru.skillbox.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.dto.LikeCommentDto;
+import ru.skillbox.dto.likeComment.LikeCommentDto;
 import ru.skillbox.service.LikeCommentService;
 
 @RestController
@@ -15,12 +14,13 @@ public class LikeCommentController {
     private LikeCommentService likeCommentService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public LikeCommentDto createLike(@PathVariable Long id, @PathVariable Long commentId) {
         return likeCommentService.createLikeComment(id, commentId);
     }
 
     @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     public void deleteLike(@PathVariable Long commentId) {
         likeCommentService.deleteLikeComment(commentId);
     }

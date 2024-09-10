@@ -1,7 +1,7 @@
 package ru.skillbox.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.skillbox.dto.CommentDto;
+import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.model.Comment;
