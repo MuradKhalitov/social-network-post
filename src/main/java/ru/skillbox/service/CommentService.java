@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -88,15 +89,17 @@ public class CommentService {
         return null;
     }
 
-    public void deleteComment(Long id) {
-        String currentUsername = currentUsers.getCurrentUsername();
-        User currentUser = userRepository.findByUsername(currentUsername).get();
-        Comment deletedComment = commentMapper.convertToEntity(getCommentById(id));
-        User authorComment = deletedComment.getAuthor();
+    public void deleteComment(Long commentId) {
 
-        if (currentUser.getId().equals(authorComment.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
-            commentRepository.deleteById(id);
-        } else new CommentNotFoundException("Comment with id " + id + " not found");
+        Long userId = currentUsers.getCurrentUserId();
+        User user = userRepository.findById(userId).get();
+
+        Optional<Comment> existingComment = commentRepository.findByIdAndAuthorId(commentId, user.getId());
+        if (existingComment.isPresent()) {
+            Post post = postRepository.findById(existingComment.get().getPost().getId()).get();
+            post.setCommentsCount(post.getCommentsCount() - 1);
+            commentRepository.deleteById(commentId);
+        } else new CommentNotFoundException("Comment with id " + commentId + " not found");
 
     }
 }

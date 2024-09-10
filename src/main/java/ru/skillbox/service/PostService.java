@@ -49,6 +49,7 @@ public class PostService {
         Long userId = currentUsers.getCurrentUserId();
         User user = userRepository.findById(userId).get();
         post.setAuthor(user);
+        post.setCommentsCount(0);
         List<Tag> tags = new ArrayList<>();
         for (String tagName : postDto.getTags()) {
             Tag tag = tagRepository.findByName(tagName)

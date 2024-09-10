@@ -1,8 +1,8 @@
 package ru.skillbox.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.dto.LikePostDto;
 import ru.skillbox.service.LikePostService;
@@ -24,8 +24,8 @@ public class LikePostController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteLike(@PathVariable Long id) {
-        likePostService.deleteLike(id);
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLike(@PathVariable Long id) {
+        likePostService.deleteLikePost(id);
     }
 }

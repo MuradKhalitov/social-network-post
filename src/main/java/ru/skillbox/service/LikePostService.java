@@ -2,7 +2,6 @@ package ru.skillbox.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.LikePostDto;
 import ru.skillbox.mapper.LikePostMapper;
@@ -57,7 +56,7 @@ public class LikePostService {
         return likePostMapper.convertToDTO(likePostRepository.save(likePost));
     }
 
-    public ResponseEntity<Void> deleteLike(Long postId) {
+    public void deleteLikePost(Long postId) {
         Long userId = currentUsers.getCurrentUserId();
         User user = userRepository.findById(userId).get();
 
@@ -67,8 +66,6 @@ public class LikePostService {
             post.setLikeAmount(post.getLikeAmount() - 1);
             likePostRepository.deleteById(existingLike.get().getId());
         }
-
-        return null;
     }
 
 }

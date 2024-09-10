@@ -40,7 +40,7 @@ public class Post {
     @Column(name = "is_delete")
     private boolean isDelete;
     @Column(name = "comments_count")
-    private Integer commentsCount;
+    private Integer commentsCount = 0;
     @Column(name = "like_amount")
     private Integer likeAmount;
     @Column(name = "my_like")

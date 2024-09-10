@@ -2,7 +2,6 @@ package ru.skillbox.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.LikeCommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
@@ -39,9 +38,9 @@ public class LikeCommentService {
         this.currentUsers = currentUsers;
     }
 
-    public LikeCommentDto createLikeComment(Long id, Long commentId) {
-        String currentUsername = currentUsers.getCurrentUsername();
-        User user = userRepository.findByUsername(currentUsername).get();
+    public LikeCommentDto createLikeComment(Long Postid, Long commentId) {
+        Long userId = currentUsers.getCurrentUserId();
+        User user = userRepository.findById(userId).get();
 
         Optional<LikeComment> existingLike = likeCommentRepository.findByCommentIdAndAuthorId(commentId, user.getId());
         if (existingLike.isPresent()) {
@@ -51,23 +50,23 @@ public class LikeCommentService {
         LikeComment likeComment = new LikeComment();
         //Comment comment = commentMapper.convertToEntity(commentService.getCommentById(commentId));
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found"));
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + Postid + " not found"));
+        comment.setLikeAmount(comment.getLikeAmount() + 1);
         likeComment.setComment(comment);
         likeComment.setAuthor(user);
-        log.info("Пользователь: {}, добавил like к комментарию: {}", currentUsername, comment.getId());
+        log.info("Пользователь: {}, добавил like к комментарию: {}", user.getUsername(), comment.getId());
         return likeCommentMapper.convertToDTO(likeCommentRepository.save(likeComment));
     }
 
-    public ResponseEntity<Void> deleteLike(Long commentId) {
-        String currentUsername = currentUsers.getCurrentUsername();
-        User user = userRepository.findByUsername(currentUsername).get();
+    public void deleteLikeComment(Long commentId) {
+        Long userId = currentUsers.getCurrentUserId();
+        User user = userRepository.findById(userId).get();
 
         Optional<LikeComment> existingLike = likeCommentRepository.findByCommentIdAndAuthorId(commentId, user.getId());
         if (existingLike.isPresent()) {
+            Comment comment = commentRepository.findById(commentId).get();
+            comment.setLikeAmount(comment.getLikeAmount() - 1);
             likeCommentRepository.deleteById(existingLike.get().getId());
         }
-
-        return null;
     }
-
 }
