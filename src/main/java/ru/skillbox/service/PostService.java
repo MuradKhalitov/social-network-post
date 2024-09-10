@@ -105,24 +105,6 @@ public class PostService {
         return pagePostDto;
     }
 
-//    public List<BriefPostDTO> getAllNews(PageRequest pageRequest) {
-//        Page<Post> page = postRepository.findAll(pageRequest);
-//        List<BriefPostDTO> briefPostDTOList = page.getContent().stream()
-//                .map(postMapper::convertToBriefDTO)
-//                .collect(Collectors.toList());
-//        return briefPostDTOList;
-//    }
-//    public ResponseList<PostResponse> filter(SearchDto request) {
-//        Page<Post> page = postRepository.findAll(
-//                HotelSpecification.withRequest(request),
-//                PageRequest.of(request.getPageNumber(), request.getPageSize())
-//        );
-//        ResponseList<PostResponse> response = new ResponseList<>();
-//        response.setItems(page.getContent().stream().map(this::hotelToResponse).toList());
-//        response.setTotalCount(page.getTotalElements());
-//        return response;
-//    }
-
 
     public PostDto getPostById(Long id) {
         return postRepository.findById(id)
