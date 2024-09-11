@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS post_schema.post(
     type VARCHAR(255),
     post_text VARCHAR(255),
     is_blocked BOOLEAN DEFAULT FALSE,
-    is_delete BOOLEAN DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE,
     comments_count INT DEFAULT 0,
     tags VARCHAR(255),
     like_amount INT DEFAULT 0,

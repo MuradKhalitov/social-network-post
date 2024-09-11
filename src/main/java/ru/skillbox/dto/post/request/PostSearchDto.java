@@ -14,7 +14,7 @@ public class PostSearchDto {
     private String title;
     private String postText;
     private Boolean withFriends;
-    private Boolean isDelete;
+    private Boolean isDeleted;
     private List<String> tags;
     private Long dateFrom;
     private Long dateTo;

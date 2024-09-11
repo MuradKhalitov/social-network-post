@@ -37,8 +37,8 @@ public class Post {
     private String type;
     @Column(name = "is_blocked")
     private boolean isBlocked;
-    @Column(name = "is_delete")
-    private boolean isDelete;
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
     @Column(name = "comments_count")
     private Integer commentsCount = 0;
     @Column(name = "like_amount")

@@ -5,6 +5,7 @@ import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.model.Post;
 
 import jakarta.persistence.criteria.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +58,17 @@ public class PostSpecification {
             }
 
             // Фильтрация по статусу удаления
-            if (postSearchDto.getIsDelete() != null) {
-                predicates.add(cb.equal(root.get("isDelete"), postSearchDto.getIsDelete()));
+            if (postSearchDto.getIsDeleted() != null) {
+                predicates.add(cb.equal(root.get("isDeleted"), postSearchDto.getIsDeleted()));
+            }
+
+            // Фильтрация по полю "с друзьями" (withFriends)
+            if (postSearchDto.getWithFriends() != null) {
+                // Предполагается, что в сущности Post есть поле, отражающее связь с друзьями
+                // Например, проверка на автора из списка друзей:
+                if (postSearchDto.getWithFriends()) {
+                    predicates.add(cb.isTrue(root.get("author").get("isFriend")));
+                }
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

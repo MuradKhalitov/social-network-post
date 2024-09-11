@@ -45,8 +45,13 @@ public class PostController {
             PostSearchDto postSearchDto,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id,asc") String sort
+            @RequestParam(defaultValue = "id,asc") String sort,
+            @RequestParam(required = false) Boolean withFriends,
+            @RequestParam(defaultValue = "false") Boolean isDeleted
     ) {
+        postSearchDto.setWithFriends(withFriends);
+        postSearchDto.setIsDeleted(isDeleted);
+
         String[] sortParams = sort.split("\\s*,\\s*");
         String field = sortParams[0];
         String direction = (sortParams.length > 1) ? sortParams[1] : "asc";

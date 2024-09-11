@@ -92,7 +92,7 @@ public class PostService {
                 "POSTED",  // Тип можно изменить на основе логики
                 post.getPostText(),
                 post.isBlocked(),
-                post.isDelete(),
+                post.isDeleted(),
                 post.getCommentsCount() != null ? post.getCommentsCount() : 0,
                 post.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
                 post.getLikeAmount() != null ? post.getLikeAmount() : 0,
