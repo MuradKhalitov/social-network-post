@@ -70,7 +70,7 @@ public class PostService {
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
 
-        // Формирование PostResponse
+        // Формирование PagePostDto
         PagePostDto pagePostDto = new PagePostDto();
         pagePostDto.setTotalElements(postPage.getTotalElements());
         pagePostDto.setTotalPages(postPage.getTotalPages());

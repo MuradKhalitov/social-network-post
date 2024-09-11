@@ -1,7 +1,9 @@
 package ru.skillbox.service;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.comment.request.CommentDto;
+import ru.skillbox.dto.comment.response.PageCommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.model.Comment;
@@ -66,6 +68,43 @@ public class CommentService {
                 .map(commentMapper::convertToDTO)
                 .collect(Collectors.toList());
     }
+    public PageCommentDto getComments(Long postId, Pageable pageable) {
+        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+
+        // Формирование PageCommentDto
+        PageCommentDto pageCommentDto = new PageCommentDto();
+        pageCommentDto.setTotalElements(commentPage.getTotalElements());
+        pageCommentDto.setTotalPages(commentPage.getTotalPages());
+        pageCommentDto.setNumber(commentPage.getNumber());
+        pageCommentDto.setSize(commentPage.getSize());
+        pageCommentDto.setFirst(commentPage.isFirst());
+        pageCommentDto.setLast(commentPage.isLast());
+        pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
+        pageCommentDto.setPageable(pageable);
+        pageCommentDto.setEmpty(commentPage.isEmpty());
+
+        // Маппинг Comment в CommentContent
+        List<PageCommentDto.CommentContent> content = commentPage.getContent().stream().map(comment -> new PageCommentDto.CommentContent(
+                comment.getId(),
+                comment.getCommentType(),
+                comment.getTime(),
+                comment.getTimeChanged(),
+                comment.getAuthor().getId(),
+                comment.getParent() != null ? comment.getParent().getId() : 0L,
+                comment.getCommentText(),
+                comment.getPost().getId(),
+                comment.isBlocked(),
+                comment.isDelete(),
+                comment.getLikeAmount(),
+                comment.isMyLike(),
+                comment.getSubComments().size(),
+                comment.getImagePath()
+        )).collect(Collectors.toList());
+
+        pageCommentDto.setContent(content);
+        return pageCommentDto;
+    }
+
 
     public CommentDto getCommentById(Long id) {
         return commentRepository.findById(id)

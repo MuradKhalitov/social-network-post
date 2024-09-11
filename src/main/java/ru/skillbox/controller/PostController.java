@@ -40,12 +40,6 @@ public class PostController {
     }
 
 
-
-//    @GetMapping()
-//    public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
-//        return postService.searchPosts(postSearchDto, pageable);
-//    }
-
     @GetMapping()
     public PagePostDto searchPosts(
             PostSearchDto postSearchDto,
@@ -53,15 +47,12 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id,asc") String sort
     ) {
-        // Разделяем строку по запятой
         String[] sortParams = sort.split("\\s*,\\s*");
         String field = sortParams[0];
         String direction = (sortParams.length > 1) ? sortParams[1] : "asc";
 
-        // Создаем объект Sort
         Sort sorting = Sort.by(new Sort.Order(Sort.Direction.fromString(direction), field));
 
-        // Создаем объект Pageable
         Pageable pageable = PageRequest.of(page, size, sorting);
 
         return postService.searchPosts(postSearchDto, pageable);

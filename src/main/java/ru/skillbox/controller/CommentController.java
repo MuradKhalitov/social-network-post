@@ -1,6 +1,11 @@
 package ru.skillbox.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import ru.skillbox.dto.comment.request.CommentDto;
+import ru.skillbox.dto.comment.response.PageCommentDto;
+import ru.skillbox.dto.post.request.PostSearchDto;
+import ru.skillbox.dto.post.response.PagePostDto;
 import ru.skillbox.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -35,13 +40,42 @@ public class CommentController {
 
 
     @GetMapping
-    public List<CommentDto> getCommentsByPostId(@PathVariable Long postId,
-                                                @RequestParam(required = false, defaultValue = "0") int page,
-                                                @RequestParam(required = false, defaultValue = "10") int size) {
-        List<CommentDto> commentDtoList = commentService.getCommentsByNewsId(postId, PageRequest.of(page, size));
+    public PageCommentDto getCommentsByPostId(@PathVariable Long postId,
+                                              @RequestParam(required = false, defaultValue = "0") int page,
+                                              @RequestParam(required = false, defaultValue = "10") int size,
+                                              @RequestParam(defaultValue = "id,asc") String sort) {
 
-        return commentDtoList;
+        String[] sortParams = sort.split("\\s*,\\s*");
+        String field = sortParams[0];
+        String direction = (sortParams.length > 1) ? sortParams[1] : "asc";
+
+        Sort sorting = Sort.by(new Sort.Order(Sort.Direction.fromString(direction), field));
+
+        Pageable pageable = PageRequest.of(page, size, sorting);
+
+        return commentService.getComments(postId, pageable);
+
+
+        //return commentService.getCommentsByNewsId(postId, PageRequest.of(page, size));
     }
+
+//    @GetMapping()
+//    public PagePostDto searchPosts(
+//            PostSearchDto postSearchDto,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "id,asc") String sort
+//    ) {
+//        String[] sortParams = sort.split("\\s*,\\s*");
+//        String field = sortParams[0];
+//        String direction = (sortParams.length > 1) ? sortParams[1] : "asc";
+//
+//        Sort sorting = Sort.by(new Sort.Order(Sort.Direction.fromString(direction), field));
+//
+//        Pageable pageable = PageRequest.of(page, size, sorting);
+//
+//        return postService.searchPosts(postSearchDto, pageable);
+//    }
 
     @GetMapping("/{id}")
     public CommentDto getCommentById(@PathVariable Long id) {
