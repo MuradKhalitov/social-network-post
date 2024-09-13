@@ -14,7 +14,7 @@ public class LikeComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    private User author;
+    private Account author;
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;

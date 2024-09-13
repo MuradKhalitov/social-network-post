@@ -1,13 +1,13 @@
 package ru.skillbox.mapper;
 
 import ru.skillbox.dto.user.UserDTO;
-import ru.skillbox.model.User;
+import ru.skillbox.model.Account;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    User convertToEntity(UserDTO userDTO);
+    Account convertToEntity(UserDTO userDTO);
 
-    UserDTO convertToDTO(User user);
+    UserDTO convertToDTO(Account account);
 }

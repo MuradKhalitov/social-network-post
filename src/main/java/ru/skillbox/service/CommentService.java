@@ -6,9 +6,9 @@ import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.dto.comment.response.PageCommentDto;
 import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
+import ru.skillbox.model.Account;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
-import ru.skillbox.model.User;
 import ru.skillbox.repository.CommentRepository;
 import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.UserRepository;
@@ -51,13 +51,13 @@ public class CommentService {
             comment.setParent(parentComment);
         }
         Long userId = currentUsers.getCurrentUserId();
-        User user = userRepository.findById(userId).get();
+        Account account = userRepository.findById(userId).get();
         Post post = postRepository.findById(postId).get();
-        comment.setAuthor(user);
+        comment.setAuthor(account);
         post.setCommentsCount(post.getCommentsCount() + 1);
         comment.setPost(post);
         //post.updateCommentsCount();
-        log.info("Пользователь: {}, добавил комментарий", user.getUsername());
+        log.info("Пользователь: {}, добавил комментарий", account.getEmail());
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
 
@@ -114,13 +114,13 @@ public class CommentService {
 
     @Transactional
     public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
-        String currentUsername = currentUsers.getCurrentUsername();
-        User currentUser = userRepository.findByUsername(currentUsername).get();
+        Long userId = currentUsers.getCurrentUserId();
+        Account currentAccount = userRepository.findById(userId).get();
 
         Comment oldComment = commentMapper.convertToEntity(getCommentById(id));
-        User authorComment = oldComment.getAuthor();
+        Account authorComment = oldComment.getAuthor();
 
-        if (currentUser.getId().equals(authorComment.getId())) {
+        if (currentAccount.getId().equals(authorComment.getId())) {
             oldComment.setCommentText(updatedCommentDto.getCommentText());
 
             return commentMapper.convertToDTO(commentRepository.save(oldComment));
@@ -131,9 +131,9 @@ public class CommentService {
     public void deleteComment(Long commentId) {
 
         Long userId = currentUsers.getCurrentUserId();
-        User user = userRepository.findById(userId).get();
+        Account account = userRepository.findById(userId).get();
 
-        Optional<Comment> existingComment = commentRepository.findByIdAndAuthorId(commentId, user.getId());
+        Optional<Comment> existingComment = commentRepository.findByIdAndAuthorId(commentId, account.getId());
         if (existingComment.isPresent()) {
             Post post = postRepository.findById(existingComment.get().getPost().getId()).get();
             post.setCommentsCount(post.getCommentsCount() - 1);

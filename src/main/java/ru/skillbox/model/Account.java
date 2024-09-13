@@ -16,22 +16,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class User{// implements UserDetails {
+public class Account {// implements UserDetails {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
-    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "username", unique = true, nullable = false)
-    private String username;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-
+    @Column(name = "password", nullable = false)
+    private String password;
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;

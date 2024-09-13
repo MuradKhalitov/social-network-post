@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.dto.likePost.LikePostDto;
 import ru.skillbox.mapper.LikePostMapper;
 import ru.skillbox.mapper.PostMapper;
+import ru.skillbox.model.Account;
 import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
-import ru.skillbox.model.User;
 import ru.skillbox.repository.LikePostRepository;
 import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.UserRepository;
@@ -39,10 +39,10 @@ public class LikePostService {
 
     public LikePostDto createLikePost(Long postId) {
         Long userId = currentUsers.getCurrentUserId();
-        User user = userRepository.findById(userId).get();
+        Account account = userRepository.findById(userId).get();
 
 
-        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, user.getId());
+        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, account.getId());
         if (existingLike.isPresent()) {
             return null;
         }
@@ -51,16 +51,16 @@ public class LikePostService {
         Post post = postRepository.findById(postId).get();
         post.setLikeAmount(post.getLikeAmount() + 1);
         likePost.setPost(post);
-        likePost.setAuthor(user);
-        log.info("Пользователь: {}, добавил like к посту: {}", user.getUsername(), post.getId());
+        likePost.setAuthor(account);
+        log.info("Пользователь: {}, добавил like к посту: {}", account.getEmail(), post.getId());
         return likePostMapper.convertToDTO(likePostRepository.save(likePost));
     }
 
     public void deleteLikePost(Long postId) {
         Long userId = currentUsers.getCurrentUserId();
-        User user = userRepository.findById(userId).get();
+        Account account = userRepository.findById(userId).get();
 
-        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, user.getId());
+        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, account.getId());
         if (existingLike.isPresent()) {
             Post post = postRepository.findById(postId).get();
             post.setLikeAmount(post.getLikeAmount() - 1);

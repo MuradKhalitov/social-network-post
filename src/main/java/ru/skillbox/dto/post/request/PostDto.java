@@ -19,7 +19,7 @@ public class PostDto {
     private LocalDateTime timeChanged;
     private String type;
     private boolean isBlocked;
-    private boolean isDelete;
+    private boolean isDeleted;
     private Integer commentsCount;
     private List<String> tags;
     private int likeAmount;

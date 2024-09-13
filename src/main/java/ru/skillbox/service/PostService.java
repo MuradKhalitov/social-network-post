@@ -7,9 +7,9 @@ import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.dto.post.response.PagePostDto;
 import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.PostMapper;
+import ru.skillbox.model.Account;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.Tag;
-import ru.skillbox.model.User;
 import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.PostSpecification;
 import ru.skillbox.repository.TagRepository;
@@ -47,8 +47,8 @@ public class PostService {
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
         Long userId = currentUsers.getCurrentUserId();
-        User user = userRepository.findById(userId).get();
-        post.setAuthor(user);
+        Account account = userRepository.findById(userId).get();
+        post.setAuthor(account);
         post.setCommentsCount(0);
         List<Tag> tags = new ArrayList<>();
         for (String tagName : postDto.getTags()) {
@@ -61,7 +61,7 @@ public class PostService {
             tags.add(tag);
         }
         post.setTags(tags);
-        log.info("Пользователь: {}, добавил новость", user.getUsername());
+        log.info("Пользователь: {}, добавил новость", account.getEmail());
         Post createdPost = postRepository.save(post);
 
         return postMapper.convertToDTO(createdPost);
@@ -114,14 +114,14 @@ public class PostService {
 
     @Transactional
     public PostDto updateNews(Long id, PostDto updatePostDto) {
-        String currentUsername = currentUsers.getCurrentUsername();
-        User currentUser = userRepository.findByUsername(currentUsername).get();
+        Long userId = currentUsers.getCurrentUserId();
+        Account currentAccount = userRepository.findById(userId).get();
 
         Post oldPost = postRepository.findById(id)
                 .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + "not found"));
-        User authorNews = oldPost.getAuthor();
+        Account authorNews = oldPost.getAuthor();
 
-        if (currentUser.getId().equals(authorNews.getId())) {
+        if (currentAccount.getId().equals(authorNews.getId())) {
             oldPost.setTitle(updatePostDto.getTitle());
             oldPost.setPostText(updatePostDto.getPostText());
             oldPost.setImagePath(updatePostDto.getImagePath());
@@ -134,11 +134,11 @@ public class PostService {
 
 
     public void deleteNews(Long id) {
-        String currentUsername = currentUsers.getCurrentUsername();
-        User currentUser = userRepository.findByUsername(currentUsername).get();
+        Long userId = currentUsers.getCurrentUserId();
+        Account currentAccount = userRepository.findById(userId).get();
         Post deletedPost = postMapper.convertToEntity(getPostById(id));
-        User authorNews = deletedPost.getAuthor();
-        if (currentUser.getId().equals(authorNews.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+        Account authorNews = deletedPost.getAuthor();
+        if (currentAccount.getId().equals(authorNews.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             postRepository.deleteById(id);
         } else new NewsNotFoundException("News with id " + id + " not found");
 

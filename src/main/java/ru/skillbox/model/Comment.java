@@ -26,7 +26,7 @@ public class Comment {
     @Column(name = "time_changed")
     private LocalDateTime timeChanged;
     @ManyToOne()
-    private User author;
+    private Account author;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")

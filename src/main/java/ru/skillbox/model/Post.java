@@ -23,7 +23,7 @@ public class Post {
     private String postText;
 
     @ManyToOne
-    private User author;
+    private Account author;
     @CreationTimestamp
     private LocalDateTime time;
     @UpdateTimestamp

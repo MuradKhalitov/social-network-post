@@ -8,8 +8,6 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
     private Long id;
-    @NotBlank(message = "Имя пользователя не должно быть пустым")
-    private String username;
     private String email;
     private String password;
     private String roles;

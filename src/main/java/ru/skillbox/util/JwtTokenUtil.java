@@ -7,17 +7,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenUtil {
 
-    private String secret = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855";
+    private String secret = "secret";
 //    {
 //        "role": "ROLE_USER",
 //            "id": 1,
 //            "email": "tagir@gmail.com",
 //            "sub": "tagir",
 //            "iat": 1725694564,
-//            "exp": 1725838564
+//            "exp": 9725838564
 //    }
-    private String token = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoidGFnaXJAZ21haWwuY29tIiwic3ViIjoidGFnaXIiLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.mn6iTtPxENZMioPUSDYfiIMqtzXPONxI9VKfxsLUTbU";
-
+    private String token =
+        "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoidGFnaXJAZ21haWwuY29tIiwic3ViIjoidGFnaXIiLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.pSgFanQtSYisJjRKDH9uEXrtObW_9nUyoS1TcbGemso";
+    //    {
+//        "role": "ROLE_USER",
+//            "id": 1,
+//            "email": "tagir@gmail.com",
+//            "sub": "tagir",
+//            "iat": 1725694564,
+//            "exp": 9725838564
+//    }
+    private String token2 =
+    "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.OoR7DDKgQKDaJ8jAMByMhL91_qBB4NPWtj1qX_vLpB4";
     public Claims getAllClaimsFromToken() {
         return Jwts.parser()
                 .setSigningKey(secret)
