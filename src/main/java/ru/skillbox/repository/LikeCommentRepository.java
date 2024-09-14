@@ -8,10 +8,12 @@ import ru.skillbox.model.LikePost;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface LikeCommentRepository extends JpaRepository<LikeComment, Long> {
-    Optional<LikeComment> findByCommentIdAndAuthorId(Long commentId, Long authorId);
+    Optional<LikeComment> findByCommentIdAndAuthorId(Long commentId, UUID authorId);
     List<LikeComment> findByCommentId(Long commentId);
+
 }
 

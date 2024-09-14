@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS post_schema.post (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     title VARCHAR(255),
     post_text TEXT,
-    author_id BIGINT,
+    author_id UUID,
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     time_changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type VARCHAR(50),
@@ -42,5 +42,5 @@ CREATE TABLE IF NOT EXISTS post_schema.post (
 
 -- Вставка тестовых данных в таблицу post
 INSERT INTO post (title, post_text, author_id, type, publish_date)
-VALUES ('First Post', 'This is the content of the first post', 1, 'PUBLIC', CURRENT_TIMESTAMP),
-       ('Second Post', 'This is the content of the second post', 2, 'PUBLIC', CURRENT_TIMESTAMP);
+VALUES ('First Post', 'This is the content of the first post', '60b1f478-ec5a-4cfa-a022-ee9713228a86'::uuid, 'PUBLIC', CURRENT_TIMESTAMP),
+       ('Second Post', 'This is the content of the second post', 'df68c55b-5909-4096-bec8-b69e174123dd'::uuid, 'PUBLIC', CURRENT_TIMESTAMP);

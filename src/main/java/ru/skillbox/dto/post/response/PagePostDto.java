@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -33,7 +34,7 @@ public class PagePostDto {
         private long id;
         private LocalDateTime time;
         private LocalDateTime timeChanged;
-        private long authorId;
+        private UUID authorId;
         private String title;
         private String type;
         private String postText;

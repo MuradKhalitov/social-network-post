@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +51,7 @@ public class CommentService {
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
             comment.setParent(parentComment);
         }
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account account = userRepository.findById(userId).get();
         Post post = postRepository.findById(postId).get();
         comment.setAuthor(account);
@@ -114,7 +115,7 @@ public class CommentService {
 
     @Transactional
     public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account currentAccount = userRepository.findById(userId).get();
 
         Comment oldComment = commentMapper.convertToEntity(getCommentById(id));
@@ -130,7 +131,7 @@ public class CommentService {
 
     public void deleteComment(Long commentId) {
 
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account account = userRepository.findById(userId).get();
 
         Optional<Comment> existingComment = commentRepository.findByIdAndAuthorId(commentId, account.getId());

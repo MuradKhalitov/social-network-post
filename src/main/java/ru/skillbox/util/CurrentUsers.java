@@ -7,6 +7,8 @@ package ru.skillbox.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class CurrentUsers {
     private final JwtTokenUtil jwtTokenUtil;
@@ -34,7 +36,7 @@ public class CurrentUsers {
 //                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
 //    }
 
-    public Long getCurrentUserId() {
+    public UUID getCurrentUserId() {
         return jwtTokenUtil.getUserIdFromToken();//"tagir";
     }
 

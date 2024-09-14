@@ -7,6 +7,7 @@ import ru.skillbox.dto.comment.request.CommentDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ public class PostDto {
     private Long id;
     private String title;
     private String postText;
-    private Long authorId;
+    private UUID authorId;
     private LocalDateTime time;
     private LocalDateTime timeChanged;
     private String type;

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +35,7 @@ public class PageCommentDto {
         private String commentType;
         private LocalDateTime time;
         private LocalDateTime timeChanged;
-        private long authorId;
+        private UUID authorId;
         private long parentId;
         private String commentText;
         private long postId;

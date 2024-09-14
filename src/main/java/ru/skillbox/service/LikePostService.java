@@ -15,6 +15,7 @@ import ru.skillbox.repository.UserRepository;
 import ru.skillbox.util.CurrentUsers;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -38,7 +39,7 @@ public class LikePostService {
     }
 
     public LikePostDto createLikePost(Long postId) {
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account account = userRepository.findById(userId).get();
 
 
@@ -57,7 +58,7 @@ public class LikePostService {
     }
 
     public void deleteLikePost(Long postId) {
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account account = userRepository.findById(userId).get();
 
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, account.getId());

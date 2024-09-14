@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +47,7 @@ public class PostService {
 
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account account = userRepository.findById(userId).get();
         post.setAuthor(account);
         post.setCommentsCount(0);
@@ -114,7 +115,7 @@ public class PostService {
 
     @Transactional
     public PostDto updateNews(Long id, PostDto updatePostDto) {
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account currentAccount = userRepository.findById(userId).get();
 
         Post oldPost = postRepository.findById(id)
@@ -134,7 +135,7 @@ public class PostService {
 
 
     public void deleteNews(Long id) {
-        Long userId = currentUsers.getCurrentUserId();
+        UUID userId = currentUsers.getCurrentUserId();
         Account currentAccount = userRepository.findById(userId).get();
         Post deletedPost = postMapper.convertToEntity(getPostById(id));
         Account authorNews = deletedPost.getAuthor();

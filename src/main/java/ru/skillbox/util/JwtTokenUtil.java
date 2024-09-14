@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class JwtTokenUtil {
 
@@ -35,17 +37,17 @@ public class JwtTokenUtil {
                 .getBody();
     }
 
-    public Long getUserIdFromToken() {
+    public UUID getUserIdFromToken() {
         Object id = getAllClaimsFromToken().get("id");
 
-        if (id instanceof Integer) {
-            return ((Integer) id).longValue(); // Преобразование Integer в Long
-        } else if (id instanceof Long) {
-            return (Long) id; // Если уже Long
-        } else {
-            throw new IllegalArgumentException("ID is not of type Integer or Long");
-        }
-        //return (Long) getAllClaimsFromToken().get("id");
+//        if (id instanceof Integer) {
+//            return ((Integer) id).(); // Преобразование Integer в Long
+//        } else if (id instanceof Long) {
+//            return (Long) id; // Если уже Long
+//        } else {
+//            throw new IllegalArgumentException("ID is not of type Integer or Long");
+//        }
+        return (UUID) getAllClaimsFromToken().get("id");
     }
     public String getRoleFromToken() {
         return (String) getAllClaimsFromToken().get("role");

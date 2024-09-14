@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
     comment_type VARCHAR(50),
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     time_changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    author_id BIGINT,
+    author_id UUID,
     parent_id BIGINT,
     post_id BIGINT,
     comment_text TEXT,
@@ -41,6 +41,6 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
 
 -- Вставка тестовых данных в таблицу comment
 INSERT INTO comment (comment_type, author_id, post_id, comment_text)
-VALUES ('TEXT', 1, 1, 'This is a comment on the first post'),
-       ('TEXT', 2, 1, 'Another comment on the first post');
+VALUES ('TEXT', '60b1f478-ec5a-4cfa-a022-ee9713228a86'::uuid, 1, 'This is a comment on the first post'),
+       ('TEXT', 'df68c55b-5909-4096-bec8-b69e174123dd'::uuid, 1, 'Another comment on the first post');
 

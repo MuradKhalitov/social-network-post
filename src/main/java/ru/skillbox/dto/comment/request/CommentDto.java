@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class CommentDto {
     private String commentType;
     private LocalDateTime time;
     private LocalDateTime timeChanged;
-    private Long authorId;
+    private UUID authorId;
     private Long parentId;
     @NotNull
     @Size(min = 1, max = 255, message = "Min comment size is: {min}. Max comment size is: {max}")
