@@ -9,17 +9,17 @@ import java.util.UUID;
 @Component
 public class JwtTokenUtil {
 
-    private String secret = "secret";
+    private String secret = "123123456456789789123123456456789789123123456456789789";
 //    {
 //        "role": "ROLE_USER",
-//            "id": 1,
+//            "id": 60b1f478-ec5a-4cfa-a022-ee9713228a86,
 //            "email": "tagir@gmail.com",
 //            "sub": "tagir",
 //            "iat": 1725694564,
 //            "exp": 9725838564
 //    }
     private String token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoidGFnaXJAZ21haWwuY29tIiwic3ViIjoidGFnaXIiLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.pSgFanQtSYisJjRKDH9uEXrtObW_9nUyoS1TcbGemso";
+        "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOiI2MGIxZjQ3OC1lYzVhLTRjZmEtYTAyMi1lZTk3MTMyMjhhODYiLCJlbWFpbCI6InRhZ2lyQGdtYWlsLmNvbSIsInN1YiI6InRhZ2lyIiwiaWF0IjoxNzI1Njk0NTY0LCJleHAiOjk3MjU4Mzg1NjR9.kF6b-qUCR3Rq9GU0pA6sZAlBnlr4ewrkjsQjFh21_v4";
     //    {
 //        "role": "ROLE_USER",
 //            "id": 1,
@@ -38,17 +38,10 @@ public class JwtTokenUtil {
     }
 
     public UUID getUserIdFromToken() {
-        Object id = getAllClaimsFromToken().get("id");
-
-//        if (id instanceof Integer) {
-//            return ((Integer) id).(); // Преобразование Integer в Long
-//        } else if (id instanceof Long) {
-//            return (Long) id; // Если уже Long
-//        } else {
-//            throw new IllegalArgumentException("ID is not of type Integer or Long");
-//        }
-        return (UUID) getAllClaimsFromToken().get("id");
+        String id = (String) getAllClaimsFromToken().get("id");
+        return UUID.fromString(id);
     }
+
     public String getRoleFromToken() {
         return (String) getAllClaimsFromToken().get("role");
     }
