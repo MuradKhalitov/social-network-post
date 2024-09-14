@@ -18,7 +18,7 @@ public class CurrentUsers {
     }
 
 
-    //    public static String getCurrentUsername() {
+//        public static String getCurrentUsername() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication != null && authentication.isAuthenticated()) {
 //            Object principal = authentication.getPrincipal();
@@ -31,7 +31,7 @@ public class CurrentUsers {
 //        }
 //        return null;
 //    }
-    //    public static boolean hasRole(String role) {
+//        public static boolean hasRole(String role) {
 //        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 //                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
 //    }
@@ -40,9 +40,9 @@ public class CurrentUsers {
         return jwtTokenUtil.getUserIdFromToken();//"tagir";
     }
 
-    public String getCurrentUsername() {
-        return jwtTokenUtil.getUsernameFromToken();//"tagir";
-    }
+//    public String getCurrentUsername() {
+//        return jwtTokenUtil.getUsernameFromToken();//"tagir";
+//    }
 
     public boolean hasRole(String role) {
         return (jwtTokenUtil.getRoleFromToken().equals(role));//true;
