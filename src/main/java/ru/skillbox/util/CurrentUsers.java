@@ -4,18 +4,18 @@ package ru.skillbox.util;
 //import org.springframework.security.core.context.SecurityContextHolder;
 //import org.springframework.security.core.userdetails.UserDetails;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
 public class CurrentUsers {
-    private final JwtTokenUtil jwtTokenUtil;
-@Autowired
-    public CurrentUsers(JwtTokenUtil jwtTokenUtil) {
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
+    private String token =
+            "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOiI2MGIxZjQ3OC1lYzVhLTRjZmEtYTAyMi1lZTk3MTMyMjhhODYiLCJlbWFpbCI6InRhZ2lyQGdtYWlsLmNvbSIsInN1YiI6InRhZ2lyIiwiaWF0IjoxNzI1Njk0NTY0LCJleHAiOjk3MjU4Mzg1NjR9.kF6b-qUCR3Rq9GU0pA6sZAlBnlr4ewrkjsQjFh21_v4";
 
 
 //        public static String getCurrentUsername() {
@@ -37,14 +37,42 @@ public class CurrentUsers {
 //    }
 
     public UUID getCurrentUserId() {
-        return jwtTokenUtil.getUserIdFromToken();//"tagir";
+        return getUserIdFromToken();
     }
 
-//    public String getCurrentUsername() {
-//        return jwtTokenUtil.getUsernameFromToken();//"tagir";
-//    }
-
     public boolean hasRole(String role) {
-        return (jwtTokenUtil.getRoleFromToken().equals(role));//true;
+        return (getRoleFromToken().equals(role));
+    }
+
+    public UUID getUserIdFromToken() {
+        Map<String, Object> claims = getAllClaimsFromToken(token);
+        return UUID.fromString((String) claims.get("id"));
+    }
+
+    public String getRoleFromToken() {
+        Map<String, Object> claims = getAllClaimsFromToken(token);
+        return (String) claims.get("role");
+    }
+
+    public Map<String, Object> getAllClaimsFromToken(String token) {
+        String payload = getPayloadFromToken(token);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> claims = null;
+        try {
+            claims = objectMapper.readValue(payload, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Ошибка при парсинге токена", e);
+        }
+        return claims;
+    }
+
+    private static String getPayloadFromToken(String token) {
+        String[] parts = token.split("\\.");
+        if (parts.length == 3) {
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(parts[1]);
+            return new String(decodedBytes);
+        } else {
+            throw new IllegalArgumentException("Invalid JWT format");
+        }
     }
 }

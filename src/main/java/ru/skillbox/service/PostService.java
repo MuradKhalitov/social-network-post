@@ -2,6 +2,8 @@ package ru.skillbox.service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skillbox.aop.CurrentUserAccount;
+import ru.skillbox.aop.CurrentUserContext;
 import ru.skillbox.dto.post.request.PostDto;
 import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.dto.post.response.PagePostDto;
@@ -44,11 +46,13 @@ public class PostService {
         this.postMapper = postMapper;
         this.currentUsers = currentUsers;
     }
-
+    @CurrentUserAccount
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
-        UUID userId = currentUsers.getCurrentUserId();
-        Account account = userRepository.findById(userId).get();
+//        UUID userId = currentUsers.getCurrentUserId();
+//        Account account = userRepository.findById(userId).get();
+        Account account = CurrentUserContext.getCurrentUser();
+
         post.setAuthor(account);
         post.setCommentsCount(0);
         List<Tag> tags = new ArrayList<>();
@@ -137,7 +141,7 @@ public class PostService {
     public void deleteNews(Long id) {
         UUID userId = currentUsers.getCurrentUserId();
         Account currentAccount = userRepository.findById(userId).get();
-        Post deletedPost = postMapper.convertToEntity(getPostById(id));
+        Post deletedPost = postRepository.findById(id).get();
         Account authorNews = deletedPost.getAuthor();
         if (currentAccount.getId().equals(authorNews.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             postRepository.deleteById(id);
