@@ -11,7 +11,7 @@ import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import ru.skillbox.repository.CommentRepository;
 import ru.skillbox.repository.PostRepository;
-import ru.skillbox.repository.UserRepository;
+import ru.skillbox.repository.AccountRepository;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +29,16 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final PostRepository postRepository;
     private final CommentMapper commentMapper;
     private final CurrentUsers currentUsers;
 
 
     @Autowired
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository, CommentMapper commentMapper, CurrentUsers currentUsers) {
+    public CommentService(CommentRepository commentRepository, AccountRepository accountRepository, PostRepository postRepository, CommentMapper commentMapper, CurrentUsers currentUsers) {
         this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.postRepository = postRepository;
         this.commentMapper = commentMapper;
         this.currentUsers = currentUsers;
@@ -52,7 +52,7 @@ public class CommentService {
             comment.setParent(parentComment);
         }
         UUID userId = currentUsers.getCurrentUserId();
-        Account account = userRepository.findById(userId).get();
+        Account account = accountRepository.findById(userId).get();
         Post post = postRepository.findById(postId).get();
         comment.setAuthor(account);
         post.setCommentsCount(post.getCommentsCount() + 1);
@@ -116,7 +116,7 @@ public class CommentService {
     @Transactional
     public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
         UUID userId = currentUsers.getCurrentUserId();
-        Account currentAccount = userRepository.findById(userId).get();
+        Account currentAccount = accountRepository.findById(userId).get();
 
         Comment oldComment = commentMapper.convertToEntity(getCommentById(id));
         Account authorComment = oldComment.getAuthor();
@@ -132,7 +132,7 @@ public class CommentService {
     public void deleteComment(Long commentId) {
 
         UUID userId = currentUsers.getCurrentUserId();
-        Account account = userRepository.findById(userId).get();
+        Account account = accountRepository.findById(userId).get();
 
         Optional<Comment> existingComment = commentRepository.findByIdAndAuthorId(commentId, account.getId());
         if (existingComment.isPresent()) {

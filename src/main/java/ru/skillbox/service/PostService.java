@@ -2,8 +2,6 @@ package ru.skillbox.service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import ru.skillbox.aop.CurrentUserAccount;
-import ru.skillbox.aop.CurrentUserContext;
 import ru.skillbox.dto.post.request.PostDto;
 import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.dto.post.response.PagePostDto;
@@ -15,7 +13,7 @@ import ru.skillbox.model.Tag;
 import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.PostSpecification;
 import ru.skillbox.repository.TagRepository;
-import ru.skillbox.repository.UserRepository;
+import ru.skillbox.repository.AccountRepository;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,25 +31,23 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final TagRepository tagRepository;
     private final PostMapper postMapper;
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public PostService(PostRepository postRepository, UserRepository userRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers) {
+    public PostService(PostRepository postRepository, AccountRepository accountRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers) {
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
         this.currentUsers = currentUsers;
     }
-    @CurrentUserAccount
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
-//        UUID userId = currentUsers.getCurrentUserId();
-//        Account account = userRepository.findById(userId).get();
-        Account account = CurrentUserContext.getCurrentUser();
+        UUID userId = currentUsers.getCurrentUserId();
+        Account account = accountRepository.findById(userId).get();
 
         post.setAuthor(account);
         post.setCommentsCount(0);
@@ -120,7 +116,7 @@ public class PostService {
     @Transactional
     public PostDto updateNews(Long id, PostDto updatePostDto) {
         UUID userId = currentUsers.getCurrentUserId();
-        Account currentAccount = userRepository.findById(userId).get();
+        Account currentAccount = accountRepository.findById(userId).get();
 
         Post oldPost = postRepository.findById(id)
                 .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + "not found"));
@@ -140,7 +136,7 @@ public class PostService {
 
     public void deleteNews(Long id) {
         UUID userId = currentUsers.getCurrentUserId();
-        Account currentAccount = userRepository.findById(userId).get();
+        Account currentAccount = accountRepository.findById(userId).get();
         Post deletedPost = postRepository.findById(id).get();
         Account authorNews = deletedPost.getAuthor();
         if (currentAccount.getId().equals(authorNews.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {

@@ -10,7 +10,7 @@ import ru.skillbox.mapper.LikeCommentMapper;
 import ru.skillbox.model.*;
 import ru.skillbox.repository.CommentRepository;
 import ru.skillbox.repository.LikeCommentRepository;
-import ru.skillbox.repository.UserRepository;
+import ru.skillbox.repository.AccountRepository;
 import ru.skillbox.util.CurrentUsers;
 
 import java.util.Optional;
@@ -21,7 +21,7 @@ import java.util.UUID;
 public class LikeCommentService {
 
     private final LikeCommentRepository likeCommentRepository;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final CommentRepository commentRepository;
     private final LikeCommentMapper likeCommentMapper;
     private final CommentService commentService;
@@ -29,9 +29,9 @@ public class LikeCommentService {
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public LikeCommentService(LikeCommentRepository likeRepository, UserRepository userRepository, CommentRepository commentRepository, LikeCommentMapper likeMapper, CommentService commentService, CommentMapper commentMapper, CurrentUsers currentUsers) {
+    public LikeCommentService(LikeCommentRepository likeRepository, AccountRepository accountRepository, CommentRepository commentRepository, LikeCommentMapper likeMapper, CommentService commentService, CommentMapper commentMapper, CurrentUsers currentUsers) {
         this.likeCommentRepository = likeRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.commentRepository = commentRepository;
         this.likeCommentMapper = likeMapper;
         this.commentService = commentService;
@@ -41,7 +41,7 @@ public class LikeCommentService {
 
     public LikeCommentDto createLikeComment(Long Postid, Long commentId) {
         UUID userId = currentUsers.getCurrentUserId();
-        Account account = userRepository.findById(userId).get();
+        Account account = accountRepository.findById(userId).get();
 
         Optional<LikeComment> existingLike = likeCommentRepository.findByCommentIdAndAuthorId(commentId, account.getId());
         if (existingLike.isPresent()) {
@@ -61,7 +61,7 @@ public class LikeCommentService {
 
     public void deleteLikeComment(Long commentId) {
         UUID userId = currentUsers.getCurrentUserId();
-        Account account = userRepository.findById(userId).get();
+        Account account = accountRepository.findById(userId).get();
 
         Optional<LikeComment> existingLike = likeCommentRepository.findByCommentIdAndAuthorId(commentId, account.getId());
         if (existingLike.isPresent()) {

@@ -11,7 +11,7 @@ import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
 import ru.skillbox.repository.LikePostRepository;
 import ru.skillbox.repository.PostRepository;
-import ru.skillbox.repository.UserRepository;
+import ru.skillbox.repository.AccountRepository;
 import ru.skillbox.util.CurrentUsers;
 
 import java.util.Optional;
@@ -22,16 +22,16 @@ import java.util.UUID;
 public class LikePostService {
 
     private final LikePostRepository likePostRepository;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final LikePostMapper likePostMapper;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository, UserRepository userRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
+    public LikePostService(LikePostRepository likeRepository, AccountRepository accountRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
         this.likePostRepository = likeRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.likePostMapper = likeMapper;
         this.postRepository = postRepository;
         this.postMapper = postMapper;
@@ -40,7 +40,7 @@ public class LikePostService {
 
     public LikePostDto createLikePost(Long postId) {
         UUID userId = currentUsers.getCurrentUserId();
-        Account account = userRepository.findById(userId).get();
+        Account account = accountRepository.findById(userId).get();
 
 
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, account.getId());
@@ -59,7 +59,7 @@ public class LikePostService {
 
     public void deleteLikePost(Long postId) {
         UUID userId = currentUsers.getCurrentUserId();
-        Account account = userRepository.findById(userId).get();
+        Account account = accountRepository.findById(userId).get();
 
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, account.getId());
         if (existingLike.isPresent()) {
