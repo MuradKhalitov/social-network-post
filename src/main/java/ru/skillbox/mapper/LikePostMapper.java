@@ -5,14 +5,12 @@ import org.mapstruct.Mapping;
 import ru.skillbox.dto.likePost.LikePostDto;
 import ru.skillbox.model.LikePost;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, PostMapper.class})
+@Mapper(componentModel = "spring", uses = {PostMapper.class})
 public interface LikePostMapper {
 
-    @Mapping(source = "author.id", target = "authorId")
     @Mapping(source = "post.id", target = "postId")
     LikePostDto convertToDTO(LikePost likePost);
 
-    @Mapping(source = "authorId", target = "author.id")
     @Mapping(source = "postId", target = "post.id")
     LikePost convertToEntity(LikePostDto likeDto);
 }

@@ -4,14 +4,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.dto.comment.response.PageCommentDto;
+import ru.skillbox.exception.AccessDeniedException;
 import ru.skillbox.exception.CommentNotFoundException;
+import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
-import ru.skillbox.model.Account;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
 import ru.skillbox.repository.CommentRepository;
 import ru.skillbox.repository.PostRepository;
-import ru.skillbox.repository.AccountRepository;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +29,18 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final AccountRepository accountRepository;
+    //private final AccountRepository accountRepository;
     private final PostRepository postRepository;
     private final CommentMapper commentMapper;
     private final CurrentUsers currentUsers;
 
 
     @Autowired
-    public CommentService(CommentRepository commentRepository, AccountRepository accountRepository, PostRepository postRepository, CommentMapper commentMapper, CurrentUsers currentUsers) {
+    public CommentService(CommentRepository commentRepository,
+                          //AccountRepository accountRepository,
+                          PostRepository postRepository, CommentMapper commentMapper, CurrentUsers currentUsers) {
         this.commentRepository = commentRepository;
-        this.accountRepository = accountRepository;
+        //this.accountRepository = accountRepository;
         this.postRepository = postRepository;
         this.commentMapper = commentMapper;
         this.currentUsers = currentUsers;
@@ -51,14 +53,13 @@ public class CommentService {
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
             comment.setParent(parentComment);
         }
-        UUID userId = currentUsers.getCurrentUserId();
-        Account account = accountRepository.findById(userId).get();
+        UUID currentUserId = currentUsers.getCurrentUserId();
         Post post = postRepository.findById(postId).get();
-        comment.setAuthor(account);
+        comment.setAuthorId(currentUserId);
         post.setCommentsCount(post.getCommentsCount() + 1);
         comment.setPost(post);
         //post.updateCommentsCount();
-        log.info("Пользователь: {}, добавил комментарий", account.getEmail());
+        log.info("Пользователь: {}, добавил комментарий", currentUserId);
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
 
@@ -90,7 +91,7 @@ public class CommentService {
                 comment.getCommentType(),
                 comment.getTime(),
                 comment.getTimeChanged(),
-                comment.getAuthor().getId(),
+                comment.getAuthorId(),
                 comment.getParent() != null ? comment.getParent().getId() : 0L,
                 comment.getCommentText(),
                 comment.getPost().getId(),
@@ -114,33 +115,33 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDto updateComment(Long id, CommentDto updatedCommentDto) {
-        UUID userId = currentUsers.getCurrentUserId();
-        Account currentAccount = accountRepository.findById(userId).get();
+    public CommentDto updateComment(Long commentId, CommentDto updatedCommentDto) {
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Comment updatedComment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
+        UUID updatedCommentAuthor = updatedComment.getAuthorId();
 
-        Comment oldComment = commentMapper.convertToEntity(getCommentById(id));
-        Account authorComment = oldComment.getAuthor();
-
-        if (currentAccount.getId().equals(authorComment.getId())) {
-            oldComment.setCommentText(updatedCommentDto.getCommentText());
-
-            return commentMapper.convertToDTO(commentRepository.save(oldComment));
+        if (currentUserId.equals(updatedCommentAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+            updatedComment.setCommentText(updatedCommentDto.getCommentText());
+            return commentMapper.convertToDTO(commentRepository.save(updatedComment));
+        }else {
+            throw new AccessDeniedException("У вас нет разрешения на обновление этого комментария");
         }
-        return null;
     }
 
     public void deleteComment(Long commentId) {
-
-        UUID userId = currentUsers.getCurrentUserId();
-        Account account = accountRepository.findById(userId).get();
-
-        Optional<Comment> existingComment = commentRepository.findByIdAndAuthorId(commentId, account.getId());
-        if (existingComment.isPresent()) {
-            Post post = postRepository.findById(existingComment.get().getPost().getId()).get();
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Comment deletedComment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
+        UUID deletedCommentAuthor = deletedComment.getAuthorId();
+        if (currentUserId.equals(deletedCommentAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+            Post post = postRepository.findById(deletedComment.getPost().getId())
+                    .orElseThrow(() -> new NewsNotFoundException("Post with postId " + deletedComment.getPost().getId() + "not found"));
             post.setCommentsCount(post.getCommentsCount() - 1);
             commentRepository.deleteById(commentId);
-        } else new CommentNotFoundException("Comment with id " + commentId + " not found");
-
+        } else {
+            throw new AccessDeniedException("У вас нет разрешения на удаление этого комментария");
+        }
     }
 }
 

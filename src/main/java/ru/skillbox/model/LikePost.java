@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -13,8 +15,10 @@ public class LikePost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    private Account author;
+    //    @ManyToOne
+//    private Account author;
+    @Column(name = "author_id")
+    private UUID authorId;
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;

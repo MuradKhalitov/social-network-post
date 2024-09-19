@@ -1,7 +1,9 @@
 package ru.skillbox.security.jwt;
 
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,36 +18,37 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.text.ParseException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
-    private final JwtUtils jwtUtils;
+    @Value("${app.jwt.uriValidate}")
+    private String uriValidate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String jwtToken = getToken(request);
-            if (jwtToken != null && true){//{jwtUtils.validateToken(jwtToken)) {
-                String username = jwtUtils.getUsername(jwtToken);
-
-                if (username != null && !username.isEmpty()) {
-                    // Создаем список с одной ролью USER
-                    var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-
-                    // Создаем токен для аутентификации с указанной ролью
+            if (jwtToken != null && true) {//{openFeignClient.validateToken(jwtToken)) {
+                String id = getIdFromToken(jwtToken);
+                if (id != null && !id.isEmpty()) {
+                    List<SimpleGrantedAuthority> authorities = getRolesFromToken(jwtToken);
+                    System.out.println(authorities);
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            new User(username, "", authorities), // Указываем пустой пароль и список ролей
-                            null,  // Поскольку пароль не используется, передаем null
-                            authorities  // Передаем роли
+                            new User(id, "", authorities),
+                            null,
+                            authorities
                     );
-
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    // Устанавливаем аутентификацию
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
@@ -56,11 +59,53 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    public Boolean validateToken(String jwt) throws io.jsonwebtoken.io.IOException, InterruptedException, java.io.IOException {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uriValidate))
+                .header("Authorization", "Bearer " + jwt)
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+            return response.body().trim().equals("true");
+        } else {
+            throw new RuntimeException("Failed to validate token: " + response.statusCode());
+        }
+    }
+
     private String getToken(HttpServletRequest request) {
         String headerAuth = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (org.springframework.util.StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
         }
         return null;
+    }
+
+    public String getIdFromToken(String jwtToken) {
+        try {
+            String sub = SignedJWT.parse(jwtToken).getPayload().toJSONObject().get("id").toString();
+            System.out.println(sub);
+            return sub;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<SimpleGrantedAuthority> getRolesFromToken(String jwtToken) {
+        try {
+            var payload = SignedJWT.parse(jwtToken).getPayload().toJSONObject();
+            if (payload.get("roles") == null) {
+                return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            }
+            List<String> roles = (List<String>) payload.get("roles");
+            return roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(role))
+                    .collect(Collectors.toList());
+        } catch (ParseException e) {
+            throw new RuntimeException("Failed to parse JWT token", e);
+        }
     }
 }

@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.dto.likePost.LikePostDto;
 import ru.skillbox.mapper.LikePostMapper;
 import ru.skillbox.mapper.PostMapper;
-import ru.skillbox.model.Account;
 import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
 import ru.skillbox.repository.LikePostRepository;
 import ru.skillbox.repository.PostRepository;
-import ru.skillbox.repository.AccountRepository;
 import ru.skillbox.util.CurrentUsers;
 
 import java.util.Optional;
@@ -22,16 +20,14 @@ import java.util.UUID;
 public class LikePostService {
 
     private final LikePostRepository likePostRepository;
-    private final AccountRepository accountRepository;
     private final LikePostMapper likePostMapper;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository, AccountRepository accountRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
+    public LikePostService(LikePostRepository likeRepository,LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
         this.likePostRepository = likeRepository;
-        this.accountRepository = accountRepository;
         this.likePostMapper = likeMapper;
         this.postRepository = postRepository;
         this.postMapper = postMapper;
@@ -39,11 +35,8 @@ public class LikePostService {
     }
 
     public LikePostDto createLikePost(Long postId) {
-        UUID userId = currentUsers.getCurrentUserId();
-        Account account = accountRepository.findById(userId).get();
-
-
-        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, account.getId());
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
         if (existingLike.isPresent()) {
             return null;
         }
@@ -52,16 +45,15 @@ public class LikePostService {
         Post post = postRepository.findById(postId).get();
         post.setLikeAmount(post.getLikeAmount() + 1);
         likePost.setPost(post);
-        likePost.setAuthor(account);
-        log.info("Пользователь: {}, добавил like к посту: {}", account.getEmail(), post.getId());
+        likePost.setAuthorId(currentUserId);
+        log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
         return likePostMapper.convertToDTO(likePostRepository.save(likePost));
     }
 
     public void deleteLikePost(Long postId) {
-        UUID userId = currentUsers.getCurrentUserId();
-        Account account = accountRepository.findById(userId).get();
+        UUID currentUserId = currentUsers.getCurrentUserId();
 
-        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, account.getId());
+        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
         if (existingLike.isPresent()) {
             Post post = postRepository.findById(postId).get();
             post.setLikeAmount(post.getLikeAmount() - 1);

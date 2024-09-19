@@ -5,15 +5,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.post.request.PostDto;
 import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.dto.post.response.PagePostDto;
+import ru.skillbox.exception.AccessDeniedException;
 import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.PostMapper;
-import ru.skillbox.model.Account;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.Tag;
 import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.PostSpecification;
 import ru.skillbox.repository.TagRepository;
-import ru.skillbox.repository.AccountRepository;
 import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,25 +30,22 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final AccountRepository accountRepository;
     private final TagRepository tagRepository;
     private final PostMapper postMapper;
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public PostService(PostRepository postRepository, AccountRepository accountRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers) {
+    public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers) {
         this.postRepository = postRepository;
-        this.accountRepository = accountRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
         this.currentUsers = currentUsers;
     }
+
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
         UUID userId = currentUsers.getCurrentUserId();
-        Account account = accountRepository.findById(userId).get();
-
-        post.setAuthor(account);
+        post.setAuthorId(userId);
         post.setCommentsCount(0);
         List<Tag> tags = new ArrayList<>();
         for (String tagName : postDto.getTags()) {
@@ -62,7 +58,7 @@ public class PostService {
             tags.add(tag);
         }
         post.setTags(tags);
-        log.info("Пользователь: {}, добавил новость", account.getEmail());
+        log.info("Пользователь: {}, добавил новость", userId);
         Post createdPost = postRepository.save(post);
 
         return postMapper.convertToDTO(createdPost);
@@ -88,7 +84,7 @@ public class PostService {
                 post.getId(),
                 post.getTime(),
                 post.getTimeChanged(),
-                post.getAuthor().getId(),
+                post.getAuthorId(),
                 post.getTitle(),
                 "POSTED",  // Тип можно изменить на основе логики
                 post.getPostText(),
@@ -114,35 +110,33 @@ public class PostService {
     }
 
     @Transactional
-    public PostDto updateNews(Long id, PostDto updatePostDto) {
-        UUID userId = currentUsers.getCurrentUserId();
-        Account currentAccount = accountRepository.findById(userId).get();
+    public PostDto updateNews(Long postId, PostDto updatePostDto) {
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Post updatedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new NewsNotFoundException("Post with postId " + postId + "not found"));
+        UUID updatedPostAuthor = updatedPost.getAuthorId();
 
-        Post oldPost = postRepository.findById(id)
-                .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + "not found"));
-        Account authorNews = oldPost.getAuthor();
-
-        if (currentAccount.getId().equals(authorNews.getId())) {
-            oldPost.setTitle(updatePostDto.getTitle());
-            oldPost.setPostText(updatePostDto.getPostText());
-            oldPost.setImagePath(updatePostDto.getImagePath());
-            Post updatedPost = postRepository.saveAndFlush(oldPost);
-
-            return postMapper.convertToDTO(updatedPost);
+        if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+            updatedPost.setTitle(updatePostDto.getTitle());
+            updatedPost.setPostText(updatePostDto.getPostText());
+            updatedPost.setImagePath(updatePostDto.getImagePath());
+            return postMapper.convertToDTO(postRepository.save(updatedPost));
+        } else {
+            throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
         }
-        return null;
     }
 
-
-    public void deleteNews(Long id) {
-        UUID userId = currentUsers.getCurrentUserId();
-        Account currentAccount = accountRepository.findById(userId).get();
-        Post deletedPost = postRepository.findById(id).get();
-        Account authorNews = deletedPost.getAuthor();
-        if (currentAccount.getId().equals(authorNews.getId()) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
-            postRepository.deleteById(id);
-        } else new NewsNotFoundException("News with id " + id + " not found");
-
+    public void deleteNews(Long postId) {
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Post deletedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new NewsNotFoundException("Post with postId " + postId + "not found"));
+        ;
+        UUID deletedPostAuthor = deletedPost.getAuthorId();
+        if (currentUserId.equals(deletedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+            postRepository.deleteById(postId);
+        } else {
+            throw new AccessDeniedException("У вас нет разрешения на удаление этого поста");
+        }
     }
 
     public Tag createOrGetTag(String tagName) {

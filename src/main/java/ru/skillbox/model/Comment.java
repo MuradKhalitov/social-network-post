@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -25,8 +26,10 @@ public class Comment {
     @UpdateTimestamp
     @Column(name = "time_changed")
     private LocalDateTime timeChanged;
-    @ManyToOne()
-    private Account author;
+    //    @ManyToOne()
+//    private Account author;
+    @Column(name = "author_id")
+    private UUID authorId;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")

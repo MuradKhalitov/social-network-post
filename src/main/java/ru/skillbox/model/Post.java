@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -22,8 +23,10 @@ public class Post {
     @Column(name = "post_text")
     private String postText;
 
-    @ManyToOne
-    private Account author;
+    //@ManyToOne
+    //private Account author;
+    @Column(name = "author_id")
+    private UUID authorId;
     @CreationTimestamp
     private LocalDateTime time;
     @UpdateTimestamp

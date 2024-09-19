@@ -2,7 +2,7 @@ server:
   port: 0
 app:
   jwt:
-    uriValidate: "/api/v1/auth/validate"
+    uriValidate: "/api/v1/auth/tokenValidation"
 
 spring:
   application:

@@ -6,6 +6,10 @@ package ru.skillbox.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
@@ -15,7 +19,7 @@ import java.util.UUID;
 @Component
 public class CurrentUsers {
     private String token =
-            "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOiI2MGIxZjQ3OC1lYzVhLTRjZmEtYTAyMi1lZTk3MTMyMjhhODYiLCJzdWIiOiJ0YWdpckBnbWFpbC5jb20iLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.0aqpFz7xIureyrK2b_dGKW0axImrlszyX3u7PINqVn0";
+            "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaWQiOiI2MGIxZjQ3OC1lYzVhLTRjZmEtYTAyMi1lZTk3MTMyMjhhODYiLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.nbu7NN_ZMj_SbtDAAJLKxoi4vLZwSJXzqyCmw4RJG5k";
 
 
 //        public static String getCurrentUsername() {
@@ -35,14 +39,38 @@ public class CurrentUsers {
 //        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 //                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
 //    }
+public UUID getCurrentUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    public UUID getCurrentUserId() {
-        return getUserIdFromToken();
+    // Проверяем, что пользователь аутентифицирован
+    if (authentication != null && authentication.isAuthenticated()) {
+        // Получаем пользователя из контекста
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            // Получаем id, который сохранён в поле username
+            String userId = ((User) principal).getUsername();
+            try {
+                return UUID.fromString(userId);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid UUID format for user ID: " + userId, e);
+            }
+        }
     }
 
-    public boolean hasRole(String role) {
-        return (getRoleFromToken().equals(role));
+    // Если пользователь не аутентифицирован или id отсутствует, можно бросить исключение
+    throw new RuntimeException("User is not authenticated");
+}
+public boolean hasRole(String role) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.equals(new SimpleGrantedAuthority(role)));
     }
+
+    // Если роль не найдена, возвращаем false
+    return false;
+}
+
 
     public UUID getUserIdFromToken() {
         Map<String, Object> claims = getAllClaimsFromToken(token);
@@ -51,7 +79,7 @@ public class CurrentUsers {
 
     public String getRoleFromToken() {
         Map<String, Object> claims = getAllClaimsFromToken(token);
-        return (String) claims.get("role");
+        return (String) claims.get("roles");
     }
 
     public Map<String, Object> getAllClaimsFromToken(String token) {

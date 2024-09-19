@@ -10,19 +10,16 @@ import ru.skillbox.model.Tag;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, CommentMapper.class})
+@Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface PostMapper {
 
-    @Mapping(source = "author.id", target = "authorId")
     @Mapping(source = "comments", target = "comments")
     @Mapping(source = "tags", target = "tags")
     PostDto convertToDTO(Post post);
 
-    @Mapping(source = "author.id", target = "authorId")
     @Mapping(source = "tags", target = "tags")
     PagePostDto.PostContent convertToPostContent(Post post);
 
-    @Mapping(source = "authorId", target = "author.id")
     @Mapping(source = "comments", target = "comments")
     @Mapping(source = "tags", target = "tags")
     Post convertToEntity(PostDto postDto);
