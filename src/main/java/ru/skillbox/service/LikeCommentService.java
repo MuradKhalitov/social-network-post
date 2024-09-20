@@ -42,10 +42,9 @@ public class LikeCommentService {
         if (existingLike.isPresent()) {
             return null;
         }
-
         LikeComment likeComment = new LikeComment();
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + Postid + " not found"));
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
         comment.setLikeAmount(comment.getLikeAmount() + 1);
         likeComment.setComment(comment);
         likeComment.setAuthorId(currentUserId);

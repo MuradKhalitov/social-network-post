@@ -44,8 +44,8 @@ public class PostService {
 
     public PostDto createNews(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
-        UUID userId = currentUsers.getCurrentUserId();
-        post.setAuthorId(userId);
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        post.setAuthorId(currentUserId);
         post.setCommentsCount(0);
         List<Tag> tags = new ArrayList<>();
         for (String tagName : postDto.getTags()) {
@@ -58,7 +58,7 @@ public class PostService {
             tags.add(tag);
         }
         post.setTags(tags);
-        log.info("Пользователь: {}, добавил новость", userId);
+        log.info("Пользователь: {}, добавил новость", currentUserId);
         Post createdPost = postRepository.save(post);
 
         return postMapper.convertToDTO(createdPost);
@@ -106,7 +106,7 @@ public class PostService {
     public PostDto getPostById(Long id) {
         return postRepository.findById(id)
                 .map(postMapper::convertToDTO)
-                .orElseThrow(() -> new NewsNotFoundException("News with id " + id + " not found"));
+                .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + " not found"));
     }
 
     @Transactional

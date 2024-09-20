@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    //private final AccountRepository accountRepository;
     private final PostRepository postRepository;
     private final CommentMapper commentMapper;
     private final CurrentUsers currentUsers;
@@ -37,10 +35,8 @@ public class CommentService {
 
     @Autowired
     public CommentService(CommentRepository commentRepository,
-                          //AccountRepository accountRepository,
                           PostRepository postRepository, CommentMapper commentMapper, CurrentUsers currentUsers) {
         this.commentRepository = commentRepository;
-        //this.accountRepository = accountRepository;
         this.postRepository = postRepository;
         this.commentMapper = commentMapper;
         this.currentUsers = currentUsers;
@@ -54,22 +50,16 @@ public class CommentService {
             comment.setParent(parentComment);
         }
         UUID currentUserId = currentUsers.getCurrentUserId();
-        Post post = postRepository.findById(postId).get();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NewsNotFoundException("Post with id " + postId + " not found"));
+        ;
         comment.setAuthorId(currentUserId);
         post.setCommentsCount(post.getCommentsCount() + 1);
         comment.setPost(post);
-        //post.updateCommentsCount();
         log.info("Пользователь: {}, добавил комментарий", currentUserId);
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
 
-    public List<CommentDto> getCommentsByNewsId(Long postId, PageRequest pageRequest) {
-        Page<Comment> page = commentRepository.findByPostId(postId, pageRequest);
-
-        return page.getContent().stream()
-                .map(commentMapper::convertToDTO)
-                .collect(Collectors.toList());
-    }
     public PageCommentDto getComments(Long postId, Pageable pageable) {
         Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 
@@ -124,7 +114,7 @@ public class CommentService {
         if (currentUserId.equals(updatedCommentAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             updatedComment.setCommentText(updatedCommentDto.getCommentText());
             return commentMapper.convertToDTO(commentRepository.save(updatedComment));
-        }else {
+        } else {
             throw new AccessDeniedException("У вас нет разрешения на обновление этого комментария");
         }
     }

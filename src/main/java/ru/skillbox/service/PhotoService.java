@@ -15,22 +15,16 @@ public class PhotoService {
     private static final String STORAGE_DIR = "photos/";
 
     public PhotoDto uploadPhoto(MultipartFile file) {
-        // Логика сохранения файла
         String filePath = saveFile(file);
-
-        // Сохранение пути к файлу и возврат DTO
         return new PhotoDto(filePath);
     }
 
     private String saveFile(MultipartFile file) {
         try {
-            // Создание директории, если она не существует
             Path storagePath = Paths.get(STORAGE_DIR);
             if (!Files.exists(storagePath)) {
-                Files.createDirectories(storagePath);  // Создание директории
+                Files.createDirectories(storagePath);
             }
-
-            // Генерация уникального имени файла и его сохранение
             Path path = storagePath.resolve(System.currentTimeMillis() + "_" + file.getOriginalFilename());
             Files.write(path, file.getBytes());
             return path.toString();

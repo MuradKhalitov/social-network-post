@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.likePost.LikePostDto;
+import ru.skillbox.exception.NewsNotFoundException;
 import ru.skillbox.mapper.LikePostMapper;
 import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.LikePost;
@@ -26,7 +27,7 @@ public class LikePostService {
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository,LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
+    public LikePostService(LikePostRepository likeRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
         this.likePostRepository = likeRepository;
         this.likePostMapper = likeMapper;
         this.postRepository = postRepository;
@@ -40,9 +41,9 @@ public class LikePostService {
         if (existingLike.isPresent()) {
             return null;
         }
-
         LikePost likePost = new LikePost();
-        Post post = postRepository.findById(postId).get();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NewsNotFoundException("Post with id " + postId + " not found"));;
         post.setLikeAmount(post.getLikeAmount() + 1);
         likePost.setPost(post);
         likePost.setAuthorId(currentUserId);
@@ -52,7 +53,6 @@ public class LikePostService {
 
     public void deleteLikePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
-
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
         if (existingLike.isPresent()) {
             Post post = postRepository.findById(postId).get();

@@ -37,14 +37,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String jwtToken = getToken(request);
-            if (jwtToken != null && true) {//{openFeignClient.validateToken(jwtToken)) {
-                String id = getIdFromToken(jwtToken);
-                if (id != null && !id.isEmpty()) {
-                    List<SimpleGrantedAuthority> authorities = getRolesFromToken(jwtToken);
+            String headerAuth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = null;
+            if (org.springframework.util.StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+                token = headerAuth.substring(7);
+            }
+            if (token != null && true){//validateToken(headerAuth)) {
+                String accountId = getIdFromToken(token);
+                if (accountId != null && !accountId.isEmpty()) {
+                    List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);
                     System.out.println(authorities);
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            new User(id, "", authorities),
+                            new User(accountId, "", authorities),
                             null,
                             authorities
                     );
@@ -59,11 +63,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    public Boolean validateToken(String jwt) throws io.jsonwebtoken.io.IOException, InterruptedException, java.io.IOException {
+    public static Boolean validateToken(String headerAuth) throws io.jsonwebtoken.io.IOException, InterruptedException, java.io.IOException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uriValidate))
-                .header("Authorization", "Bearer " + jwt)
+                .uri(URI.create("http://89.111.174.153:9090/api/v1/auth/tokenValidation"))
+                .header("Authorization", headerAuth)
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
@@ -76,17 +80,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
     }
 
-    private String getToken(HttpServletRequest request) {
-        String headerAuth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (org.springframework.util.StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
-        }
-        return null;
-    }
-
-    public String getIdFromToken(String jwtToken) {
+    public String getIdFromToken(String token) {
         try {
-            String sub = SignedJWT.parse(jwtToken).getPayload().toJSONObject().get("id").toString();
+            String sub = SignedJWT.parse(token).getPayload().toJSONObject().get("id").toString();
             System.out.println(sub);
             return sub;
         } catch (ParseException e) {
@@ -94,9 +90,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
     }
 
-    public List<SimpleGrantedAuthority> getRolesFromToken(String jwtToken) {
+    public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
         try {
-            var payload = SignedJWT.parse(jwtToken).getPayload().toJSONObject();
+            var payload = SignedJWT.parse(token).getPayload().toJSONObject();
             if (payload.get("roles") == null) {
                 return List.of(new SimpleGrantedAuthority("ROLE_USER"));
             }
