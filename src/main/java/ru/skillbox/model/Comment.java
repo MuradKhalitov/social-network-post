@@ -26,8 +26,7 @@ public class Comment {
     @UpdateTimestamp
     @Column(name = "time_changed")
     private LocalDateTime timeChanged;
-    //    @ManyToOne()
-//    private Account author;
+
     @Column(name = "author_id")
     private UUID authorId;
 

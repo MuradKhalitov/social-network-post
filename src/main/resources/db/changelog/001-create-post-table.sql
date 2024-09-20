@@ -37,10 +37,9 @@ CREATE TABLE IF NOT EXISTS post_schema.post (
     my_like BOOLEAN DEFAULT FALSE,
     image_path VARCHAR(255),
     publish_date TIMESTAMP,
-    CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES users(id)
 );
 
 -- Вставка тестовых данных в таблицу post
 INSERT INTO post (title, post_text, author_id, type, publish_date)
-VALUES ('First Post', 'This is the content of the first post', '60b1f478-ec5a-4cfa-a022-ee9713228a86'::uuid, 'PUBLIC', CURRENT_TIMESTAMP),
-       ('Second Post', 'This is the content of the second post', 'df68c55b-5909-4096-bec8-b69e174123dd'::uuid, 'PUBLIC', CURRENT_TIMESTAMP);
+VALUES ('First Post', 'This is the content of the first post', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 'PUBLIC', CURRENT_TIMESTAMP),
+       ('Second Post', 'This is the content of the second post', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 'PUBLIC', CURRENT_TIMESTAMP);

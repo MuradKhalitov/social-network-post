@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import ru.skillbox.dto.likeComment.LikeCommentDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,4 +31,5 @@ public class CommentDto {
     private int commentsCount;
     private String imagePath;
     private List<CommentDto> subComments;
+    private List<LikeCommentDto> likes;
 }

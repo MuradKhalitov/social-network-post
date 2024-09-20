@@ -5,12 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-<!--    <include file="db/changelog/000-create-users-table.sql"/>-->
     <include file="db/changelog/001-create-post-table.sql"/>
     <include file="db/changelog/002-create-comment-table.sql"/>
     <include file="db/changelog/003-create-like_post-table.sql"/>
     <include file="db/changelog/004-create-like_comment-table.sql"/>
     <include file="db/changelog/005-create-tag-table.sql"/>
     <include file="db/changelog/006-create-post_tags-table.sql"/>
-    <include file="db/changelog/007-create-photo-table.sql"/>
 </databaseChangeLog>

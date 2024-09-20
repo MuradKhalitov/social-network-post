@@ -1,5 +1,6 @@
 server:
-  port: 8082
+#  port: 8082
+  port: 0
 app:
   jwt:
     uriValidate: "http://89.111.174.153:9090/api/v1/auth/tokenValidation"
@@ -8,7 +9,8 @@ spring:
   application:
     name: social-network-post
   datasource:
-    url: jdbc:postgresql://localhost:5432/social-network-post
+#    url: jdbc:postgresql://localhost:5432/social-network-post
+    url: jdbc:postgresql://89.111.174.153:5432/social-network-post
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -35,5 +37,5 @@ eureka:
   client:
     enabled: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-      #defaultZone: http://89.111.174.153:8761/eureka/
+#      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://89.111.174.153:8761/eureka/

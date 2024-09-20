@@ -34,13 +34,12 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
     my_like BOOLEAN DEFAULT FALSE,
     comments_count INTEGER DEFAULT 0,
     image_path VARCHAR(255),
-    CONSTRAINT fk_author_comment FOREIGN KEY (author_id) REFERENCES users(id),
     CONSTRAINT fk_post_comment FOREIGN KEY (post_id) REFERENCES post(id),
     CONSTRAINT fk_parent_comment FOREIGN KEY (parent_id) REFERENCES comment(id)
 );
 
 -- Вставка тестовых данных в таблицу comment
 INSERT INTO comment (comment_type, author_id, post_id, comment_text)
-VALUES ('TEXT', '60b1f478-ec5a-4cfa-a022-ee9713228a86'::uuid, 1, 'This is a comment on the first post'),
-       ('TEXT', 'df68c55b-5909-4096-bec8-b69e174123dd'::uuid, 1, 'Another comment on the first post');
+VALUES ('TEXT', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 1, 'This is a comment on the first post'),
+       ('TEXT', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 2, 'Another comment on the second post');
 

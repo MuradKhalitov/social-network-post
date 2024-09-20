@@ -15,8 +15,6 @@ public class LikePost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //    @ManyToOne
-//    private Account author;
     @Column(name = "author_id")
     private UUID authorId;
     @ManyToOne

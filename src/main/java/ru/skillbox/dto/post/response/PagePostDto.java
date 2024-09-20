@@ -39,7 +39,7 @@ public class PagePostDto {
         private String type;
         private String postText;
         private boolean isBlocked;
-        private boolean isDelete;
+        private boolean isDeleted;
         private int commentsCount;
         private List<String> tags;
         private int likeAmount;
