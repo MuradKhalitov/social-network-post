@@ -1,4 +1,4 @@
-package ru.skillbox.security.jwt;
+package ru.skillbox.security;
 
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (org.springframework.util.StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
                 token = headerAuth.substring(7);
             }
-            if (token != null && true){//validateToken(headerAuth)) {
+            if (token != null &&
+                    //true){
+                    validateToken(headerAuth)) {
                 String accountId = getIdFromToken(token);
                 if (accountId != null && !accountId.isEmpty()) {
                     List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);
