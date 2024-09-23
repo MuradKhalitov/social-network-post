@@ -23,8 +23,6 @@ public class Post {
     @Column(name = "post_text")
     private String postText;
 
-    //@ManyToOne
-    //private Account author;
     @Column(name = "author_id")
     private UUID authorId;
     @CreationTimestamp

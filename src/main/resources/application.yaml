@@ -1,9 +1,6 @@
 server:
 #  port: 8082
   port: 0
-app:
-  jwt:
-    uriValidate: "http://89.111.174.153:9090/api/v1/auth/tokenValidation"
 
 spring:
   application:

@@ -40,7 +40,6 @@ public class PostController {
 
 
     @GetMapping()
-    @CrossOrigin(origins = "http://localhost:8080")
     public PagePostDto searchPosts(
             PostSearchDto postSearchDto,
             @RequestParam(defaultValue = "0") int page,

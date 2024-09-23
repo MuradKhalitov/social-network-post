@@ -58,9 +58,8 @@ public class PostService {
             tags.add(tag);
         }
         post.setTags(tags);
-        log.info("Пользователь: {}, добавил новость", currentUserId);
         Post createdPost = postRepository.save(post);
-
+        log.info("Пользователь: {}, добавил новость", currentUserId);
         return postMapper.convertToDTO(createdPost);
     }
 

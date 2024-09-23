@@ -1,7 +1,5 @@
 package ru.skillbox.dto.comment.request;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.dto.likeComment.LikeCommentDto;
@@ -19,10 +17,7 @@ public class CommentDto {
     private LocalDateTime timeChanged;
     private UUID authorId;
     private Long parentId;
-    @NotNull
-    @Size(min = 1, max = 255, message = "Min comment size is: {min}. Max comment size is: {max}")
     private String commentText;
-
     private Long postId;
     private boolean isBlocked;
     private boolean isDelete;

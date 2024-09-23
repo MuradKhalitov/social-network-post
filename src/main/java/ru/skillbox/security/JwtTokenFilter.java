@@ -8,9 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,6 +23,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
-    @Value("${app.jwt.uriValidate}")
-    private String uriValidate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -39,7 +38,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             String headerAuth = request.getHeader(HttpHeaders.AUTHORIZATION);
             String token = null;
-            if (org.springframework.util.StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
                 token = headerAuth.substring(7);
             }
             if (token != null &&
@@ -49,11 +48,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 if (accountId != null && !accountId.isEmpty()) {
                     List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);
                     System.out.println(authorities);
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            new User(accountId, "", authorities),
-                            null,
-                            authorities
-                    );
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(accountId, null, new ArrayList<>());
+//                            new User(accountId, "", authorities),
+//                            null,
+//                            authorities
+//                    );
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
@@ -70,7 +69,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://89.111.174.153:9090/api/v1/auth/tokenValidation"))
                 .header("Authorization", headerAuth)
-                .POST(HttpRequest.BodyPublishers.noBody())
+                .GET()
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

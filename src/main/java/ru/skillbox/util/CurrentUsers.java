@@ -10,8 +10,6 @@ import java.util.UUID;
 
 @Component
 public class CurrentUsers {
-    private String token =
-            "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaWQiOiI2MGIxZjQ3OC1lYzVhLTRjZmEtYTAyMi1lZTk3MTMyMjhhODYiLCJpYXQiOjE3MjU2OTQ1NjQsImV4cCI6OTcyNTgzODU2NH0.nbu7NN_ZMj_SbtDAAJLKxoi4vLZwSJXzqyCmw4RJG5k";
 
 public UUID getCurrentUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

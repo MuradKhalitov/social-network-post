@@ -62,12 +62,12 @@ public class PostSpecification {
                 predicates.add(cb.equal(root.get("isDeleted"), postSearchDto.getIsDeleted()));
             }
 
-            // Фильтрация по полю "с друзьями" (withFriends)
+           //  Фильтрация по полю "с друзьями" (withFriends)
 //            if (postSearchDto.getWithFriends() != null) {
 //                // Предполагается, что в сущности Post есть поле, отражающее связь с друзьями
 //                // Например, проверка на автора из списка друзей:
 //                if (postSearchDto.getWithFriends()) {
-//                    predicates.add(cb.isTrue(root.get("author").get("isFriend")));
+//                    predicates.add(cb.isTrue(root.get("authorId").get("isFriend")));
 //                }
 //            }
 
