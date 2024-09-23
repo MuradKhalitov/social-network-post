@@ -108,14 +108,17 @@ public class PostService {
                 .orElseThrow(() -> new NewsNotFoundException("Post with id " + id + " not found"));
     }
 
-    @Transactional
     public PostDto updateNews(Long postId, PostDto updatePostDto) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Post updatedPost = postRepository.findById(postId)
                 .orElseThrow(() -> new NewsNotFoundException("Post with postId " + postId + "not found"));
         UUID updatedPostAuthor = updatedPost.getAuthorId();
+        System.out.println("currentUserId: " + currentUserId);
+        System.out.println("PostAuthor   : " + updatedPostAuthor);
 
-        if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+        if (currentUserId.equals(updatedPostAuthor)
+        ){
+                //|| currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             updatedPost.setTitle(updatePostDto.getTitle());
             updatedPost.setPostText(updatePostDto.getPostText());
             updatedPost.setImagePath(updatePostDto.getImagePath());

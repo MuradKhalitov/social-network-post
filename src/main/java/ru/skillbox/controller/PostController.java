@@ -28,10 +28,17 @@ public class PostController {
         return postService.getPostById(id);
     }
 
+//    @PutMapping("/{id}")
+//    public PostDto updateNews(@PathVariable Long id, @RequestBody PostDto postDto) {
+//        return postService.updateNews(id, postDto);
+//    }
+
     @PutMapping("/{id}")
-    public PostDto updateNews(@PathVariable Long id, @RequestBody PostDto postDto) {
-        return postService.updateNews(id, postDto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public void updateNews(@PathVariable Long id, @RequestBody PostDto postDto) {
+        postService.updateNews(id, postDto);
     }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteNews(@PathVariable Long id) {
