@@ -16,7 +16,6 @@ public abstract class NewsMapperDelegate implements PostMapper {
     @Override
     public PagePostDto.PostContent convertToPostContent(Post post) {
         PagePostDto.PostContent postContent = delegate.convertToPostContent(post);
-        //postContent.setUsername(news.getAuthor().getUsername());
         postContent.setCommentsCount(post.getComments().size());
 
         return postContent;

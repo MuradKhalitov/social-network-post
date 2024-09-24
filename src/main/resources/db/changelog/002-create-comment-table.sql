@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
     post_id BIGINT,
     comment_text TEXT,
     is_blocked BOOLEAN DEFAULT FALSE,
-    is_delete BOOLEAN DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE,
     like_amount INTEGER DEFAULT 0,
     my_like BOOLEAN DEFAULT FALSE,
     comments_count INTEGER DEFAULT 0,
@@ -23,6 +23,6 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
 
 -- Вставка тестовых данных в таблицу comment
 INSERT INTO comment (comment_type, author_id, post_id, comment_text)
-VALUES ('TEXT', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 1, 'This is a comment on the first post'),
-       ('TEXT', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 2, 'Another comment on the second post');
+VALUES ('TEXT', '5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 1, 'This is a comment on the first post'),
+       ('TEXT', '5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 2, 'Another comment on the second post');
 

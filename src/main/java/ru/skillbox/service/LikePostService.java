@@ -4,7 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.likePost.LikePostDto;
-import ru.skillbox.exception.NewsNotFoundException;
+import ru.skillbox.exception.LikePostNotFoundException;
+import ru.skillbox.exception.PostNotFoundException;
 import ru.skillbox.mapper.LikePostMapper;
 import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.LikePost;
@@ -35,20 +36,19 @@ public class LikePostService {
         this.currentUsers = currentUsers;
     }
 
-    public LikePostDto createLikePost(Long postId) {
+    public void createLikePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
-        if (existingLike.isPresent()) {
-            return null;
+        if (!existingLike.isPresent()) {
+            LikePost likePost = new LikePost();
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
+            post.setLikeAmount(post.getLikeAmount() + 1);
+            likePost.setPost(post);
+            likePost.setAuthorId(currentUserId);
+            log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
+            likePostRepository.save(likePost);
         }
-        LikePost likePost = new LikePost();
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NewsNotFoundException("Post with id " + postId + " not found"));;
-        post.setLikeAmount(post.getLikeAmount() + 1);
-        likePost.setPost(post);
-        likePost.setAuthorId(currentUserId);
-        log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
-        return likePostMapper.convertToDTO(likePostRepository.save(likePost));
     }
 
     public void deleteLikePost(Long postId) {
@@ -59,6 +59,7 @@ public class LikePostService {
             post.setLikeAmount(post.getLikeAmount() - 1);
             likePostRepository.deleteById(existingLike.get().getId());
         }
+
     }
 
 }

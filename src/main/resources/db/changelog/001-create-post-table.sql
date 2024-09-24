@@ -21,5 +21,5 @@ CREATE TABLE IF NOT EXISTS post_schema.post (
 
 -- Вставка тестовых данных в таблицу post
 INSERT INTO post (title, post_text, author_id, type, publish_date)
-VALUES ('First Post', 'This is the content of the first post', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 'PUBLIC', CURRENT_TIMESTAMP),
-       ('Second Post', 'This is the content of the second post', 'd3ae9bc0-a1d7-4bad-9200-c15d37fc5d6a'::uuid, 'PUBLIC', CURRENT_TIMESTAMP);
+VALUES ('First Post', 'This is the content of the first post', '5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 'PUBLIC', CURRENT_TIMESTAMP),
+       ('Second Post', 'This is the content of the second post', '5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 'PUBLIC', CURRENT_TIMESTAMP);

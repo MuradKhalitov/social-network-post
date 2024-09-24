@@ -6,7 +6,7 @@ import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.dto.comment.response.PageCommentDto;
 import ru.skillbox.exception.AccessDeniedException;
 import ru.skillbox.exception.CommentNotFoundException;
-import ru.skillbox.exception.NewsNotFoundException;
+import ru.skillbox.exception.PostNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
@@ -16,7 +16,6 @@ import ru.skillbox.util.CurrentUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,7 +50,7 @@ public class CommentService {
         }
         UUID currentUserId = currentUsers.getCurrentUserId();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NewsNotFoundException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
         ;
         comment.setAuthorId(currentUserId);
         post.setCommentsCount(post.getCommentsCount() + 1);
@@ -61,6 +60,7 @@ public class CommentService {
     }
 
     public PageCommentDto getComments(Long postId, Pageable pageable) {
+        UUID currentUserId = currentUsers.getCurrentUserId();
         Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 
         // Формирование PageCommentDto
@@ -76,22 +76,28 @@ public class CommentService {
         pageCommentDto.setEmpty(commentPage.isEmpty());
 
         // Маппинг Comment в CommentContent
-        List<PageCommentDto.CommentContent> content = commentPage.getContent().stream().map(comment -> new PageCommentDto.CommentContent(
-                comment.getId(),
-                comment.getCommentType(),
-                comment.getTime(),
-                comment.getTimeChanged(),
-                comment.getAuthorId(),
-                comment.getParent() != null ? comment.getParent().getId() : 0L,
-                comment.getCommentText(),
-                comment.getPost().getId(),
-                comment.isBlocked(),
-                comment.isDelete(),
-                comment.getLikeAmount(),
-                comment.isMyLike(),
-                comment.getSubComments().size(),
-                comment.getImagePath()
-        )).collect(Collectors.toList());
+        List<PageCommentDto.CommentContent> content = commentPage.getContent().stream().map(comment -> {
+            comment.updateLikeAmount();
+            boolean isMyLike = comment.getLikes().stream()
+                    .anyMatch(likeComment -> likeComment.getAuthorId().equals(currentUserId));
+
+            return new PageCommentDto.CommentContent(
+                    comment.getId(),
+                    comment.getCommentType(),
+                    comment.getTime(),
+                    comment.getTimeChanged(),
+                    comment.getAuthorId(),
+                    comment.getParent() != null ? comment.getParent().getId() : 0L,
+                    comment.getCommentText(),
+                    comment.getPost().getId(),
+                    comment.isBlocked(),
+                    comment.isDeleted(),
+                    comment.getLikeAmount(),
+                    isMyLike,
+                    comment.getSubComments().size(),
+                    comment.getImagePath()
+            );
+        }).collect(Collectors.toList());
 
         pageCommentDto.setContent(content);
         return pageCommentDto;
@@ -126,7 +132,7 @@ public class CommentService {
         UUID deletedCommentAuthor = deletedComment.getAuthorId();
         if (currentUserId.equals(deletedCommentAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             Post post = postRepository.findById(deletedComment.getPost().getId())
-                    .orElseThrow(() -> new NewsNotFoundException("Post with postId " + deletedComment.getPost().getId() + "not found"));
+                    .orElseThrow(() -> new PostNotFoundException("Post with postId " + deletedComment.getPost().getId() + "not found"));
             post.setCommentsCount(post.getCommentsCount() - 1);
             commentRepository.deleteById(commentId);
         } else {

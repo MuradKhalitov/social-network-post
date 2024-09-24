@@ -41,9 +41,9 @@ public class Post {
     @Column(name = "is_deleted")
     private boolean isDeleted;
     @Column(name = "comments_count")
-    private Integer commentsCount = 0;
+    private int commentsCount;
     @Column(name = "like_amount")
-    private Integer likeAmount;
+    private int likeAmount;
     @Column(name = "my_like")
     private boolean myLike;
     @Column(name = "image_path")
@@ -62,7 +62,7 @@ public class Post {
         this.commentsCount = comments.size();
     }
 
-    private void updateLikeAmount() {
+    public void updateLikeAmount() {
         this.likeAmount = likes.size();
     }
 }

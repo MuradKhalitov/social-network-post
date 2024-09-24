@@ -42,8 +42,8 @@ public class Comment {
     private Post post;
     @Column(name = "is_blocked")
     private boolean isBlocked;
-    @Column(name = "is_delete")
-    private boolean isDelete;
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
     @Column(name = "like_amount")
     private int likeAmount;
     @Column(name = "my_like")
@@ -55,13 +55,7 @@ public class Comment {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeComment> likes = new ArrayList<>();
 
-    public void addLike(LikeComment like) {
-        likes.add(like);
-        like.setComment(this);
-    }
-
-    public void removeLike(LikeComment like) {
-        likes.remove(like);
-        like.setComment(null);
+    public void updateLikeAmount() {
+        this.likeAmount = likes.size();
     }
 }

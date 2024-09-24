@@ -16,14 +16,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import ru.skillbox.client.OpenFeignClient;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
+    private final OpenFeignClient openFeignClient;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,13 +39,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 token = headerAuth.substring(7);
             }
             if (token != null &&
-                    true){
-            //validateToken(headerAuth)) {
+                    //true){
+            openFeignClient.validateToken(headerAuth)) {
                 String accountId = getIdFromToken(token);
                 if (accountId != null && !accountId.isEmpty()) {
                     List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);
                     System.out.println(authorities);
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(//accountId, null, new ArrayList<>());
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             new User(accountId, "", authorities),
                             null,
                             authorities
@@ -62,23 +59,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    public static Boolean validateToken(String headerAuth) throws io.jsonwebtoken.io.IOException, InterruptedException, java.io.IOException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://89.111.174.153:9090/api/v1/auth/tokenValidation"))
-                .header("Authorization", headerAuth)
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 200) {
-            return response.body().trim().equals("true");
-        } else {
-            throw new RuntimeException("Failed to validate token: " + response.statusCode());
-        }
     }
 
     public String getIdFromToken(String token) {

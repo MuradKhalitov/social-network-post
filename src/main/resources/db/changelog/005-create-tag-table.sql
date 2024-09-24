@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS post_schema.tag (
 
 -- Вставка тестовых данных в таблицу tag
 INSERT INTO tag (name)
-VALUES ('First'),
-       ('Second');
+VALUES ('Java'),
+       ('Spring');
 
 
 

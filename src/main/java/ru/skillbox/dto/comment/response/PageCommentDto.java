@@ -40,7 +40,7 @@ public class PageCommentDto {
         private String commentText;
         private long postId;
         private boolean isBlocked;
-        private boolean isDelete;
+        private boolean isDeleted;
         private int likeAmount;
         private boolean myLike;
         private int commentsCount;

@@ -19,8 +19,8 @@ public class LikePostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LikePostDto createLike(@PathVariable Long id) {
-        return likePostService.createLikePost(id);
+    public void createLike(@PathVariable Long id) {
+        likePostService.createLikePost(id);
     }
 
     @DeleteMapping

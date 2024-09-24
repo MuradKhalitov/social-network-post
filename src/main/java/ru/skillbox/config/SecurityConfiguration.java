@@ -27,7 +27,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/post/**").permitAll()
+                        .requestMatchers("/api/v1/**").permitAll()
                         //.requestMatchers("/api/v1/post/**").hasAnyRole("ADMIN", "USER", "MODERATOR")
                         .anyRequest().authenticated())
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))

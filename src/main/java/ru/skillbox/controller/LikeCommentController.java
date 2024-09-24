@@ -15,13 +15,13 @@ public class LikeCommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LikeCommentDto createLike(@PathVariable Long id, @PathVariable Long commentId) {
-        return likeCommentService.createLikeComment(id, commentId);
+    public void createLike(@PathVariable Long id, @PathVariable Long commentId) {
+        likeCommentService.createLikeComment(commentId);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void deleteLike(@PathVariable Long commentId) {
+    public void deleteLike(@PathVariable Long id, @PathVariable Long commentId) {
         likeCommentService.deleteLikeComment(commentId);
     }
 }

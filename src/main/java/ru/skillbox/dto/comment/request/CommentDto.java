@@ -20,7 +20,7 @@ public class CommentDto {
     private String commentText;
     private Long postId;
     private boolean isBlocked;
-    private boolean isDelete;
+    private boolean isDeleted;
     private int likeAmount;
     private boolean myLike;
     private int commentsCount;
