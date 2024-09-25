@@ -42,7 +42,7 @@ public class LikeCommentService {
             LikeComment likeComment = new LikeComment();
             Comment comment = commentRepository.findById(commentId)
                     .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
-            comment.setLikeAmount(comment.getLikeAmount() + 1);
+            //comment.setLikeAmount(comment.getLikeAmount() + 1);
             likeComment.setComment(comment);
             likeComment.setAuthorId(currentUserId);
             log.info("Пользователь: {}, добавил like к комментарию: {}", currentUserId, comment.getId());
@@ -55,7 +55,7 @@ public class LikeCommentService {
         Optional<LikeComment> existingLike = likeCommentRepository.findByCommentIdAndAuthorId(commentId, currentUserId);
         if (existingLike.isPresent()) {
             Comment comment = commentRepository.findById(commentId).get();
-            comment.setLikeAmount(comment.getLikeAmount() - 1);
+            //comment.setLikeAmount(comment.getLikeAmount() - 1);
             likeCommentRepository.deleteById(existingLike.get().getId());
         }
     }

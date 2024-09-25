@@ -25,6 +25,4 @@ public class CommentDto {
     private boolean myLike;
     private int commentsCount;
     private String imagePath;
-    private List<CommentDto> subComments;
-    private List<LikeCommentDto> likes;
 }

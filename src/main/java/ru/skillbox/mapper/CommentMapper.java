@@ -1,6 +1,7 @@
 package ru.skillbox.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.skillbox.dto.comment.request.CommentDto;
+import ru.skillbox.dto.comment.response.PageCommentDto;
 import ru.skillbox.model.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,15 +14,20 @@ public abstract class CommentMapper {
     private CommentRepository commentRepository;
 
     @Mapping(source = "post.id", target = "postId")
-    @Mapping(source = "subComments", target = "subComments")
+//    @Mapping(source = "subComments", target = "subComments")
     @Mapping(target = "parentId", source = "parent.id")  // Маппинг parent.id в parentId
-    @Mapping(source = "likes", target = "likes")         // Маппинг списка лайков
+//    @Mapping(source = "likes", target = "likes")         // Маппинг списка лайков
     public abstract CommentDto convertToDTO(Comment comment);
+//    @Mapping(source = "post.id", target = "postId")
+//    @Mapping(source = "subComments", target = "subComments")
+//    @Mapping(target = "parentId", source = "parent.id")  // Маппинг parent.id в parentId
+//    @Mapping(source = "likes", target = "likes")         // Маппинг списка лайков
+//    public abstract PageCommentDto.CommentContent convertToDTO(Comment comment);
 
     @Mapping(source = "postId", target = "post.id")
-    @Mapping(source = "subComments", target = "subComments")
+//    @Mapping(source = "subComments", target = "subComments")
     @Mapping(target = "parent", source = "parentId")      // Маппинг parentId в parent
-    @Mapping(source = "likes", target = "likes")          // Обратный маппинг для лайков
+//    @Mapping(source = "likes", target = "likes")          // Обратный маппинг для лайков
     public abstract Comment convertToEntity(CommentDto commentDTO);
 
     // Метод для маппинга parentId в Comment

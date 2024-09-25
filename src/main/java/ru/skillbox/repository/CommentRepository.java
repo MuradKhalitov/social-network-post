@@ -13,6 +13,7 @@ import java.util.UUID;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findByPostId(Long postId, Pageable pageable);
+    Page<Comment> findById(Long postId, Pageable pageable);
     Optional<Comment> findById(Long id);
 
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.parent.id = :parentId")

@@ -27,5 +27,4 @@ public class PostDto {
     private boolean myLike;
     private String imagePath;
     private LocalDateTime publishDate;
-    private List<CommentDto> comments = new ArrayList<>();
 }

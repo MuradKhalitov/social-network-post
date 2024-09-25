@@ -15,17 +15,13 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface PostMapper {
 
-    @Mapping(source = "comments", target = "comments")
     @Mapping(source = "tags", target = "tags")
-    @Mapping(source = "likes", target = "likeAmount")  // Маппинг от likes к likeAmount
     PostDto convertToDTO(Post post);
 
     @Mapping(source = "tags", target = "tags")
     PagePostDto.PostContent convertToPostContent(Post post);
 
-    @Mapping(source = "comments", target = "comments")
     @Mapping(source = "tags", target = "tags")
-    @Mapping(source = "likeAmount", target = "likes")
     Post convertToEntity(PostDto postDto);
 
     default List<String> mapTagsToStrings(List<Tag> tags) {
@@ -41,23 +37,6 @@ public interface PostMapper {
                     return tag;
                 })
                 .toList();
-    }
-
-    default Integer mapComments(List<Comment> comments) {
-        return comments.size();
-    }
-
-
-    default int mapLikesToLikeAmount(List<LikePost> likes) {
-        return likes != null ? likes.size() : 0;
-    }
-
-    default List<LikePost> mapLikeAmountToLikes(int likeAmount) {
-        List<LikePost> likes = new ArrayList<>();
-        for (int i = 0; i < likeAmount; i++) {
-            likes.add(new LikePost());
-        }
-        return likes;
     }
 }
 

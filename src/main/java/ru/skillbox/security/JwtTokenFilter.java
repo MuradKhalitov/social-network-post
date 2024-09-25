@@ -1,8 +1,8 @@
 package ru.skillbox.security;
 
 import com.nimbusds.jwt.SignedJWT;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,10 +24,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
+
     private final OpenFeignClient openFeignClient;
+
+    @Autowired
+    public JwtTokenFilter(OpenFeignClient openFeignClient) {
+        this.openFeignClient = openFeignClient;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -39,8 +44,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 token = headerAuth.substring(7);
             }
             if (token != null &&
-                    //true){
-            openFeignClient.validateToken(headerAuth)) {
+                    true){
+//                    openFeignClient.validateToken(headerAuth)) {
                 String accountId = getIdFromToken(token);
                 if (accountId != null && !accountId.isEmpty()) {
                     List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);

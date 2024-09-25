@@ -10,10 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/post/{postId}/comment")
+@RequestMapping("/api/v1/post/{id}/comment")
 public class CommentController {
 
     private final CommentService commentService;
@@ -25,20 +23,21 @@ public class CommentController {
 
 
     @PostMapping
-    public CommentDto createComment(@PathVariable Long postId, @RequestBody CommentDto commentDTO,
-                                    @RequestParam(required = false) Long parentCommentId) {
-        return commentService.createComment(postId, commentDTO, parentCommentId);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto createPostComment(@PathVariable Long id, @RequestBody CommentDto commentDTO) {
+        return commentService.createPostComment(id, commentDTO);
     }
 
     @PostMapping("/{commentId}/subcomment")
-    public CommentDto createReplyComment(@PathVariable Long postId, @RequestBody CommentDto commentDTO,
-                                         @PathVariable Long commentId) {
-        return commentService.createComment(postId, commentDTO, commentId);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto createSubComment(@PathVariable Long id, @RequestParam Long parentCommentId,
+                                       @RequestBody CommentDto commentDTO) {
+        return commentService.createSubComment(id, commentDTO, parentCommentId);
     }
 
-
     @GetMapping
-    public PageCommentDto getCommentsByPostId(@PathVariable Long postId,
+    @ResponseStatus(HttpStatus.OK)
+    public PageCommentDto getCommentsByPostId(@PathVariable Long id,
                                               @RequestParam(required = false, defaultValue = "0") int page,
                                               @RequestParam(required = false, defaultValue = "10") int size,
                                               @RequestParam(defaultValue = "id,asc") String sort) {
@@ -51,23 +50,36 @@ public class CommentController {
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        return commentService.getComments(postId, pageable);
+        return commentService.getPostComments(id, pageable);
     }
 
-    @GetMapping("/{id}")
-    public CommentDto getCommentById(@PathVariable Long id) {
-        return commentService.getCommentById(id);
+    @GetMapping("/{commentId}/subcomment")
+    @ResponseStatus(HttpStatus.OK)
+    public PageCommentDto getSubCommentById(@PathVariable Long id,
+                                        @PathVariable Long commentId,
+                                        @RequestParam(required = false, defaultValue = "0") int page,
+                                        @RequestParam(required = false, defaultValue = "10") int size,
+                                        @RequestParam(defaultValue = "id,asc") String sort) {
+        String[] sortParams = sort.split("\\s*,\\s*");
+        String field = sortParams[0];
+        String direction = (sortParams.length > 1) ? sortParams[1] : "asc";
+
+        Sort sorting = Sort.by(new Sort.Order(Sort.Direction.fromString(direction), field));
+
+        Pageable pageable = PageRequest.of(page, size, sorting);
+        return commentService.getSubComments(id, commentId, pageable);
     }
 
-    @PutMapping("/{id}")
-    public CommentDto updateComment(@PathVariable Long id, @RequestBody CommentDto commentDTO) {
-        return commentService.updateComment(id, commentDTO);
+    @PutMapping("/{commentId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto updateComment(@PathVariable Long id, @PathVariable Long commentId, @RequestBody CommentDto commentDTO) {
+        return commentService.updateComment(id, commentId, commentDTO);
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+    @DeleteMapping("/{commentId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteComment(@PathVariable Long id, @PathVariable Long commentId) {
+        commentService.deleteComment(id, commentId);
     }
 }
 

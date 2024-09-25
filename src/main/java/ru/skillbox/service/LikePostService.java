@@ -43,7 +43,7 @@ public class LikePostService {
             LikePost likePost = new LikePost();
             Post post = postRepository.findById(postId)
                     .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
-            post.setLikeAmount(post.getLikeAmount() + 1);
+            //post.setLikeAmount(post.getLikeAmount() + 1);
             likePost.setPost(post);
             likePost.setAuthorId(currentUserId);
             log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
@@ -56,7 +56,7 @@ public class LikePostService {
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
         if (existingLike.isPresent()) {
             Post post = postRepository.findById(postId).get();
-            post.setLikeAmount(post.getLikeAmount() - 1);
+            //post.setLikeAmount(post.getLikeAmount() - 1);
             likePostRepository.deleteById(existingLike.get().getId());
         }
 

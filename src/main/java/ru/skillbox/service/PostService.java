@@ -60,57 +60,63 @@ public class PostService {
         return postMapper.convertToDTO(createdPost);
     }
 
-public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
-    UUID currentUserId = currentUsers.getCurrentUserId();
-    Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
+    public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
 
-    // Формирование PagePostDto
-    PagePostDto pagePostDto = new PagePostDto();
-    pagePostDto.setTotalElements(postPage.getTotalElements());
-    pagePostDto.setTotalPages(postPage.getTotalPages());
-    pagePostDto.setNumber(postPage.getNumber());
-    pagePostDto.setSize(postPage.getSize());
-    pagePostDto.setFirst(postPage.isFirst());
-    pagePostDto.setLast(postPage.isLast());
-    pagePostDto.setNumberOfElements(postPage.getNumberOfElements());
-    pagePostDto.setPageable(pageable);
-    pagePostDto.setEmpty(postPage.isEmpty());
+        // Формирование PagePostDto
+        PagePostDto pagePostDto = new PagePostDto();
+        pagePostDto.setTotalElements(postPage.getTotalElements());
+        pagePostDto.setTotalPages(postPage.getTotalPages());
+        pagePostDto.setNumber(postPage.getNumber());
+        pagePostDto.setSize(postPage.getSize());
+        pagePostDto.setFirst(postPage.isFirst());
+        pagePostDto.setLast(postPage.isLast());
+        pagePostDto.setNumberOfElements(postPage.getNumberOfElements());
+        pagePostDto.setPageable(pageable);
+        pagePostDto.setEmpty(postPage.isEmpty());
 
-    // Маппим Post в PostContent
-    List<PagePostDto.PostContent> content = postPage.getContent().stream().map(post -> {
+        // Маппим Post в PostContent
+        List<PagePostDto.PostContent> content = postPage.getContent().stream().map(post -> {
+            post.updateCommentsCount();
+            post.updateLikeAmount();
+            boolean isMyLike = post.getLikes().stream()
+                    .anyMatch(likePost -> likePost.getAuthorId().equals(currentUserId));
+
+            return new PagePostDto.PostContent(
+                    post.getId(),
+                    post.getTime(),
+                    post.getTimeChanged(),
+                    post.getAuthorId(),
+                    post.getTitle(),
+                    post.getType(),
+                    post.getPostText(),
+                    post.isBlocked(),
+                    post.isDeleted(),
+                    post.getCommentsCount(),
+                    post.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
+                    post.getLikeAmount(),
+                    isMyLike,
+                    post.getImagePath(),
+                    post.getPublishDate()
+            );
+        }).collect(Collectors.toList());
+
+        pagePostDto.setContent(content);
+        return pagePostDto;
+    }
+
+
+    public PostDto getPostById(Long id) {
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("Post with id " + id + " not found"));
         post.updateCommentsCount();
         post.updateLikeAmount();
         boolean isMyLike = post.getLikes().stream()
                 .anyMatch(likePost -> likePost.getAuthorId().equals(currentUserId));
-
-        return new PagePostDto.PostContent(
-                post.getId(),
-                post.getTime(),
-                post.getTimeChanged(),
-                post.getAuthorId(),
-                post.getTitle(),
-                post.getType(),
-                post.getPostText(),
-                post.isBlocked(),
-                post.isDeleted(),
-                post.getCommentsCount(),  // Получаем актуальное значение commentsCount
-                post.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
-                post.getLikeAmount(),
-                isMyLike,
-                post.getImagePath(),
-                post.getPublishDate()
-        );
-    }).collect(Collectors.toList());
-
-    pagePostDto.setContent(content);
-    return pagePostDto;
-}
-
-
-    public PostDto getPostById(Long id) {
-        return postRepository.findById(id)
-                .map(postMapper::convertToDTO)
-                .orElseThrow(() -> new PostNotFoundException("Post with id " + id + " not found"));
+        post.setMyLike(isMyLike);
+        return postMapper.convertToDTO(post);
     }
 
     public PostDto updatePost(Long postId, PostDto updatePostDto) {
@@ -121,9 +127,7 @@ public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         System.out.println("currentUserId: " + currentUserId);
         System.out.println("PostAuthor   : " + updatedPostAuthor);
 
-        if (currentUserId.equals(updatedPostAuthor)
-        //){
-                || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+        if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             updatedPost.setTitle(updatePostDto.getTitle());
             updatedPost.setPostText(updatePostDto.getPostText());
             updatedPost.setImagePath(updatePostDto.getImagePath());
@@ -137,7 +141,6 @@ public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Post deletedPost = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post with postId " + postId + "not found"));
-        ;
         UUID deletedPostAuthor = deletedPost.getAuthorId();
         if (currentUserId.equals(deletedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             postRepository.deleteById(postId);
