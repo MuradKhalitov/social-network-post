@@ -1,6 +1,8 @@
 package ru.skillbox.service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+import ru.skillbox.dto.TagDto;
 import ru.skillbox.dto.post.request.PostDto;
 import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.dto.post.response.PagePostDto;
@@ -46,11 +48,11 @@ public class PostService {
         UUID currentUserId = currentUsers.getCurrentUserId();
         post.setAuthorId(currentUserId);
         List<Tag> tags = new ArrayList<>();
-        for (String tagName : postDto.getTags()) {
-            Tag tag = tagRepository.findByName(tagName)
+        for (TagDto tagName : postDto.getTags()) {
+            Tag tag = tagRepository.findByName(tagName.getName())
                     .orElseGet(() -> {
                         Tag newTag = new Tag();
-                        newTag.setName(tagName);
+                        newTag.setName(tagName.getName());
                         return newTag;
                     });
             tags.add(tag);
@@ -124,10 +126,11 @@ public class PostService {
         return postMapper.convertToDTO(post);
     }
 
-    public PostDto updatePost(Long postId, PostDto updatePostDto) {
+    @Transactional
+    public PostDto updatePost(PostDto updatePostDto) {
         UUID currentUserId = currentUsers.getCurrentUserId();
-        Post updatedPost = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post with postId " + postId + "not found"));
+        Post updatedPost = postRepository.findById(updatePostDto.getId())
+                .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + "not found"));
         UUID updatedPostAuthor = updatedPost.getAuthorId();
         System.out.println("currentUserId: " + currentUserId);
         System.out.println("PostAuthor   : " + updatedPostAuthor);

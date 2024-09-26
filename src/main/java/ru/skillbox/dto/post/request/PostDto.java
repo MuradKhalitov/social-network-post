@@ -2,10 +2,9 @@ package ru.skillbox.dto.post.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.dto.comment.request.CommentDto;
+import ru.skillbox.dto.TagDto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +21,7 @@ public class PostDto {
     private boolean isBlocked;
     private boolean isDeleted;
     private Integer commentsCount;
-    private List<String> tags;
+    private List<TagDto> tags;
     private int likeAmount;
     private boolean myLike;
     private String imagePath;

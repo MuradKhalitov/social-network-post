@@ -30,7 +30,7 @@ public class CommentController {
 
     @PostMapping("/{commentId}/subcomment")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createSubComment(@PathVariable Long id, @RequestParam Long parentCommentId,
+    public CommentDto createSubComment(@PathVariable Long id, @PathVariable Long parentCommentId,
                                        @RequestBody CommentDto commentDTO) {
         return commentService.createSubComment(id, commentDTO, parentCommentId);
     }

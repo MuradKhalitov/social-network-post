@@ -28,10 +28,10 @@ public class PostController {
         return postService.getPostById(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void updatePost(@PathVariable Long id, @RequestBody PostDto postDto) {
-        postService.updatePost(id, postDto);
+    public void updatePost(@RequestBody PostDto postDto) {
+        postService.updatePost(postDto);
     }
 
     @DeleteMapping("/{id}")
