@@ -67,7 +67,7 @@ public class CommentController {
         Sort sorting = Sort.by(new Sort.Order(Sort.Direction.fromString(direction), field));
 
         Pageable pageable = PageRequest.of(page, size, sorting);
-        return commentService.getSubComments(id, commentId, pageable);
+        return commentService.getSubComments(id, pageable);
     }
 
     @PutMapping("/{commentId}")

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +55,10 @@ public class PostService {
                     });
             tags.add(tag);
         }
+        if (post.getPublishDate() == null) {
+            post.setPublishDate(LocalDateTime.now());
+            post.setType("POSTED");
+        }
         post.setTags(tags);
         Post createdPost = postRepository.save(post);
         log.info("Пользователь: {}, добавил новость", currentUserId);
@@ -89,7 +94,7 @@ public class PostService {
                     post.getTimeChanged(),
                     post.getAuthorId(),
                     post.getTitle(),
-                    post.getType(),
+                    post.getType(),//"POSTED",
                     post.getPostText(),
                     post.isBlocked(),
                     post.isDeleted(),

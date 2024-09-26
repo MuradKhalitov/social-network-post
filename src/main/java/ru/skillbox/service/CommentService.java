@@ -1,6 +1,8 @@
 package ru.skillbox.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.dto.comment.response.PageCommentDto;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,12 +68,12 @@ public class CommentService {
         log.info("Пользователь: {}, добавил комментарий", currentUserId);
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
-
     public PageCommentDto getPostComments(Long postId, Pageable pageable) {
-        UUID currentUserId = currentUsers.getCurrentUserId();
+
+        // Получаем все комментарии поста с сортировкой по времени
         Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 
-        // Формирование PageCommentDto
+        // Формируем объект PageCommentDto
         PageCommentDto pageCommentDto = new PageCommentDto();
         pageCommentDto.setTotalElements(commentPage.getTotalElements());
         pageCommentDto.setTotalPages(commentPage.getTotalPages());
@@ -82,88 +85,163 @@ public class CommentService {
         pageCommentDto.setPageable(pageable);
         pageCommentDto.setEmpty(commentPage.isEmpty());
 
-        // Маппинг Comment в CommentContent
-        List<PageCommentDto.CommentContent> content = commentPage.getContent().stream().map(comment -> {
-            comment.updateLikeAmount();
-            boolean isMyLike = comment.getLikes().stream()
-                    .anyMatch(likeComment -> likeComment.getAuthorId().equals(currentUserId));
+        // Отделяем родительские комментарии от субкомментариев
+        List<PageCommentDto.CommentContent> parentComments = commentPage.getContent().stream()
+                .filter(comment -> comment.getParent() == null)  // только родительские
+                .map(comment -> convertToCommentContent(comment))
+                .collect(Collectors.toList());
 
-            return new PageCommentDto.CommentContent(
-                    comment.getId(),
-                    comment.getCommentType(),
-                    comment.getTime(),
-                    comment.getTimeChanged(),
-                    comment.getAuthorId(),
-                    comment.getParent() != null ? comment.getParent().getId() : 0L,
-                    comment.getCommentText(),
-                    comment.getPost().getId(),
-                    comment.isBlocked(),
-                    comment.isDeleted(),
-                    comment.getLikeAmount(),
-                    isMyLike,
-                    comment.getSubComments().size(),
-                    comment.getImagePath()
-            );
-        }).collect(Collectors.toList());
+        // Собираем итоговый список комментариев
+        List<PageCommentDto.CommentContent> allComments = new ArrayList<>(parentComments);
 
-        pageCommentDto.setContent(content);
+        pageCommentDto.setContent(allComments);
+
+        return pageCommentDto;
+    }
+    public PageCommentDto getSubComments(Long postId, Pageable pageable) {
+
+        // Получаем все комментарии поста с сортировкой по времени
+        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+
+        // Формируем объект PageCommentDto
+        PageCommentDto pageCommentDto = new PageCommentDto();
+        pageCommentDto.setTotalElements(commentPage.getTotalElements());
+        pageCommentDto.setTotalPages(commentPage.getTotalPages());
+        pageCommentDto.setNumber(commentPage.getNumber());
+        pageCommentDto.setSize(commentPage.getSize());
+        pageCommentDto.setFirst(commentPage.isFirst());
+        pageCommentDto.setLast(commentPage.isLast());
+        pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
+        pageCommentDto.setPageable(pageable);
+        pageCommentDto.setEmpty(commentPage.isEmpty());
+
+        List<PageCommentDto.CommentContent> subComments = commentPage.getContent().stream()
+                .filter(comment -> comment.getParent() != null)  // только субкомментарии
+                .map(comment -> convertToCommentContent(comment))
+                .collect(Collectors.toList());
+
+        // Собираем итоговый список комментариев
+        List<PageCommentDto.CommentContent> allComments = new ArrayList<>(subComments);
+
+        pageCommentDto.setContent(allComments);
+
         return pageCommentDto;
     }
 
-
-    public PageCommentDto getSubComments(Long postId, Long commentId, Pageable pageable) {
+    private PageCommentDto.CommentContent convertToCommentContent(Comment comment) {
         UUID currentUserId = currentUsers.getCurrentUserId();
-        Page<Comment> commentPage = commentRepository.findById(commentId, pageable);
 
-        // Формирование PageCommentDto
-        PageCommentDto pageCommentDto = new PageCommentDto();
-        pageCommentDto.setTotalElements(commentPage.getTotalElements());
-        pageCommentDto.setTotalPages(commentPage.getTotalPages());
-        pageCommentDto.setNumber(commentPage.getNumber());
-        pageCommentDto.setSize(commentPage.getSize());
-        pageCommentDto.setFirst(commentPage.isFirst());
-        pageCommentDto.setLast(commentPage.isLast());
-        pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
-        pageCommentDto.setPageable(pageable);
-        pageCommentDto.setEmpty(commentPage.isEmpty());
+        comment.updateLikeAmount();
+        boolean isMyLike = comment.getLikes().stream()
+                .anyMatch(likeComment -> likeComment.getAuthorId().equals(currentUserId));
 
-        // Маппинг Comment в CommentContent
-        List<PageCommentDto.CommentContent> content = commentPage.getContent().stream().map(comment -> {
-            comment.updateLikeAmount();
-            boolean isMyLike = comment.getLikes().stream()
-                    .anyMatch(likeComment -> likeComment.getAuthorId().equals(currentUserId));
-
-            return new PageCommentDto.CommentContent(
-                    comment.getId(),
-                    comment.getCommentType(),
-                    comment.getTime(),
-                    comment.getTimeChanged(),
-                    comment.getAuthorId(),
-                    comment.getParent() != null ? comment.getParent().getId() : 0L,
-                    comment.getCommentText(),
-                    comment.getPost().getId(),
-                    comment.isBlocked(),
-                    comment.isDeleted(),
-                    comment.getLikeAmount(),
-                    isMyLike,
-                    comment.getSubComments().size(),
-                    comment.getImagePath()
-            );
-        }).collect(Collectors.toList());
-
-        pageCommentDto.setContent(content);
-        return pageCommentDto;
-
-//        UUID currentUserId = currentUsers.getCurrentUserId();
-//        Comment comment = commentRepository.findById(commentId)
-//                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
-//        comment.updateCommentsCount();
-//        comment.updateLikeAmount();
-//        boolean isMyLike = comment.getLikes().stream()
-//                .anyMatch(likePost -> likePost.getAuthorId().equals(currentUserId));
-//        comment.setMyLike(isMyLike);
-//        return commentMapper.convertToDTO(comment);
+        return new PageCommentDto.CommentContent(
+                comment.getId(),
+                comment.getCommentType(),
+                comment.getTime(),
+                comment.getTimeChanged(),
+                comment.getAuthorId(),
+                comment.getParent() != null ? comment.getParent().getId() : 0L,
+                comment.getCommentText(),
+                comment.getPost().getId(),
+                comment.isBlocked(),
+                comment.isDeleted(),
+                comment.getLikeAmount(),
+                isMyLike,
+                comment.getSubComments().size(),
+                comment.getImagePath()
+        );
     }
+
+
+//    public PageCommentDto getPostComments(Long postId, Pageable pageable) {
+//        UUID currentUserId = currentUsers.getCurrentUserId();
+//        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+//
+//        // Формирование PageCommentDto
+//        PageCommentDto pageCommentDto = new PageCommentDto();
+//        pageCommentDto.setTotalElements(commentPage.getTotalElements());
+//        pageCommentDto.setTotalPages(commentPage.getTotalPages());
+//        pageCommentDto.setNumber(commentPage.getNumber());
+//        pageCommentDto.setSize(commentPage.getSize());
+//        pageCommentDto.setFirst(commentPage.isFirst());
+//        pageCommentDto.setLast(commentPage.isLast());
+//        pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
+//        pageCommentDto.setPageable(pageable);
+//        pageCommentDto.setEmpty(commentPage.isEmpty());
+//
+//        // Маппинг Comment в CommentContent
+//        List<PageCommentDto.CommentContent> content = commentPage.getContent().stream().map(comment -> {
+//            comment.updateLikeAmount();
+//            boolean isMyLike = comment.getLikes().stream()
+//                    .anyMatch(likeComment -> likeComment.getAuthorId().equals(currentUserId));
+//
+//            return new PageCommentDto.CommentContent(
+//                    comment.getId(),
+//                    comment.getCommentType(),
+//                    comment.getTime(),
+//                    comment.getTimeChanged(),
+//                    comment.getAuthorId(),
+//                    comment.getParent() != null ? comment.getParent().getId() : 0L,
+//                    comment.getCommentText(),
+//                    comment.getPost().getId(),
+//                    comment.isBlocked(),
+//                    comment.isDeleted(),
+//                    comment.getLikeAmount(),
+//                    isMyLike,
+//                    comment.getSubComments().size(),
+//                    comment.getImagePath()
+//            );
+//        }).collect(Collectors.toList());
+//
+//        pageCommentDto.setContent(content);
+//        return pageCommentDto;
+//    }
+//
+//
+//    public PageCommentDto getSubComments(Long postId, Long commentId, Pageable pageable) {
+//        UUID currentUserId = currentUsers.getCurrentUserId();
+//        Page<Comment> commentPage = commentRepository.findById(commentId, pageable);
+//
+//        // Формирование PageCommentDto
+//        PageCommentDto pageCommentDto = new PageCommentDto();
+//        pageCommentDto.setTotalElements(commentPage.getTotalElements());
+//        pageCommentDto.setTotalPages(commentPage.getTotalPages());
+//        pageCommentDto.setNumber(commentPage.getNumber());
+//        pageCommentDto.setSize(commentPage.getSize());
+//        pageCommentDto.setFirst(commentPage.isFirst());
+//        pageCommentDto.setLast(commentPage.isLast());
+//        pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
+//        pageCommentDto.setPageable(pageable);
+//        pageCommentDto.setEmpty(commentPage.isEmpty());
+//
+//        // Маппинг Comment в CommentContent
+//        List<PageCommentDto.CommentContent> content = commentPage.getContent().stream().map(comment -> {
+//            comment.updateLikeAmount();
+//            boolean isMyLike = comment.getLikes().stream()
+//                    .anyMatch(likeComment -> likeComment.getAuthorId().equals(currentUserId));
+//
+//            return new PageCommentDto.CommentContent(
+//                    comment.getId(),
+//                    comment.getCommentType(),
+//                    comment.getTime(),
+//                    comment.getTimeChanged(),
+//                    comment.getAuthorId(),
+//                    comment.getParent() != null ? comment.getParent().getId() : 0L,
+//                    comment.getCommentText(),
+//                    comment.getPost().getId(),
+//                    comment.isBlocked(),
+//                    comment.isDeleted(),
+//                    comment.getLikeAmount(),
+//                    isMyLike,
+//                    comment.getSubComments().size(),
+//                    comment.getImagePath()
+//            );
+//        }).collect(Collectors.toList());
+//
+//        pageCommentDto.setContent(content);
+//        return pageCommentDto;
+//    }
 
     @Transactional
     public CommentDto updateComment(Long postId, Long commentId, CommentDto updatedCommentDto) {
