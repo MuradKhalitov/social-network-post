@@ -101,7 +101,14 @@ public class PostService {
                     post.isBlocked(),
                     post.isDeleted(),
                     post.getCommentsCount(),
-                    post.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
+                    //post.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
+                    post.getTags().stream()
+                            .map(tag -> {
+                                TagDto tagDto = new TagDto();
+                                tagDto.setName(tag.getName());
+                                return tagDto;
+                            })
+                            .collect(Collectors.toList()),
                     post.getLikeAmount(),
                     isMyLike,
                     post.getImagePath(),

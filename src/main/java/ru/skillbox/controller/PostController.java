@@ -43,7 +43,7 @@ public class PostController {
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public PagePostDto searchPosts(
-            PostSearchDto postSearchDto,
+            @ModelAttribute PostSearchDto postSearchDto,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id,asc") String sort,

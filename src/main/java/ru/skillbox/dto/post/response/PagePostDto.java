@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import ru.skillbox.dto.TagDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,7 +42,7 @@ public class PagePostDto {
         private boolean isBlocked;
         private boolean isDeleted;
         private int commentsCount;
-        private List<String> tags;
+        private List<TagDto> tags;
         private int likeAmount;
         private boolean myLike;
         private String imagePath;
