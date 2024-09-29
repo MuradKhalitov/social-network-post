@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS post_schema.like_comment (
 
 -- Вставка тестовых данных в таблицу like_comment
 INSERT INTO like_comment (author_id, comment_id)
-VALUES ('5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 1),
-       ('5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 2);
+VALUES ('e61e54d7-3f0e-4bf2-b7d3-24663f35e506'::uuid, 1),
+       ('e61e54d7-3f0e-4bf2-b7d3-24663f35e506'::uuid, 2);
 
 

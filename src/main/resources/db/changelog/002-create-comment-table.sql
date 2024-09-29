@@ -23,6 +23,6 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
 
 -- Вставка тестовых данных в таблицу comment
 INSERT INTO comment (comment_type, author_id, post_id, comment_text)
-VALUES ('TEXT', '5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 1, 'This is a comment on the first post'),
-       ('TEXT', '5e9573f3-3ee7-40fa-a0d8-d3ce01122848'::uuid, 2, 'Another comment on the second post');
+VALUES ('TEXT', 'e61e54d7-3f0e-4bf2-b7d3-24663f35e506'::uuid, 1, 'This is a comment on the first post'),
+       ('TEXT', 'e61e54d7-3f0e-4bf2-b7d3-24663f35e506'::uuid, 2, 'Another comment on the second post');
 
