@@ -20,7 +20,6 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-    // Метод для поиска тегов по имени
     public List<TagDto> searchTagsByName(String name) {
         List<Tag> tags = tagRepository.findByNameContainingIgnoreCase(name);
         return tags.stream()
