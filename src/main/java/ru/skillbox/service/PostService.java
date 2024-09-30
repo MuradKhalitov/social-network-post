@@ -139,9 +139,6 @@ public class PostService {
         Post updatedPost = postRepository.findById(updatePostDto.getId())
                 .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + "not found"));
         UUID updatedPostAuthor = updatedPost.getAuthorId();
-        System.out.println("currentUserId: " + currentUserId);
-        System.out.println("PostAuthor   : " + updatedPostAuthor);
-
         if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
             updatedPost.setTitle(updatePostDto.getTitle());
             updatedPost.setPostText(updatePostDto.getPostText());

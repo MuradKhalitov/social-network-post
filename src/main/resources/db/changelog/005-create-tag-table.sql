@@ -6,10 +6,5 @@ CREATE TABLE IF NOT EXISTS post_schema.tag (
     name VARCHAR(255) NOT NULL UNIQUE
 );
 
--- Вставка тестовых данных в таблицу tag
-INSERT INTO tag (name)
-VALUES ('Java'),
-       ('Spring');
-
 
 

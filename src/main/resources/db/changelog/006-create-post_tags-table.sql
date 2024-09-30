@@ -9,12 +9,6 @@ CREATE TABLE IF NOT EXISTS post_schema.post_tags (
     PRIMARY KEY (post_id, tag_id)
 );
 
--- Вставка тестовых данных для связи post и tag
-INSERT INTO post_tags (post_id, tag_id)
-VALUES (1, 1),
-       (1, 2),
-       (2, 1);
-
 
 
 

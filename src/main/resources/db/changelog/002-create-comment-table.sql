@@ -21,8 +21,3 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
     CONSTRAINT fk_parent_comment FOREIGN KEY (parent_id) REFERENCES comment(id)
 );
 
--- Вставка тестовых данных в таблицу comment
-INSERT INTO comment (comment_type, author_id, post_id, comment_text)
-VALUES ('TEXT', 'e61e54d7-3f0e-4bf2-b7d3-24663f35e506'::uuid, 1, 'This is a comment on the first post'),
-       ('TEXT', 'e61e54d7-3f0e-4bf2-b7d3-24663f35e506'::uuid, 2, 'Another comment on the second post');
-
