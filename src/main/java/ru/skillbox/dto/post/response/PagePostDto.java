@@ -45,11 +45,11 @@ public class PagePostDto {
         private boolean isDeleted;
         private int commentsCount;
         private List<TagDto> tags;
-        private ReactionInfoDto reactionsInfo; // Вся информация о реакциях и лайках в одном объекте
-//        private int likeAmount;
-//        private boolean myLike;
-//        private String myReaction;
-//        private List<ReactionType> reactionType;
+        //private ReactionInfoDto reactionsInfo; // Вся информация о реакциях и лайках в одном объекте
+        private boolean myLike;
+        private String myReaction;
+        private int likeAmount;
+        private List<ReactionType> reactionType;
         private String imagePath;
         private LocalDateTime publishDate;
     }
