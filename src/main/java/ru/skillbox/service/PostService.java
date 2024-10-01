@@ -13,6 +13,7 @@ import ru.skillbox.exception.PostNotFoundException;
 import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
+import ru.skillbox.model.ReactionType;
 import ru.skillbox.model.Tag;
 import ru.skillbox.repository.PostRepository;
 import ru.skillbox.repository.PostSpecification;
@@ -85,22 +86,69 @@ public class PostService {
         pagePostDto.setEmpty(postPage.isEmpty());
 
         // Маппим Post в PostContent
+//        List<PagePostDto.PostContent> content = postPage.getContent().stream().map(post -> {
+//            post.updateCommentsCount();
+//            post.updateLikeAmount();
+////            boolean isMyLike = post.getLikes().stream()
+////                    .anyMatch(likePost -> likePost.getAuthorId().equals(currentUserId));
+//
+//            Optional<LikePost> myReaction = post.getLikes().stream()
+//                    .filter(likePost -> likePost.getAuthorId().equals(currentUserId))
+//                    .findFirst();
+//
+//            // Сбор статистики по реакциям
+//            Map<String, Long> reactionTypeCounts = post.getLikes().stream()
+//                    .collect(Collectors.groupingBy(LikePost::getReactionType, Collectors.counting()));
+//
+//            List<ReactionTypeDto> reactionTypeDtos = reactionTypeCounts.entrySet().stream()
+//                    .map(entry -> new ReactionTypeDto(entry.getKey(), entry.getValue()))
+//                    .collect(Collectors.toList());
+//
+//            return new PagePostDto.PostContent(
+//                    post.getId(),
+//                    post.getTime(),
+//                    post.getTimeChanged(),
+//                    post.getAuthorId(),
+//                    post.getTitle(),
+//                    post.getType(),//"POSTED",
+//                    post.getPostText(),
+//                    post.isBlocked(),
+//                    post.isDeleted(),
+//                    post.getCommentsCount(),
+//                    post.getTags().stream()
+//                            .map(tag -> {
+//                                TagDto tagDto = new TagDto();
+//                                tagDto.setName(tag.getName());
+//                                return tagDto;
+//                            })
+//                            .collect(Collectors.toList()),
+//                    post.getLikeAmount(),
+//                    //isMyLike,
+//                    myReaction.isPresent(),
+//                    myReaction.map(LikePost::getReactionType).orElse(null),
+//                    reactionTypeDtos,
+//                    post.getImagePath(),
+//                    post.getPublishDate()
+//            );
+//        }).collect(Collectors.toList());
         List<PagePostDto.PostContent> content = postPage.getContent().stream().map(post -> {
             post.updateCommentsCount();
             post.updateLikeAmount();
-//            boolean isMyLike = post.getLikes().stream()
-//                    .anyMatch(likePost -> likePost.getAuthorId().equals(currentUserId));
 
-            Optional<LikePost> myReaction = post.getLikes().stream()
+            // Получаем реакцию текущего пользователя
+            Optional<LikePost> myLikePost = post.getLikes().stream()
                     .filter(likePost -> likePost.getAuthorId().equals(currentUserId))
                     .findFirst();
 
-            // Сбор статистики по реакциям
-            Map<String, Long> reactionTypeCounts = post.getLikes().stream()
-                    .collect(Collectors.groupingBy(LikePost::getReactionType, Collectors.counting()));
+            // Определяем тип реакции, если лайк есть
+            String myReaction = myLikePost.map(LikePost::getReactionType).orElse(null);
+            boolean isMyLike = myLikePost.isPresent();
 
-            List<ReactionTypeDto> reactionTypeDtos = reactionTypeCounts.entrySet().stream()
-                    .map(entry -> new ReactionTypeDto(entry.getKey(), entry.getValue()))
+            // Формируем список реакций
+            List<ReactionType> reactionTypes = post.getLikes().stream()
+                    .collect(Collectors.groupingBy(LikePost::getReactionType, Collectors.counting()))
+                    .entrySet().stream()
+                    .map(entry -> new ReactionType(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
 
             return new PagePostDto.PostContent(
@@ -109,23 +157,18 @@ public class PostService {
                     post.getTimeChanged(),
                     post.getAuthorId(),
                     post.getTitle(),
-                    post.getType(),//"POSTED",
+                    post.getType(),
                     post.getPostText(),
                     post.isBlocked(),
                     post.isDeleted(),
                     post.getCommentsCount(),
                     post.getTags().stream()
-                            .map(tag -> {
-                                TagDto tagDto = new TagDto();
-                                tagDto.setName(tag.getName());
-                                return tagDto;
-                            })
+                            .map(tag -> new TagDto(tag.getName()))
                             .collect(Collectors.toList()),
                     post.getLikeAmount(),
-                    //isMyLike,
-                    myReaction.isPresent(),
-                    myReaction.map(LikePost::getReactionType).orElse(null),
-                    reactionTypeDtos,
+                    isMyLike,
+                    myReaction, // Добавляем реакцию пользователя
+                    reactionTypes, // Добавляем список реакций
                     post.getImagePath(),
                     post.getPublishDate()
             );
