@@ -1,4 +1,4 @@
-package ru.skillbox.dto.likePost;
+package ru.skillbox.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

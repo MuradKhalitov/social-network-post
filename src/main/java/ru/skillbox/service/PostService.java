@@ -114,7 +114,6 @@ public class PostService {
                     post.isBlocked(),
                     post.isDeleted(),
                     post.getCommentsCount(),
-                    //post.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
                     post.getTags().stream()
                             .map(tag -> {
                                 TagDto tagDto = new TagDto();
@@ -127,7 +126,6 @@ public class PostService {
                     myReaction.isPresent(),
                     myReaction.map(LikePost::getReactionType).orElse(null),
                     reactionTypeDtos,
-
                     post.getImagePath(),
                     post.getPublishDate()
             );
