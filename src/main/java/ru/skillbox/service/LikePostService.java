@@ -36,32 +36,60 @@ public class LikePostService {
         this.currentUsers = currentUsers;
     }
 
-    public void createLikePost(Long postId, AddReactionDto addReactionDto) {
-        UUID currentUserId = currentUsers.getCurrentUserId();
-        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
-        if (!existingLike.isPresent()) {
-            Post post = postRepository.findById(postId)
-                    .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
-            LikePost likePost = new LikePost();
-            likePost.setPost(post);
-            likePost.setAuthorId(currentUserId);
-            likePost.setReactionType(addReactionDto.getReactionType());
-            likePost.setCreatedAt(LocalDateTime.now());
-            log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
-            likePostRepository.save(likePost);
+//    public void createLikePost(Long postId, AddReactionDto addReactionDto) {
+//        UUID currentUserId = currentUsers.getCurrentUserId();
+//        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
+//        if (!existingLike.isPresent()) {
+//            Post post = postRepository.findById(postId)
+//                    .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
+//            LikePost likePost = new LikePost();
+//            likePost.setPost(post);
+//            likePost.setAuthorId(currentUserId);
+//            likePost.setReactionType(addReactionDto.getReactionType());
+//            likePost.setCreatedAt(LocalDateTime.now());
+//            log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
+//            likePostRepository.save(likePost);
+//        } else {
+//            LikePost oldLike = existingLike.get();
+//            oldLike.setReactionType(addReactionDto.getReactionType());
+//            likePostRepository.save(oldLike);
+//        }
+//    }
+public void createLikePost(Long postId, AddReactionDto addReactionDto) {
+    UUID currentUserId = currentUsers.getCurrentUserId();
+
+    Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
+
+    Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
+
+    if (existingLike.isPresent()) {
+        LikePost oldLike = existingLike.get();
+
+        if (oldLike.getReactionType().equals(addReactionDto.getReactionType())) {
+            likePostRepository.delete(oldLike); // Удаляем лайк
+            log.info("Пользователь: {}, удалил like с поста: {}", currentUserId, postId);
         } else {
-            LikePost oldLike = existingLike.get();
             oldLike.setReactionType(addReactionDto.getReactionType());
             likePostRepository.save(oldLike);
+            log.info("Пользователь: {}, изменил реакцию на пост: {}", currentUserId, postId);
         }
+    } else {
+        LikePost likePost = new LikePost();
+        likePost.setPost(post);
+        likePost.setAuthorId(currentUserId);
+        likePost.setReactionType(addReactionDto.getReactionType());
+        likePost.setCreatedAt(LocalDateTime.now());
+        likePostRepository.save(likePost);
+        log.info("Пользователь: {}, добавил новую реакцию к посту: {}", currentUserId, postId);
     }
+}
 
     public void deleteLikePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
         if (existingLike.isPresent()) {
             Post post = postRepository.findById(postId).get();
-            //post.setLikeAmount(post.getLikeAmount() - 1);
             likePostRepository.deleteById(existingLike.get().getId());
         }
 
