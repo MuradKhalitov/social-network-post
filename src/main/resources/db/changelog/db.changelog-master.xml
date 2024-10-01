@@ -11,4 +11,5 @@
     <include file="db/changelog/004-create-like_comment-table.sql"/>
     <include file="db/changelog/005-create-tag-table.sql"/>
     <include file="db/changelog/006-create-post_tags-table.sql"/>
+    <include file="db/changelog/007-add-columns-to-like_post.sql"/>
 </databaseChangeLog>
