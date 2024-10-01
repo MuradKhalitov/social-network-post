@@ -145,7 +145,7 @@ public class PostService {
             boolean isMyLike = myLikePost.isPresent();
 
             // Формируем список реакций
-            List<ReactionType> reactionTypes = post.getLikes().stream()
+            List<ReactionType> reactionType = post.getLikes().stream()
                     .collect(Collectors.groupingBy(LikePost::getReactionType, Collectors.counting()))
                     .entrySet().stream()
                     .map(entry -> new ReactionType(entry.getKey(), entry.getValue()))
@@ -168,7 +168,7 @@ public class PostService {
                     post.getLikeAmount(),
                     isMyLike,
                     myReaction, // Добавляем реакцию пользователя
-                    reactionTypes, // Добавляем список реакций
+                    reactionType, // Добавляем список реакций
                     post.getImagePath(),
                     post.getPublishDate()
             );

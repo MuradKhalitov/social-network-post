@@ -4,8 +4,6 @@ import lombok.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.skillbox.dto.TagDto;
-import ru.skillbox.dto.likePost.AddReactionDto;
-import ru.skillbox.dto.likePost.ReactionTypeDto;
 import ru.skillbox.model.ReactionType;
 
 import java.time.LocalDateTime;
@@ -49,7 +47,7 @@ public class PagePostDto {
         private int likeAmount;
         private boolean myLike;
         private String myReaction;
-        private List<ReactionType> reactionTypes;
+        private List<ReactionType> reactionType;
         private String imagePath;
         private LocalDateTime publishDate;
     }
