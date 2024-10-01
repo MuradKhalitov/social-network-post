@@ -1,17 +1,18 @@
 package ru.skillbox.dto.post.response;
 
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.skillbox.dto.TagDto;
+import ru.skillbox.dto.likePost.AddReactionDto;
+import ru.skillbox.dto.likePost.ReactionTypeDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PagePostDto {
@@ -28,7 +29,8 @@ public class PagePostDto {
     private Pageable pageable;
     private boolean empty;
 
-    @Data
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostContent {
@@ -45,6 +47,8 @@ public class PagePostDto {
         private List<TagDto> tags;
         private int likeAmount;
         private boolean myLike;
+        private String myReaction;
+        private List<ReactionTypeDto> reactionTypes;
         private String imagePath;
         private LocalDateTime publishDate;
     }

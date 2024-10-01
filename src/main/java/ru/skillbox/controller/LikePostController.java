@@ -3,7 +3,7 @@ package ru.skillbox.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.dto.likePost.LikePostDto;
+import ru.skillbox.dto.likePost.AddReactionDto;
 import ru.skillbox.service.LikePostService;
 
 @RestController
@@ -19,8 +19,8 @@ public class LikePostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createLike(@PathVariable Long id) {
-        likePostService.createLikePost(id);
+    public void createLike(@PathVariable Long id, @RequestBody AddReactionDto addReactionDto) {
+        likePostService.createLikePost(id, addReactionDto);
     }
 
     @DeleteMapping

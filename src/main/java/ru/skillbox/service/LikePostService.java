@@ -3,8 +3,7 @@ package ru.skillbox.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.skillbox.dto.likePost.LikePostDto;
-import ru.skillbox.exception.LikePostNotFoundException;
+import ru.skillbox.dto.likePost.AddReactionDto;
 import ru.skillbox.exception.PostNotFoundException;
 import ru.skillbox.mapper.LikePostMapper;
 import ru.skillbox.mapper.PostMapper;
@@ -14,6 +13,7 @@ import ru.skillbox.repository.LikePostRepository;
 import ru.skillbox.repository.PostRepository;
 import ru.skillbox.util.CurrentUsers;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,18 +36,23 @@ public class LikePostService {
         this.currentUsers = currentUsers;
     }
 
-    public void createLikePost(Long postId) {
+    public void createLikePost(Long postId, AddReactionDto addReactionDto) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
         if (!existingLike.isPresent()) {
-            LikePost likePost = new LikePost();
             Post post = postRepository.findById(postId)
                     .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
-            //post.setLikeAmount(post.getLikeAmount() + 1);
+            LikePost likePost = new LikePost();
             likePost.setPost(post);
             likePost.setAuthorId(currentUserId);
+            likePost.setReactionType(addReactionDto.getReactionType());
+            likePost.setCreatedAt(LocalDateTime.now());
             log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
             likePostRepository.save(likePost);
+        } else {
+            LikePost oldLike = existingLike.get();
+            oldLike.setReactionType(addReactionDto.getReactionType());
+            likePostRepository.save(oldLike);
         }
     }
 

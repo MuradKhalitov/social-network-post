@@ -3,12 +3,15 @@ package ru.skillbox.service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.TagDto;
+import ru.skillbox.dto.likePost.AddReactionDto;
+import ru.skillbox.dto.likePost.ReactionTypeDto;
 import ru.skillbox.dto.post.request.PostDto;
 import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.dto.post.response.PagePostDto;
 import ru.skillbox.exception.AccessDeniedException;
 import ru.skillbox.exception.PostNotFoundException;
 import ru.skillbox.mapper.PostMapper;
+import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
 import ru.skillbox.model.Tag;
 import ru.skillbox.repository.PostRepository;
@@ -21,9 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,8 +88,20 @@ public class PostService {
         List<PagePostDto.PostContent> content = postPage.getContent().stream().map(post -> {
             post.updateCommentsCount();
             post.updateLikeAmount();
-            boolean isMyLike = post.getLikes().stream()
-                    .anyMatch(likePost -> likePost.getAuthorId().equals(currentUserId));
+//            boolean isMyLike = post.getLikes().stream()
+//                    .anyMatch(likePost -> likePost.getAuthorId().equals(currentUserId));
+
+            Optional<LikePost> myReaction = post.getLikes().stream()
+                    .filter(likePost -> likePost.getAuthorId().equals(currentUserId))
+                    .findFirst();
+
+            // Сбор статистики по реакциям
+            Map<String, Long> reactionTypeCounts = post.getLikes().stream()
+                    .collect(Collectors.groupingBy(LikePost::getReactionType, Collectors.counting()));
+
+            List<ReactionTypeDto> reactionTypeDtos = reactionTypeCounts.entrySet().stream()
+                    .map(entry -> new ReactionTypeDto(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
 
             return new PagePostDto.PostContent(
                     post.getId(),
@@ -110,7 +123,11 @@ public class PostService {
                             })
                             .collect(Collectors.toList()),
                     post.getLikeAmount(),
-                    isMyLike,
+                    //isMyLike,
+                    myReaction.isPresent(),
+                    myReaction.map(LikePost::getReactionType).orElse(null),
+                    reactionTypeDtos,
+
                     post.getImagePath(),
                     post.getPublishDate()
             );

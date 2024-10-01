@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -20,5 +21,9 @@ public class LikePost {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+    @Column(name = "reaction_type")
+    private String reactionType;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }
 
