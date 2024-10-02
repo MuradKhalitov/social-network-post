@@ -32,7 +32,7 @@ public class PostSpecification {
 
             // Фильтрация по автору (authorId как строка)
             if (postSearchDto.getAuthor() != null && !postSearchDto.getAuthor().isEmpty()) {
-                predicates.add(cb.like(cb.lower(root.get("authorId").as(String.class)), "%" + postSearchDto.getAuthor().toLowerCase() + "%"));
+                predicates.add(cb.like(cb.lower(root.get("author").as(String.class)), "%" + postSearchDto.getAuthor().toLowerCase() + "%"));
             }
 
             // Фильтрация по заголовку
@@ -62,14 +62,14 @@ public class PostSpecification {
                 predicates.add(cb.equal(root.get("isDeleted"), postSearchDto.getIsDeleted()));
             }
 
-           //  Фильтрация по полю "с друзьями" (withFriends)
-//            if (postSearchDto.getWithFriends() != null) {
-//                // Предполагается, что в сущности Post есть поле, отражающее связь с друзьями
-//                // Например, проверка на автора из списка друзей:
-//                if (postSearchDto.getWithFriends()) {
-//                    predicates.add(cb.isTrue(root.get("authorId").get("isFriend")));
-//                }
-//            }
+             //Фильтрация по полю "с друзьями" (withFriends)
+            if (postSearchDto.getWithFriends() != null) {
+                // Предполагается, что в сущности Post есть поле, отражающее связь с друзьями
+                // Например, проверка на автора из списка друзей:
+                if (postSearchDto.getWithFriends()) {
+                    predicates.add(cb.isTrue(root.get("authorId").get("isFriend")));
+                }
+            }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };

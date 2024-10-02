@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReactionDto {
-    private String reactionType; // Тип реакции (например, "heart", "funny")
-    private int count;           // Количество таких реакций
+    private String reactionType;
+    private int count;
 }

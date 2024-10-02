@@ -36,25 +36,6 @@ public class LikePostService {
         this.currentUsers = currentUsers;
     }
 
-//    public void createLikePost(Long postId, AddReactionDto addReactionDto) {
-//        UUID currentUserId = currentUsers.getCurrentUserId();
-//        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
-//        if (!existingLike.isPresent()) {
-//            Post post = postRepository.findById(postId)
-//                    .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
-//            LikePost likePost = new LikePost();
-//            likePost.setPost(post);
-//            likePost.setAuthorId(currentUserId);
-//            likePost.setReactionType(addReactionDto.getReactionType());
-//            likePost.setCreatedAt(LocalDateTime.now());
-//            log.info("Пользователь: {}, добавил like к посту: {}", currentUserId, post.getId());
-//            likePostRepository.save(likePost);
-//        } else {
-//            LikePost oldLike = existingLike.get();
-//            oldLike.setReactionType(addReactionDto.getReactionType());
-//            likePostRepository.save(oldLike);
-//        }
-//    }
 public void createLikePost(Long postId, AddReactionDto addReactionDto) {
     UUID currentUserId = currentUsers.getCurrentUserId();
 
