@@ -63,13 +63,13 @@ public class PostSpecification {
             }
 
              //Фильтрация по полю "с друзьями" (withFriends)
-            if (postSearchDto.getWithFriends() != null) {
-                // Предполагается, что в сущности Post есть поле, отражающее связь с друзьями
-                // Например, проверка на автора из списка друзей:
-                if (postSearchDto.getWithFriends()) {
-                    predicates.add(cb.isTrue(root.get("authorId").get("isFriend")));
-                }
-            }
+//            if (postSearchDto.getWithFriends() != null) {
+//                // Предполагается, что в сущности Post есть поле, отражающее связь с друзьями
+//                // Например, проверка на автора из списка друзей:
+//                if (postSearchDto.getWithFriends()) {
+//                    predicates.add(cb.isTrue(root.get("authorId").get("isFriend")));
+//                }
+//            }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
