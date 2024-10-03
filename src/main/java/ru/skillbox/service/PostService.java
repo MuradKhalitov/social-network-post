@@ -58,7 +58,7 @@ public class PostService {
             tags.add(tag);
         }
         if (post.getPublishDate() == null) {
-            post.setPublishDate(LocalDateTime.now());
+            post.setPublishDate(LocalDateTime.now().plusHours(3));
             post.setType("POSTED");
         }
         post.setTags(tags);
@@ -104,7 +104,7 @@ public class PostService {
                     .collect(Collectors.toList());
             
             // Проверка даты публикации и обновление типа поста, если тип еще не "POSTED"
-            if (!"POSTED".equals(post.getType()) && post.getPublishDate() != null && post.getPublishDate().isBefore(LocalDateTime.now())) {
+            if (!"POSTED".equals(post.getType()) && post.getPublishDate() != null && post.getPublishDate().isBefore(LocalDateTime.now().plusHours(3))) {
                 post.setType("POSTED");
                 postRepository.save(post);
             }
