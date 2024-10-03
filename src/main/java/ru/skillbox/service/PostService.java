@@ -102,6 +102,12 @@ public class PostService {
                     .entrySet().stream()
                     .map(entry -> new ReactionType(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
+            
+            // Проверка даты публикации и обновление типа поста, если тип еще не "POSTED"
+            if (!"POSTED".equals(post.getType()) && post.getPublishDate() != null && post.getPublishDate().isBefore(LocalDateTime.now())) {
+                post.setType("POSTED");
+                postRepository.save(post);
+            }
 
             return new PagePostDto.PostContent(
                     post.getId(),
