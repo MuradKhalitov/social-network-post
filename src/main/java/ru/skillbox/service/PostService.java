@@ -148,21 +148,62 @@ public class PostService {
         return postMapper.convertToDTO(post);
     }
 
-    @Transactional
-    public PostDto updatePost(PostDto updatePostDto) {
-        UUID currentUserId = currentUsers.getCurrentUserId();
-        Post updatedPost = postRepository.findById(updatePostDto.getId())
-                .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + "not found"));
-        UUID updatedPostAuthor = updatedPost.getAuthorId();
-        if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
-            updatedPost.setTitle(updatePostDto.getTitle());
-            updatedPost.setPostText(updatePostDto.getPostText());
-            updatedPost.setImagePath(updatePostDto.getImagePath());
-            return postMapper.convertToDTO(postRepository.save(updatedPost));
-        } else {
-            throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
-        }
+//    @Transactional
+//    public PostDto updatePost(PostDto updatePostDto) {
+//        UUID currentUserId = currentUsers.getCurrentUserId();
+//        Post updatedPost = postRepository.findById(updatePostDto.getId())
+//                .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + "not found"));
+//        UUID updatedPostAuthor = updatedPost.getAuthorId();
+//        if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+//            updatedPost.setTitle(updatePostDto.getTitle());
+//            updatedPost.setPostText(updatePostDto.getPostText());
+//            updatedPost.setImagePath(updatePostDto.getImagePath());
+//            return postMapper.convertToDTO(postRepository.save(updatedPost));
+//        } else {
+//            throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
+//        }
+//    }
+@Transactional
+public PostDto updatePost(PostDto updatePostDto) {
+    UUID currentUserId = currentUsers.getCurrentUserId();
+    Post updatedPost = postRepository.findById(updatePostDto.getId())
+            .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + " not found"));
+    UUID updatedPostAuthor = updatedPost.getAuthorId();
+
+    if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+        updatedPost.setTitle(updatePostDto.getTitle());
+        updatedPost.setPostText(updatePostDto.getPostText());
+        updatedPost.setImagePath(updatePostDto.getImagePath());
+
+        List<Tag> existingTags = updatedPost.getTags();
+
+        Set<Tag> newTags = updatePostDto.getTags().stream()
+                .map(tagDto -> tagRepository.findByName(tagDto.getName())
+                        .orElseGet(() -> {
+                            Tag newTag = new Tag();
+                            newTag.setName(tagDto.getName());
+                            return tagRepository.save(newTag);
+                        }))
+                .collect(Collectors.toSet());
+
+        existingTags.removeIf(tag -> !newTags.contains(tag));
+
+        newTags.forEach(tag -> {
+            if (!existingTags.contains(tag)) {
+                existingTags.add(tag);
+            }
+        });
+
+        updatedPost.setTags(existingTags);
+
+        return postMapper.convertToDTO(postRepository.save(updatedPost));
+    } else {
+        throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
     }
+}
+
+
+
 
     public void deletePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();

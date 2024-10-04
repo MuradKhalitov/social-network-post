@@ -15,7 +15,7 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String name;
     @ManyToMany(mappedBy = "tags")
     private List<Post> posts;
