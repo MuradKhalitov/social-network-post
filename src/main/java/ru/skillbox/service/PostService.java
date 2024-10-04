@@ -43,30 +43,6 @@ public class PostService {
         this.currentUsers = currentUsers;
     }
 
-    public PostDto createPost(PostDto postDto) {
-        Post post = postMapper.convertToEntity(postDto);
-        UUID currentUserId = currentUsers.getCurrentUserId();
-        post.setAuthorId(currentUserId);
-        List<Tag> tags = new ArrayList<>();
-        for (TagDto tagName : postDto.getTags()) {
-            Tag tag = tagRepository.findByName(tagName.getName())
-                    .orElseGet(() -> {
-                        Tag newTag = new Tag();
-                        newTag.setName(tagName.getName());
-                        return newTag;
-                    });
-            tags.add(tag);
-        }
-        if (post.getPublishDate() == null) {
-            post.setPublishDate(LocalDateTime.now().plusHours(3));
-            post.setType("POSTED");
-        }
-        post.setTags(tags);
-        Post createdPost = postRepository.save(post);
-        log.info("Пользователь: {}, добавил новость", currentUserId);
-        return postMapper.convertToDTO(createdPost);
-    }
-
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
@@ -102,7 +78,7 @@ public class PostService {
                     .entrySet().stream()
                     .map(entry -> new ReactionType(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
-            
+
             // Проверка даты публикации и обновление типа поста, если тип еще не "POSTED"
             if (!"POSTED".equals(post.getType()) && post.getPublishDate() != null && post.getPublishDate().isBefore(LocalDateTime.now().plusHours(3))) {
                 post.setType("POSTED");
@@ -148,62 +124,68 @@ public class PostService {
         return postMapper.convertToDTO(post);
     }
 
-//    @Transactional
-//    public PostDto updatePost(PostDto updatePostDto) {
-//        UUID currentUserId = currentUsers.getCurrentUserId();
-//        Post updatedPost = postRepository.findById(updatePostDto.getId())
-//                .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + "not found"));
-//        UUID updatedPostAuthor = updatedPost.getAuthorId();
-//        if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
-//            updatedPost.setTitle(updatePostDto.getTitle());
-//            updatedPost.setPostText(updatePostDto.getPostText());
-//            updatedPost.setImagePath(updatePostDto.getImagePath());
-//            return postMapper.convertToDTO(postRepository.save(updatedPost));
-//        } else {
-//            throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
-//        }
-//    }
-@Transactional
-public PostDto updatePost(PostDto updatePostDto) {
-    UUID currentUserId = currentUsers.getCurrentUserId();
-    Post updatedPost = postRepository.findById(updatePostDto.getId())
-            .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + " not found"));
-    UUID updatedPostAuthor = updatedPost.getAuthorId();
-
-    if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
-        updatedPost.setTitle(updatePostDto.getTitle());
-        updatedPost.setPostText(updatePostDto.getPostText());
-        updatedPost.setImagePath(updatePostDto.getImagePath());
-
-        List<Tag> existingTags = updatedPost.getTags();
-
-        Set<Tag> newTags = updatePostDto.getTags().stream()
-                .map(tagDto -> tagRepository.findByName(tagDto.getName())
-                        .orElseGet(() -> {
-                            Tag newTag = new Tag();
-                            newTag.setName(tagDto.getName());
-                            return tagRepository.save(newTag);
-                        }))
-                .collect(Collectors.toSet());
-
-        existingTags.removeIf(tag -> !newTags.contains(tag));
-
-        newTags.forEach(tag -> {
-            if (!existingTags.contains(tag)) {
-                existingTags.add(tag);
-            }
-        });
-
-        updatedPost.setTags(existingTags);
-
-        return postMapper.convertToDTO(postRepository.save(updatedPost));
-    } else {
-        throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
+    public PostDto createPost(PostDto postDto) {
+        Post post = postMapper.convertToEntity(postDto);
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        post.setAuthorId(currentUserId);
+        List<Tag> tags = new ArrayList<>();
+        for (TagDto tagName : postDto.getTags()) {
+            Tag tag = tagRepository.findByName(tagName.getName())
+                    .orElseGet(() -> {
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName.getName());
+                        return newTag;
+                    });
+            tags.add(tag);
+        }
+        if (post.getPublishDate() == null) {
+            post.setPublishDate(LocalDateTime.now().plusHours(3));
+            post.setType("POSTED");
+        }
+        post.setTags(tags);
+        Post createdPost = postRepository.save(post);
+        log.info("Пользователь: {}, добавил новость", currentUserId);
+        return postMapper.convertToDTO(createdPost);
     }
-}
 
+    @Transactional
+    public PostDto updatePost(PostDto updatePostDto) {
+        UUID currentUserId = currentUsers.getCurrentUserId();
+        Post updatedPost = postRepository.findById(updatePostDto.getId())
+                .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + " not found"));
+        UUID updatedPostAuthor = updatedPost.getAuthorId();
 
+        if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
+            updatedPost.setTitle(updatePostDto.getTitle());
+            updatedPost.setPostText(updatePostDto.getPostText());
+            updatedPost.setImagePath(updatePostDto.getImagePath());
 
+            List<Tag> existingTags = updatedPost.getTags();
+
+            Set<Tag> newTags = updatePostDto.getTags().stream()
+                    .map(tagDto -> tagRepository.findByName(tagDto.getName())
+                            .orElseGet(() -> {
+                                Tag newTag = new Tag();
+                                newTag.setName(tagDto.getName());
+                                return tagRepository.save(newTag);
+                            }))
+                    .collect(Collectors.toSet());
+
+            existingTags.removeIf(tag -> !newTags.contains(tag));
+
+            newTags.forEach(tag -> {
+                if (!existingTags.contains(tag)) {
+                    existingTags.add(tag);
+                }
+            });
+
+            updatedPost.setTags(existingTags);
+
+            return postMapper.convertToDTO(postRepository.save(updatedPost));
+        } else {
+            throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
+        }
+    }
 
     public void deletePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
