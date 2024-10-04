@@ -1,7 +1,6 @@
 package ru.skillbox.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.skillbox.dto.comment.request.CommentDto;
-import ru.skillbox.dto.comment.response.PageCommentDto;
 import ru.skillbox.model.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
