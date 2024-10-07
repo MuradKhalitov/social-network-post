@@ -68,9 +68,10 @@ public void createLikePost(Long postId, AddReactionDto addReactionDto) {
 
     public void deleteLikePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
         if (existingLike.isPresent()) {
-            Post post = postRepository.findById(postId).get();
             likePostRepository.deleteById(existingLike.get().getId());
         }
 

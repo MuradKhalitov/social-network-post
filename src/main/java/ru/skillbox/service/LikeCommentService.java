@@ -37,11 +37,11 @@ public class LikeCommentService {
 
     public void createLikeComment(Long commentId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
         Optional<LikeComment> existingLike = likeCommentRepository.findByCommentIdAndAuthorId(commentId, currentUserId);
         if (!existingLike.isPresent()) {
             LikeComment likeComment = new LikeComment();
-            Comment comment = commentRepository.findById(commentId)
-                    .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
             likeComment.setComment(comment);
             likeComment.setAuthorId(currentUserId);
             log.info("Пользователь: {}, добавил like к комментарию: {}", currentUserId, comment.getId());
@@ -51,10 +51,12 @@ public class LikeCommentService {
 
     public void deleteLikeComment(Long commentId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
         Optional<LikeComment> existingLike = likeCommentRepository.findByCommentIdAndAuthorId(commentId, currentUserId);
         if (existingLike.isPresent()) {
-            Comment comment = commentRepository.findById(commentId).get();
-            likeCommentRepository.deleteById(existingLike.get().getId());
+            likeCommentRepository.deleteById(existingLike.get().getId())
+                    ;
         }
     }
 }

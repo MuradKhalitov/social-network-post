@@ -43,9 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
                 token = headerAuth.substring(7);
             }
-            if (token != null &&
-                    //true){
-                    openFeignClient.validateToken(headerAuth)) {
+            if (token != null && openFeignClient.validateToken(headerAuth)) {
                 String accountId = getIdFromToken(token);
                 if (accountId != null && !accountId.isEmpty()) {
                     List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);

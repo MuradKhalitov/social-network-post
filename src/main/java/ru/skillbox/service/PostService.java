@@ -42,7 +42,6 @@ public class PostService {
         this.postMapper = postMapper;
         this.currentUsers = currentUsers;
     }
-
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
@@ -111,7 +110,6 @@ public class PostService {
         pagePostDto.setContent(content);
         return pagePostDto;
     }
-
     public PostDto getPostById(Long id) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Post post = postRepository.findById(id)
@@ -123,7 +121,6 @@ public class PostService {
         post.setMyLike(isMyLike);
         return postMapper.convertToDTO(post);
     }
-
     public PostDto createPost(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
         UUID currentUserId = currentUsers.getCurrentUserId();
@@ -186,7 +183,6 @@ public class PostService {
             throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
         }
     }
-
     public void deletePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Post deletedPost = postRepository.findById(postId)
