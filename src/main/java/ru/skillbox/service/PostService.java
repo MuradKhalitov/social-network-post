@@ -2,7 +2,6 @@ package ru.skillbox.service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.TagDto;
 import ru.skillbox.dto.kafka.NotificationPost;
@@ -38,16 +37,14 @@ public class PostService {
     private final PostMapper postMapper;
     private final CurrentUsers currentUsers;
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers, KafkaTemplate<String, Object> kafkaTemplate, SimpMessagingTemplate messagingTemplate) {
+    public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers, KafkaTemplate<String, Object> kafkaTemplate) {
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
         this.currentUsers = currentUsers;
         this.kafkaTemplate = kafkaTemplate;
-        this.messagingTemplate = messagingTemplate;
     }
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
@@ -149,6 +146,7 @@ public class PostService {
         post.setTags(tags);
         Post createdPost = postRepository.save(post);
         log.info("Пользователь: {}, добавил новость", currentUserId);
+
         kafkaTemplate.send("notification-topic", NotificationPost.builder()
                 .authorId(post.getAuthorId().toString())
                 .notificationType("POST")
