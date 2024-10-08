@@ -21,6 +21,14 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+  kafka:
+    bootstrap-servers: 89.111.174.153:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: 1
+      retries: 3
+
 
   jpa:
     hibernate:
