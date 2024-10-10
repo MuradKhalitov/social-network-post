@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.TagDto;
+import ru.skillbox.dto.kafka.BotPost;
 import ru.skillbox.dto.kafka.NotificationPost;
 import ru.skillbox.dto.post.request.PostDto;
 import ru.skillbox.dto.post.request.PostSearchDto;
@@ -152,6 +153,13 @@ public class PostService {
                 .notificationType("POST")
                 .content(post.getPostText())
                 .build());
+
+        kafkaTemplate.send("bot-topic", BotPost.builder()
+                .authorId(post.getAuthorId().toString())
+                .title(post.getTitle())
+                .postText(post.getPostText())
+                .build());
+
         return postMapper.convertToDTO(createdPost);
     }
 
