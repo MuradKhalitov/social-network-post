@@ -1,6 +1,5 @@
 package ru.skillbox.config;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -22,7 +21,6 @@ public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
-
 
     @Bean
     public ProducerFactory<String, Object> producerFactory(ObjectMapper objectMapper) {
