@@ -3,6 +3,8 @@ package ru.skillbox.service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skillbox.client.AccountFeignClient;
+import ru.skillbox.dto.AccountDto;
 import ru.skillbox.dto.TagDto;
 import ru.skillbox.dto.kafka.BotPost;
 import ru.skillbox.dto.kafka.NotificationPost;
@@ -38,14 +40,16 @@ public class PostService {
     private final PostMapper postMapper;
     private final CurrentUsers currentUsers;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final AccountFeignClient accountFeignClient;
 
     @Autowired
-    public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers, KafkaTemplate<String, Object> kafkaTemplate) {
+    public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers, KafkaTemplate<String, Object> kafkaTemplate, AccountFeignClient accountFeignClient) {
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
         this.currentUsers = currentUsers;
         this.kafkaTemplate = kafkaTemplate;
+        this.accountFeignClient = accountFeignClient;
     }
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
@@ -149,13 +153,18 @@ public class PostService {
         log.info("Пользователь: {}, добавил новость", currentUserId);
 
         kafkaTemplate.send("notification-topic", NotificationPost.builder()
-                .authorId(post.getAuthorId().toString())
+                .authorId(currentUserId.toString())
                 .notificationType("POST")
                 .content(post.getPostText())
                 .build());
 
+        AccountDto accountDto = accountFeignClient.getAccountById(currentUserId);
+        String fullName = accountDto.getFirstName() + " " + accountDto.getLastName();
+
+        System.out.println(fullName);
+
         kafkaTemplate.send("bot-topic", BotPost.builder()
-                .authorId(post.getAuthorId().toString())
+                .authorName(fullName)
                 .title(post.getTitle())
                 .postText(post.getPostText())
                 .build());

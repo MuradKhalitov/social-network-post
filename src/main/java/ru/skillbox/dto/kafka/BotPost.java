@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class BotPost {
-    private String authorId;
+    private String authorName;
     private String title;
     private String postText;
 }

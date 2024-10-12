@@ -12,8 +12,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import ru.skillbox.security.JwtAuthenticationEntryPoint;
 import ru.skillbox.security.JwtTokenFilter;
 
-import java.util.List;
-
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration

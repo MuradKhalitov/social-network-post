@@ -40,13 +40,14 @@ class CommentControllerTest extends AbstractTest {
         CommentDto commentDto = new CommentDto();
         commentDto.setCommentText("Тестовый комментарий");
 
-        when(commentService.createPostComment(any(Long.class), any(CommentDto.class)))
-                .thenReturn(commentDto);
+//        when(commentService.createPostComment(any(Long.class), any(CommentDto.class)))
+//                .thenReturn(commentDto);
 
         mockMvc.perform(post(BASE_URL + postId + "/comment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect();
     }
 
     @Test
