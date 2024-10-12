@@ -46,8 +46,7 @@ class CommentControllerTest extends AbstractTest {
         mockMvc.perform(post(BASE_URL + postId + "/comment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDto)))
-                .andExpect(status().isCreated())
-                .andExpect();
+                .andExpect(status().isCreated());
     }
 
     @Test
