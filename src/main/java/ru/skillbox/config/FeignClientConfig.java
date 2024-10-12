@@ -13,25 +13,19 @@ public class FeignClientConfig {
 
     @Bean
     public RequestInterceptor requestInterceptor() {
-        return new RequestInterceptor() {
-            @Override
-            public void apply(RequestTemplate requestTemplate) {
-                // Получаем текущую аутентификацию
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return requestTemplate -> {
+            // Получаем текущую аутентификацию
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-                if (authentication != null && authentication.isAuthenticated()) {
-                    // Получаем токен из UserDetails (или иного объекта)
-                    if (authentication.getPrincipal() instanceof User) {
-                        User user = (User) authentication.getPrincipal();
-                        // Например, если токен хранится как имя пользователя (или по-другому)
-                        String token = user.getUsername(); // Здесь зависит от того, как хранится токен
+            if (authentication != null && authentication.isAuthenticated()) {
+                // Получаем токен из credentials
+                String token = (String) authentication.getCredentials();
 
-                        // Добавляем токен в заголовки запроса
-                        requestTemplate.header("Authorization", "Bearer " + token);
-                    }
-                }
+                // Добавляем токен в заголовки запроса
+                requestTemplate.header("Authorization", "Bearer " + token);
             }
         };
     }
 }
+
 
