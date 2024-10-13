@@ -1,112 +1,214 @@
-package ru.skillbox.controller;
+package ru.skillbox.controller;//package ru.skillbox.controller;
+//
+//import jakarta.servlet.http.HttpServletResponse;
+//import org.junit.jupiter.api.DisplayName;
+//import org.junit.jupiter.api.Test;
+//import org.springframework.http.MediaType;
+//import org.springframework.security.test.context.support.WithMockUser;
+//import ru.skillbox.AbstractTest;
+//import ru.skillbox.client.AccountFeignClient;
+//import ru.skillbox.dto.post.request.PostDto;
+//import ru.skillbox.dto.post.response.PagePostDto;
+//
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+//import static reactor.core.publisher.Mono.when;
+//
+//class PostControllerTest extends AbstractTest {
+//
+//    @Test
+//    @DisplayName("GetPostById, should return 200")
+//    @WithMockUser(username = AUTHOR_UUID)
+//    void testGetPostById_shouldReturnOk() throws Exception {
+//        Long id = 1L;
+//
+//        mockMvc.perform(get(BASE_URL + "/{id}", id))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$.id").value(id.intValue()))
+//                .andExpect(jsonPath("$.title").value("Test Post"))
+//                .andExpect(jsonPath("$.authorId").value(AUTHOR_UUID));
+//    }
+//
+//    @Test
+//    @DisplayName("GetPostById, should return 401")
+//    void testGetPostById_shouldReturnUnauthorized() throws Exception {
+//        Long id = 1L;
+//
+//        mockMvc.perform(get(BASE_URL + "/{id}", id))
+//                .andExpect(status().isUnauthorized())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+//                .andExpect(jsonPath("$.error").value("Unauthorized"))
+//                .andExpect(jsonPath("$.message").exists());
+//    }
+//    @Test
+//    @DisplayName("GetPostById, should return 404")
+//    @WithMockUser(username = AUTHOR_UUID)
+//    void testGetAccountById_shouldReturnNotFound() throws Exception {
+//        Long id = 999L;
+//
+//        mockMvc.perform(get(BASE_URL + "/{id}", id))
+//                .andExpect(status().isNotFound());
+//    }
+//
+//    @Test
+//    @WithMockUser(username = AUTHOR_UUID)
+//    void createPost_shouldReturnCreatedStatus() throws Exception {
+//        PostDto postDto = new PostDto();
+//        postDto.setTitle("Test Post");
+//
+//        mockMvc.perform(post(BASE_URL)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(postDto)))
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.id").value(2L))
+//                .andExpect(jsonPath("$.title").value("Test Post"));
+//    }
+//
+//    @Test
+//    @WithMockUser(username = AUTHOR_UUID)
+//    void updatePost_shouldReturnCreatedStatus() throws Exception {
+//        PostDto postDto = new PostDto();
+//        postDto.setTitle("Updated Post");
+//
+//        mockMvc.perform(put(BASE_URL)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(postDto)))
+//                .andExpect(status().isCreated()); // Проверяем только статус
+//    }
+//
+//
+//
+//
+//    @Test
+//    @WithMockUser(username = AUTHOR_UUID)
+//    void deletePost_shouldReturnOkStatus() throws Exception {
+//        Long id = 1L;
+//
+//        mockMvc.perform(delete(BASE_URL + "/{id}", id)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//    }
+//
+//    @Test
+//    @WithMockUser(username = AUTHOR_UUID)
+//    void searchPosts_shouldReturnOkStatus() throws Exception {
+//        PagePostDto pagePostDto = new PagePostDto();
+//        // Здесь можно настроить pagePostDto
+//
+//        mockMvc.perform(get(BASE_URL)
+//                        .param("page", "0")
+//                        .param("size", "10")
+//                        .param("sort", "id,asc")
+//                        .param("isDeleted", "false"))
+//                .andExpect(status().isOk());
+//    }
+//}
 
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.skillbox.AbstractTest;
+import ru.skillbox.client.AccountFeignClient;
+import ru.skillbox.dto.AccountDto;
 import ru.skillbox.dto.post.request.PostDto;
-import ru.skillbox.dto.post.response.PagePostDto;
-import ru.skillbox.service.PostService;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.util.UUID;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 class PostControllerTest extends AbstractTest {
-    @Mock
-    private PostService postService;
-    @InjectMocks
-    private PostController postController;
-    @BeforeEach
-    public void setup() {
-        super.setup();
-        mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
+
+    @MockBean
+    private AccountFeignClient accountFeignClient;
+
+    @Test
+    @DisplayName("GetPostById, should return 200")
+    @WithMockUser(username = AUTHOR_UUID)
+    void testGetPostById_shouldReturnOk() throws Exception {
+        Long id = 1L;
+
+        mockMvc.perform(get(BASE_URL + "/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(id.intValue()))
+                .andExpect(jsonPath("$.title").value("Test Post"))
+                .andExpect(jsonPath("$.authorId").value(AUTHOR_UUID));
     }
 
     @Test
+    @DisplayName("GetPostById, should return 401")
+    void testGetPostById_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+
+        mockMvc.perform(get(BASE_URL + "/{id}", id))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("GetPostById, should return 404")
     @WithMockUser(username = AUTHOR_UUID)
-    void getPostById_shouldReturnPostDto() throws Exception {
-        Long postId = 1L;
+    void testGetPostById_shouldReturnNotFound() throws Exception {
+        Long id = 999L;
 
-        PostDto postDto = new PostDto();
-        postDto.setId(postId);
-        postDto.setTitle("Test Post");
-
-        // Мокаем сервис и задаем поведение
-        when(postService.getPostById(any(Long.class))).thenReturn(postDto);
-
-        mockMvc.perform(get(BASE_URL + postId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(postId))
-                .andExpect(jsonPath("$.title").value("Test Post"));
+        mockMvc.perform(get(BASE_URL + "/{id}", id))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void createPost_shouldReturnCreatedStatus() throws Exception {
-        // Создание DTO для запроса
         PostDto postDto = new PostDto();
         postDto.setTitle("Test Post");
+        postDto.setPostText("This is a test post."); // Добавьте текст поста, если он требуется
 
-        // Mock для postService.createPost
-        when(postService.createPost(any(PostDto.class))).thenAnswer(invocation -> {
-            PostDto result = invocation.getArgument(0);
-            result.setId(1L); // Устанавливаем id для сохраненного поста
-            return result;
-        });
+        when(accountFeignClient.getAccountById(UUID.fromString(AUTHOR_UUID)))
+                .thenReturn(new AccountDto("John", "Doe"));
 
-        // Выполняем POST-запрос
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postDto)))
-                .andExpect(status().isCreated()) // Ожидаем статус 201 Created
-                .andExpect(jsonPath("$.id").value(1L)) // Проверяем, что ID возвращенного поста = 1
-                .andExpect(jsonPath("$.title").value("Test Post")); // Проверяем название поста
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.title").value("Test Post"));
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void updatePost_shouldReturnCreatedStatus() throws Exception {
+        Long id = 1L; // Указываем ID поста для обновления
         PostDto postDto = new PostDto();
+        postDto.setId(id); // Указываем ID поста
         postDto.setTitle("Updated Post");
-
-        // Если метод возвращает PostDto, используйте when:
-        when(postService.updatePost(any(PostDto.class))).thenReturn(postDto);
 
         mockMvc.perform(put(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postDto)))
-                .andExpect(status().isCreated()); // Проверяем только статус
+                .andExpect(status().isCreated());
     }
-
-
-
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void deletePost_shouldReturnOkStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
 
-        mockMvc.perform(delete(BASE_URL + postId)
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(BASE_URL + "/{id}", id))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void searchPosts_shouldReturnOkStatus() throws Exception {
-        PagePostDto pagePostDto = new PagePostDto();
-        // Здесь можно настроить pagePostDto
-
-       when(postService.searchPosts(any(), any())).thenReturn(pagePostDto);
-
         mockMvc.perform(get(BASE_URL)
                         .param("page", "0")
                         .param("size", "10")
@@ -115,3 +217,4 @@ class PostControllerTest extends AbstractTest {
                 .andExpect(status().isOk());
     }
 }
+

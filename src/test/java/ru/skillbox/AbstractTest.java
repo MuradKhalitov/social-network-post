@@ -64,7 +64,7 @@ public class AbstractTest {
     protected ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     protected JdbcTemplate jdbcTemplate;
-    protected static final String BASE_URL = "/api/v1/post/";
+    protected static final String BASE_URL = "/api/v1/post";
     protected static final String AUTHOR_UUID = "10000000-0000-0000-0000-000000000200";
 
 

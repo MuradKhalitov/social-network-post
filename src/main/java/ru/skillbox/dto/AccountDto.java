@@ -32,4 +32,8 @@ public class AccountDto {
     private String photo;
     private LocalDateTime lastOnlineTime;
 
+    public AccountDto(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

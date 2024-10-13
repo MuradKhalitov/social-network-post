@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS post_schema.comment (
     my_like BOOLEAN DEFAULT FALSE,
     comments_count INTEGER DEFAULT 0,
     image_path VARCHAR(255),
-    CONSTRAINT fk_post_comment FOREIGN KEY (post_id) REFERENCES post(id),
-    CONSTRAINT fk_parent_comment FOREIGN KEY (parent_id) REFERENCES comment(id)
+    CONSTRAINT fk_post_comment FOREIGN KEY (post_id) REFERENCES post_schema.post(id) ON DELETE CASCADE,
+    CONSTRAINT fk_parent_comment FOREIGN KEY (parent_id) REFERENCES post_schema.comment(id)
 );
+
 

@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS post_schema.like_post (
     post_id BIGINT,
     reaction_type VARCHAR(20),
     created_at TIMESTAMP,
-    CONSTRAINT fk_post_like_post FOREIGN KEY (post_id) REFERENCES post(id)
+    CONSTRAINT fk_post_like_post FOREIGN KEY (post_id) REFERENCES post_schema.post(id) ON DELETE CASCADE
 );

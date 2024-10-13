@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface PostMapper {
-
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "tags", target = "tags")
     PostDto convertToDTO(Post post);
 
