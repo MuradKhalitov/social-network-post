@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.skillbox.dto.likePost.AddReactionDto;
 import ru.skillbox.exception.PostNotFoundException;
-import ru.skillbox.mapper.LikePostMapper;
-import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
 import ru.skillbox.repository.LikePostRepository;
@@ -22,17 +20,13 @@ import java.util.UUID;
 public class LikePostService {
 
     private final LikePostRepository likePostRepository;
-    private final LikePostMapper likePostMapper;
     private final PostRepository postRepository;
-    private final PostMapper postMapper;
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public LikePostService(LikePostRepository likeRepository, LikePostMapper likeMapper, PostRepository postRepository, PostMapper postMapper, CurrentUsers currentUsers) {
+    public LikePostService(LikePostRepository likeRepository, PostRepository postRepository, CurrentUsers currentUsers) {
         this.likePostRepository = likeRepository;
-        this.likePostMapper = likeMapper;
         this.postRepository = postRepository;
-        this.postMapper = postMapper;
         this.currentUsers = currentUsers;
     }
 

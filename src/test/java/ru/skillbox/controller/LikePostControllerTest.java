@@ -1,5 +1,6 @@
 package ru.skillbox.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -13,54 +14,75 @@ class LikePostControllerTest extends AbstractTest {
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void createLike_shouldReturnCreatedStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
 
-        // Создаем DTO для передачи в тело запроса
         AddReactionDto addReactionDto = new AddReactionDto();
-        addReactionDto.setReactionType("LIKE");  // Пример типа реакции
+        addReactionDto.setReactionType("funny");
 
-        // Преобразуем DTO в JSON
-        String requestBody = objectMapper.writeValueAsString(addReactionDto);
-
-        mockMvc.perform(post(BASE_URL + postId + "/like")
+        mockMvc.perform(post("/api/v1/post/{id}/like", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isCreated());  // Проверяем, что статус ответа CREATED (201)
+                        .content(objectMapper.writeValueAsString(addReactionDto)))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    @WithMockUser(username = AUTHOR_UUID)
-    void deleteLike_shouldReturnCreatedStatus() throws Exception {
-        Long postId = 1L;
+    void createLike_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
 
-        mockMvc.perform(delete(BASE_URL + postId + "/like"))
-                .andExpect(status().isCreated());
+        AddReactionDto addReactionDto = new AddReactionDto();
+        addReactionDto.setReactionType("funny");
+
+        mockMvc.perform(post("/api/v1/post/{id}/like", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addReactionDto)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void createLike_shouldReturnNotFoundStatus_whenPostDoesNotExist() throws Exception {
-        Long postId = 999L;  // Несуществующий пост
+        Long id = 999L;
 
-        // Создаем DTO для передачи в тело запроса
         AddReactionDto addReactionDto = new AddReactionDto();
-        addReactionDto.setReactionType("LIKE");  // Пример типа реакции
+        addReactionDto.setReactionType("funny");
 
-        // Преобразуем DTO в JSON
-        String requestBody = objectMapper.writeValueAsString(addReactionDto);
-
-        mockMvc.perform(post(BASE_URL + postId + "/like")
+        mockMvc.perform(post("/api/v1/post/{id}/like", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isNotFound());  // Ожидаем статус NOT FOUND (404)
+                        .content(objectMapper.writeValueAsString(addReactionDto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void deleteLike_shouldReturnCreatedStatus() throws Exception {
+        Long id = 1L;
+
+        mockMvc.perform(delete("/api/v1/post/{id}/like", id))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void deleteLike_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+
+        mockMvc.perform(delete("/api/v1/post/{id}/like", id))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void deleteLike_shouldReturnNotFoundStatus_whenPostDoesNotExist() throws Exception {
-        Long postId = 999L;  // Несуществующий пост
+        Long id = 999L;
 
-        mockMvc.perform(delete(BASE_URL + postId + "/like"))
-                .andExpect(status().isNotFound());  // Ожидаем статус NOT FOUND (404)
+        mockMvc.perform(delete("/api/v1/post/{id}/like", id))
+                .andExpect(status().isNotFound());
     }
 }

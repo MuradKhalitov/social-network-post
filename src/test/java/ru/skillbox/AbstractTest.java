@@ -95,7 +95,7 @@ public class AbstractTest {
         // Создаем лайк поста
         LikePost likePost = new LikePost();
         likePost.setAuthorId(UUID.fromString(AUTHOR_UUID));
-        likePost.setReactionType("LIKE");
+        likePost.setReactionType("heart");
         likePost.setCreatedAt(LocalDateTime.now());
         likePost.setPost(post);
         likePostRepository.save(likePost);

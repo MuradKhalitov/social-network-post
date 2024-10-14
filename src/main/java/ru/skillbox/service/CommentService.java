@@ -63,7 +63,7 @@ public class CommentService {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Comment comment = commentMapper.convertToEntity(commentDTO);
         Comment parentComment = commentRepository.findById(parentCommentId)
-                .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+                .orElseThrow(() -> new CommentNotFoundException("Parent comment not found"));
         comment.setParent(parentComment);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
@@ -73,8 +73,8 @@ public class CommentService {
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
     public PageCommentDto getPostComments(Long postId, Pageable pageable) {
-
-        // Получаем все комментарии поста с сортировкой по времени
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
         Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 
         // Формируем объект PageCommentDto
@@ -102,8 +102,11 @@ public class CommentService {
 
         return pageCommentDto;
     }
-    public PageCommentDto getSubComments(Long postId, Pageable pageable) {
-
+    public PageCommentDto getSubComments(Long postId, Long commentId, Pageable pageable) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
+        Comment commentFind = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
         // Получаем все комментарии поста с сортировкой по времени
         Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 

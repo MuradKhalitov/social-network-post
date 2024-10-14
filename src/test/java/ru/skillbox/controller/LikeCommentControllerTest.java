@@ -1,61 +1,82 @@
 package ru.skillbox.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.skillbox.AbstractTest;
-import ru.skillbox.dto.likeComment.LikeCommentDto;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 class LikeCommentControllerTest extends AbstractTest {
 
-    private static final String BASE_URL = "/api/v1/post/";
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void createLike_shouldReturnCreatedStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
         Long commentId = 1L;
-        LikeCommentDto likeCommentDto = new LikeCommentDto();
-        String requestBody = objectMapper.writeValueAsString(likeCommentDto);
 
-        mockMvc.perform(post(BASE_URL + postId + "/comment/" + commentId + "/like")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+        mockMvc.perform(post("/api/v1/post/{id}/comment/{commentId}/like", id, commentId))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    @WithMockUser(username = AUTHOR_UUID)
-    void deleteLike_shouldReturnCreatedStatus() throws Exception {
-        Long postId = 1L;
+    void createLike_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
         Long commentId = 1L;
 
-        mockMvc.perform(delete(BASE_URL + postId + "/comment/" + commentId + "/like"))
-                .andExpect(status().isCreated());
+        mockMvc.perform(post("/api/v1/post/{id}/comment/{commentId}/like", id, commentId))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void createLike_shouldReturnNotFoundStatus_whenCommentDoesNotExist() throws Exception {
-        Long postId = 1L;
-        Long commentId = 999L; // Комментарий не существует
+        Long id = 1L;
+        Long commentId = 999L;
 
-        mockMvc.perform(post(BASE_URL + postId + "/comment/" + commentId + "/like")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/api/v1/post/{id}/comment/{commentId}/like", id, commentId))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
-    void deleteLike_shouldReturnNotFoundStatus_whenCommentDoesNotExist() throws Exception {
-        Long postId = 1L;
-        Long commentId = 999L; // Комментарий не существует
+    void deleteLike_shouldReturnCreatedStatus() throws Exception {
+        Long id = 1L;
+        Long commentId = 1L;
 
-        mockMvc.perform(delete(BASE_URL + postId + "/comment/" + commentId + "/like"))
+        mockMvc.perform(delete("/api/v1/post/{id}/comment/{commentId}/like", id, commentId))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void deleteLike_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+        Long commentId = 1L;
+
+        mockMvc.perform(delete("/api/v1/post/{id}/comment/{commentId}/like", id, commentId))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void deleteLike_shouldReturnNotFoundStatus_whenCommentDoesNotExist() throws Exception {
+        Long id = 1L;
+        Long commentId = 999L;
+
+        mockMvc.perform(delete("/api/v1/post/{id}/comment/{commentId}/like", id, commentId))
                 .andExpect(status().isNotFound());
     }
 }

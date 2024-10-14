@@ -1,102 +1,167 @@
 package ru.skillbox.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.skillbox.AbstractTest;
 import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.dto.comment.response.PageCommentDto;
-import ru.skillbox.service.CommentService;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 class CommentControllerTest extends AbstractTest {
-
-    @Mock
-    private CommentService commentService;
-
-    @InjectMocks
-    private CommentController commentController;
-
-    private static final String BASE_URL = "/api/v1/post/";
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(commentController).build();
-    }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void createPostComment_shouldReturnCreatedStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
 
         CommentDto commentDto = new CommentDto();
-        commentDto.setCommentText("Тестовый комментарий");
+        commentDto.setCommentText("Test comment");
 
-//        when(commentService.createPostComment(any(Long.class), any(CommentDto.class)))
-//                .thenReturn(commentDto);
-
-        mockMvc.perform(post(BASE_URL + postId + "/comment")
+        mockMvc.perform(post("/api/v1/post/{id}/comment", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.authorId").value(AUTHOR_UUID))
+                .andExpect(jsonPath("$.commentText").value("Test comment"));
+    }
+
+    @Test
+    void createPostComment_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+
+        CommentDto commentDto = new CommentDto();
+        commentDto.setCommentText("Test comment");
+
+        mockMvc.perform(post("/api/v1/post/{id}/comment", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void createPostComment_shouldReturnNotFound() throws Exception {
+        Long id = 999L;
+
+        CommentDto commentDto = new CommentDto();
+        commentDto.setCommentText("Test comment");
+
+        mockMvc.perform(post("/api/v1/post/{id}/comment", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void createSubComment_shouldReturnCreatedStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
         Long commentId = 1L;
 
         CommentDto subCommentDto = new CommentDto();
-        subCommentDto.setCommentText("Тестовый подкомментарий");
+        subCommentDto.setCommentText("Test subcomment");
 
-        when(commentService.createSubComment(any(Long.class), any(CommentDto.class), any(Long.class)))
-                .thenReturn(subCommentDto);
-
-        mockMvc.perform(post(BASE_URL + postId + "/comment/" + commentId + "/subcomment")
+        mockMvc.perform(post("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(subCommentDto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.authorId").value(AUTHOR_UUID))
+                .andExpect(jsonPath("$.commentText").value("Test subcomment"));
     }
 
+    @Test
+    void createSubComment_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+        Long commentId = 1L;
+
+        CommentDto subCommentDto = new CommentDto();
+        subCommentDto.setCommentText("Test subcomment");
+
+        mockMvc.perform(post("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(subCommentDto)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void createSubComment_shouldReturnNotFound() throws Exception {
+        Long id = 1L;
+        Long commentId = 999L;
+
+        CommentDto subCommentDto = new CommentDto();
+        subCommentDto.setCommentText("Test subcomment");
+
+        mockMvc.perform(post("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(subCommentDto)))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void getCommentsByPostId_shouldReturnOkStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
 
-        PageCommentDto pageCommentDto = new PageCommentDto();
-        when(commentService.getPostComments(any(Long.class), any()))
-                .thenReturn(pageCommentDto);
-
-        mockMvc.perform(get(BASE_URL + postId + "/comment")
+        mockMvc.perform(get("/api/v1/post/{id}/comment", id)
                         .param("page", "0")
                         .param("size", "10")
                         .param("sort", "id,asc"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getCommentsByPostId_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+
+        mockMvc.perform(get("/api/v1/post/{id}/comment", id)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "id,asc"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void getCommentsByPostId_shouldReturnNotFound() throws Exception {
+        Long id = 999L;
+
+        mockMvc.perform(get("/api/v1/post/{id}/comment", id)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "id,asc"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void getSubCommentById_shouldReturnOkStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
         Long commentId = 1L;
 
         PageCommentDto pageCommentDto = new PageCommentDto();
 
-        // Используем lenient, если вызов заглушки не критичен для теста
-        when(commentService.getSubComments(any(Long.class), any()))
-                .thenReturn(pageCommentDto);
-
-        mockMvc.perform(get(BASE_URL + postId + "/comment/" + commentId + "/subcomment")
+        mockMvc.perform(get("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
                         .param("page", "0")
                         .param("size", "10")
                         .param("sort", "id,asc"))
@@ -104,30 +169,114 @@ class CommentControllerTest extends AbstractTest {
     }
 
     @Test
+    void getSubCommentById_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+        Long commentId = 1L;
+
+        PageCommentDto pageCommentDto = new PageCommentDto();
+
+        mockMvc.perform(get("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "id,asc"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void getSubCommentById_shouldReturnNotFound() throws Exception {
+        Long id = 1L;
+        Long commentId = 999L;
+
+        PageCommentDto pageCommentDto = new PageCommentDto();
+
+        mockMvc.perform(get("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "id,asc"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @WithMockUser(username = AUTHOR_UUID)
     void updateComment_shouldReturnCreatedStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
         Long commentId = 1L;
 
         CommentDto commentDto = new CommentDto();
-        commentDto.setCommentText("Обновленный комментарий");
+        commentDto.setCommentText("Edited comment");
 
-        when(commentService.updateComment(any(Long.class), any(Long.class), any(CommentDto.class)))
-                .thenReturn(commentDto);
-
-        mockMvc.perform(put(BASE_URL + postId + "/comment/" + commentId)
+        mockMvc.perform(put("/api/v1/post/{id}/comment/{commentId}", id, commentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isCreated());
+    }
+    @Test
+    void updateComment_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+        Long commentId = 1L;
+
+        CommentDto commentDto = new CommentDto();
+        commentDto.setCommentText("Edited comment");
+
+        mockMvc.perform(put("/api/v1/post/{id}/comment/{commentId}", id, commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void updateComment_shouldReturnNotFound() throws Exception {
+        Long id = 1L;
+        Long commentId = 999L;
+
+        CommentDto commentDto = new CommentDto();
+        commentDto.setCommentText("Edited comment");
+
+        mockMvc.perform(put("/api/v1/post/{id}/comment/{commentId}", id, commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void deleteComment_shouldReturnOkStatus() throws Exception {
-        Long postId = 1L;
+        Long id = 1L;
         Long commentId = 1L;
 
-        mockMvc.perform(delete(BASE_URL + postId + "/comment/" + commentId))
+        mockMvc.perform(delete("/api/v1/post/{id}/comment/{commentId}", id, commentId))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteComment_shouldReturnUnauthorized() throws Exception {
+        Long id = 1L;
+        Long commentId = 1L;
+
+        mockMvc.perform(delete("/api/v1/post/{id}/comment/{commentId}", id, commentId))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpServletResponse.SC_UNAUTHORIZED))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @WithMockUser(username = AUTHOR_UUID)
+    void deleteComment_shouldReturnNotFound() throws Exception {
+        Long id = 1L;
+        Long commentId = 999L;
+
+        mockMvc.perform(delete("/api/v1/post/{id}/comment/{commentId}", id, commentId))
+                .andExpect(status().isNotFound());
     }
 }

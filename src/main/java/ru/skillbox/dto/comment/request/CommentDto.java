@@ -2,10 +2,8 @@ package ru.skillbox.dto.comment.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.dto.likeComment.LikeCommentDto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter

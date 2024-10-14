@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.skillbox.exception.CommentNotFoundException;
 import ru.skillbox.mapper.CommentMapper;
-import ru.skillbox.mapper.LikeCommentMapper;
 import ru.skillbox.model.*;
 import ru.skillbox.repository.CommentRepository;
 import ru.skillbox.repository.LikeCommentRepository;
@@ -20,16 +19,14 @@ public class LikeCommentService {
 
     private final LikeCommentRepository likeCommentRepository;
     private final CommentRepository commentRepository;
-    private final LikeCommentMapper likeCommentMapper;
     private final CommentService commentService;
     private final CommentMapper commentMapper;
     private final CurrentUsers currentUsers;
 
     @Autowired
-    public LikeCommentService(LikeCommentRepository likeRepository, CommentRepository commentRepository, LikeCommentMapper likeMapper, CommentService commentService, CommentMapper commentMapper, CurrentUsers currentUsers) {
+    public LikeCommentService(LikeCommentRepository likeRepository, CommentRepository commentRepository, CommentService commentService, CommentMapper commentMapper, CurrentUsers currentUsers) {
         this.likeCommentRepository = likeRepository;
         this.commentRepository = commentRepository;
-        this.likeCommentMapper = likeMapper;
         this.commentService = commentService;
         this.commentMapper = commentMapper;
         this.currentUsers = currentUsers;
