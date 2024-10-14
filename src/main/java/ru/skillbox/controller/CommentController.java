@@ -73,13 +73,13 @@ public class CommentController {
     @PutMapping("/{commentId}")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto updateComment(@PathVariable Long id, @PathVariable Long commentId, @RequestBody CommentDto commentDTO) {
-        return commentService.updateComment(id, commentId, commentDTO);
+        return commentService.updateComment(commentId, commentDTO);
     }
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteComment(@PathVariable Long id, @PathVariable Long commentId) {
-        commentService.deleteComment(id, commentId);
+        commentService.deleteComment(commentId);
     }
 }
 

@@ -1,6 +1,5 @@
 package ru.skillbox.mapper;
 
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.model.Comment;
@@ -10,8 +9,12 @@ import ru.skillbox.repository.CommentRepository;
 
 @Mapper(componentModel = "spring", uses = {PostMapper.class})
 public abstract class CommentMapper {
-    @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    public void setCommentRepository(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     @Mapping(source = "post.id", target = "postId")
     @Mapping(target = "parentId", source = "parent.id")

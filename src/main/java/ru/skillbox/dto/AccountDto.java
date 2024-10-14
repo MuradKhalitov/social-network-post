@@ -18,7 +18,6 @@ public class AccountDto {
     private String lastName;
     private String city;
     private String country;
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime birthDate;
     private Boolean isBlocked;
     private Boolean isDeleted;

@@ -55,11 +55,11 @@ public class Comment {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeComment> likes = new ArrayList<>();
 
-    public void updateCommentsCount() {
-        this.commentsCount = subComments.size();
-    }
-
     public void updateLikeAmount() {
         this.likeAmount = likes.size();
+    }
+
+    public Long getParentId() {
+        return parent.getId();
     }
 }

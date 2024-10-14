@@ -3,7 +3,7 @@ package ru.skillbox.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.dto.likePost.AddReactionDto;
+import ru.skillbox.dto.like_post.AddReactionDto;
 import ru.skillbox.service.LikePostService;
 
 @RestController

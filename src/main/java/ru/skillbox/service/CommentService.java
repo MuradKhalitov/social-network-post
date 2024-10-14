@@ -4,9 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.dto.comment.request.CommentDto;
 import ru.skillbox.dto.comment.response.PageCommentDto;
-import ru.skillbox.exception.AccessDeniedException;
-import ru.skillbox.exception.CommentNotFoundException;
-import ru.skillbox.exception.PostNotFoundException;
+import ru.skillbox.exception.*;
 import ru.skillbox.mapper.CommentMapper;
 import ru.skillbox.model.Comment;
 import ru.skillbox.model.Post;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -44,12 +41,12 @@ public class CommentService {
 
     public CommentDto createPostComment(Long postId, CommentDto commentDTO) {
         if (commentDTO.getCommentText() == null || commentDTO.getCommentText().trim().isEmpty()) {
-            throw new IllegalArgumentException("Текст комментария не может быть пустым");
+            throw new IllegalArgumentException(ErrorMessage.EMPTY_COMMENT_TEXT.getMessage());
         }
         UUID currentUserId = currentUsers.getCurrentUserId();
         Comment comment = commentMapper.convertToEntity(commentDTO);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
         comment.setAuthorId(currentUserId);
         comment.setPost(post);
         log.info("Пользователь: {}, добавил комментарий", currentUserId);
@@ -63,19 +60,20 @@ public class CommentService {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Comment comment = commentMapper.convertToEntity(commentDTO);
         Comment parentComment = commentRepository.findById(parentCommentId)
-                .orElseThrow(() -> new CommentNotFoundException("Parent comment not found"));
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND.format(parentCommentId)));
         comment.setParent(parentComment);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
         comment.setAuthorId(currentUserId);
         comment.setPost(post);
         log.info("Пользователь: {}, добавил комментарий", currentUserId);
         return commentMapper.convertToDTO(commentRepository.save(comment));
     }
+
     public PageCommentDto getPostComments(Long postId, Pageable pageable) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
-        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+                .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
+        Page<Comment> commentPage = commentRepository.findByPostId(post.getId(), pageable);
 
         // Формируем объект PageCommentDto
         PageCommentDto pageCommentDto = new PageCommentDto();
@@ -92,8 +90,8 @@ public class CommentService {
         // Отделяем родительские комментарии от субкомментариев
         List<PageCommentDto.CommentContent> parentComments = commentPage.getContent().stream()
                 .filter(comment -> comment.getParent() == null)  // только родительские
-                .map(comment -> convertToCommentContent(comment))
-                .collect(Collectors.toList());
+                .map(this::convertToCommentContent)
+                .toList();
 
         // Собираем итоговый список комментариев
         List<PageCommentDto.CommentContent> allComments = new ArrayList<>(parentComments);
@@ -102,38 +100,39 @@ public class CommentService {
 
         return pageCommentDto;
     }
-    public PageCommentDto getSubComments(Long postId, Long commentId, Pageable pageable) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
-        Comment commentFind = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
-        // Получаем все комментарии поста с сортировкой по времени
-        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 
-        // Формируем объект PageCommentDto
-        PageCommentDto pageCommentDto = new PageCommentDto();
-        pageCommentDto.setTotalElements(commentPage.getTotalElements());
-        pageCommentDto.setTotalPages(commentPage.getTotalPages());
-        pageCommentDto.setNumber(commentPage.getNumber());
-        pageCommentDto.setSize(commentPage.getSize());
-        pageCommentDto.setFirst(commentPage.isFirst());
-        pageCommentDto.setLast(commentPage.isLast());
-        pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
-        pageCommentDto.setPageable(pageable);
-        pageCommentDto.setEmpty(commentPage.isEmpty());
+public PageCommentDto getSubComments(Long postId, Long commentId, Pageable pageable) {
+    Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
 
-        List<PageCommentDto.CommentContent> subComments = commentPage.getContent().stream()
-                .filter(comment -> comment.getParent() != null)  // только субкомментарии
-                .map(comment -> convertToCommentContent(comment))
-                .collect(Collectors.toList());
+    Comment existingComment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND.format(commentId)));
+    // Получаем страницу комментариев для данного поста
+    Page<Comment> commentPage = commentRepository.findByPostId(post.getId(), pageable);
 
-        // Собираем итоговый список комментариев
-        List<PageCommentDto.CommentContent> allComments = new ArrayList<>(subComments);
+    // Формируем объект PageCommentDto
+    PageCommentDto pageCommentDto = new PageCommentDto();
+    pageCommentDto.setTotalElements(commentPage.getTotalElements());
+    pageCommentDto.setTotalPages(commentPage.getTotalPages());
+    pageCommentDto.setNumber(commentPage.getNumber());
+    pageCommentDto.setSize(commentPage.getSize());
+    pageCommentDto.setFirst(commentPage.isFirst());
+    pageCommentDto.setLast(commentPage.isLast());
+    pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
+    pageCommentDto.setPageable(pageable);
+    pageCommentDto.setEmpty(commentPage.isEmpty());
 
-        pageCommentDto.setContent(allComments);
+    // Фильтруем комментарии, чтобы оставить только подкомментарии к указанному commentId
+    List<PageCommentDto.CommentContent> subComments = commentPage.getContent().stream()
+            .filter(comment -> existingComment.getId().equals(comment.getParentId())) // Используем commentId для фильтрации
+            .map(this::convertToCommentContent)
+            .toList();
 
-        return pageCommentDto;
-    }
+    // Собираем итоговый список комментариев
+    pageCommentDto.setContent(subComments);
+
+    return pageCommentDto;
+}
 
     private PageCommentDto.CommentContent convertToCommentContent(Comment comment) {
         UUID currentUserId = currentUsers.getCurrentUserId();
@@ -161,13 +160,14 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDto updateComment(Long postId, Long commentId, CommentDto updatedCommentDto) {
+    public CommentDto updateComment(Long commentId, CommentDto updatedCommentDto) {
         if (updatedCommentDto.getCommentText() == null || updatedCommentDto.getCommentText().trim().isEmpty()) {
             throw new IllegalArgumentException("Текст комментария не может быть пустым");
         }
         UUID currentUserId = currentUsers.getCurrentUserId();
+
         Comment updatedComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND.format(commentId)));
         UUID updatedCommentAuthor = updatedComment.getAuthorId();
 
         if (currentUserId.equals(updatedCommentAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
@@ -178,15 +178,14 @@ public class CommentService {
         }
     }
 
-    public void deleteComment(Long postId, Long commentId) {
+    public void deleteComment(Long commentId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
+
         Comment deletedComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentId + " not found"));
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND.format(commentId)));
         UUID deletedCommentAuthor = deletedComment.getAuthorId();
         if (currentUserId.equals(deletedCommentAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
-            Post post = postRepository.findById(postId)
-                    .orElseThrow(() -> new PostNotFoundException("Post with postId " + postId + "not found"));
-            commentRepository.deleteById(commentId);
+            commentRepository.delete(deletedComment);
         } else {
             throw new AccessDeniedException("У вас нет разрешения на удаление этого комментария");
         }

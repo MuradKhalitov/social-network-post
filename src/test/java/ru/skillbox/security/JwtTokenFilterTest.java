@@ -15,13 +15,12 @@ import jakarta.servlet.ServletException;
 import ru.skillbox.client.OpenFeignClient;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class JwtTokenFilterTest {
+ class JwtTokenFilterTest {
 
     @Mock
     private OpenFeignClient openFeignClient;
@@ -43,7 +42,7 @@ public class JwtTokenFilterTest {
     }
 
     @Test
-    void doFilterInternal_validToken_shouldAuthenticate() throws ServletException, IOException, ParseException {
+    void doFilterInternal_validToken_shouldAuthenticate() throws ServletException, IOException {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaWQiOiIxMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAyMDAiLCJleHAiOjE3Mjg4MTg1NDYsImlhdCI6OTcyODczMjE0Nn0.uSqSdG6P0m9ZpV0HLPqJu-ttHIaYB7lO7oM6o-lvd6A";
         String accountId = "10000000-0000-0000-0000-000000000200";
         String authHeader = "Bearer " + token;
@@ -82,7 +81,7 @@ public class JwtTokenFilterTest {
     }
 
     @Test
-    void getIdFromToken_validToken_shouldReturnId() throws ParseException {
+    void getIdFromToken_validToken_shouldReturnId() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaWQiOiIxMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAyMDAiLCJleHAiOjE3Mjg4MTg1NDYsImlhdCI6OTcyODczMjE0Nn0.uSqSdG6P0m9ZpV0HLPqJu-ttHIaYB7lO7oM6o-lvd6A";
         String expectedId = "10000000-0000-0000-0000-000000000200";
 
@@ -98,9 +97,8 @@ public class JwtTokenFilterTest {
     }
 
     @Test
-    void getRolesFromToken_validTokenWithRoles_shouldReturnRoles() throws ParseException {
+    void getRolesFromToken_validTokenWithRoles_shouldReturnRoles() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaWQiOiIxMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAyMDAiLCJleHAiOjE3Mjg4MTg1NDYsImlhdCI6OTcyODczMjE0Nn0.uSqSdG6P0m9ZpV0HLPqJu-ttHIaYB7lO7oM6o-lvd6A";
-        List<String> roles = List.of("ROLE_USER");
 
         List<?> authorities = jwtTokenFilter.getRolesFromToken(token);
 
@@ -109,7 +107,7 @@ public class JwtTokenFilterTest {
     }
 
     @Test
-    void getRolesFromToken_tokenWithoutRoles_shouldReturnDefaultRole() throws ParseException {
+    void getRolesFromToken_tokenWithoutRoles_shouldReturnDefaultRole(){
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDIwMCIsImV4cCI6MTcyODgxODU0NiwiaWF0Ijo5NzI4NzMyMTQ2fQ.jy_X-lwg3gPNlB6UllxOvaEk1oF7GKD24nSCEcndHSA";
 
         List<?> authorities = jwtTokenFilter.getRolesFromToken(token);

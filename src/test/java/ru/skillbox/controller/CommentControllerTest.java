@@ -4,9 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.skillbox.AbstractTest;
 import ru.skillbox.dto.comment.request.CommentDto;
-import ru.skillbox.dto.comment.response.PageCommentDto;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,7 +25,7 @@ class CommentControllerTest extends AbstractTest {
                         .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.id").value(3L))
                 .andExpect(jsonPath("$.authorId").value(AUTHOR_UUID))
                 .andExpect(jsonPath("$.commentText").value("Test comment"));
     }
@@ -76,7 +74,7 @@ class CommentControllerTest extends AbstractTest {
                         .content(objectMapper.writeValueAsString(subCommentDto)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.id").value(3L))
                 .andExpect(jsonPath("$.authorId").value(AUTHOR_UUID))
                 .andExpect(jsonPath("$.commentText").value("Test subcomment"));
     }
@@ -159,8 +157,6 @@ class CommentControllerTest extends AbstractTest {
         Long id = 1L;
         Long commentId = 1L;
 
-        PageCommentDto pageCommentDto = new PageCommentDto();
-
         mockMvc.perform(get("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
                         .param("page", "0")
                         .param("size", "10")
@@ -172,8 +168,6 @@ class CommentControllerTest extends AbstractTest {
     void getSubCommentById_shouldReturnUnauthorized() throws Exception {
         Long id = 1L;
         Long commentId = 1L;
-
-        PageCommentDto pageCommentDto = new PageCommentDto();
 
         mockMvc.perform(get("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
                         .param("page", "0")
@@ -191,8 +185,6 @@ class CommentControllerTest extends AbstractTest {
     void getSubCommentById_shouldReturnNotFound() throws Exception {
         Long id = 1L;
         Long commentId = 999L;
-
-        PageCommentDto pageCommentDto = new PageCommentDto();
 
         mockMvc.perform(get("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
                         .param("page", "0")

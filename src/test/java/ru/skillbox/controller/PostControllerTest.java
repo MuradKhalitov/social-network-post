@@ -6,7 +6,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.skillbox.AbstractTest;
 import ru.skillbox.client.AccountFeignClient;
 import ru.skillbox.dto.AccountDto;
 import ru.skillbox.dto.kafka.BotPost;

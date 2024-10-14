@@ -1,4 +1,4 @@
-package ru.skillbox;
+package ru.skillbox.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -91,6 +91,14 @@ public class AbstractTest {
         comment.setCommentText("Тестовый комментарий");
         comment.setPost(post);
         commentRepository.save(comment);
+
+        // Создаем под комментарий с id 2
+        Comment subComment = new Comment();
+        comment.setAuthorId(UUID.fromString(AUTHOR_UUID));
+        comment.setCommentText("Тестовый комментарий");
+        comment.setParent(comment);
+        comment.setPost(post);
+        commentRepository.save(subComment);
 
         // Создаем лайк поста
         LikePost likePost = new LikePost();

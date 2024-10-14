@@ -12,6 +12,7 @@ import ru.skillbox.dto.post.request.PostDto;
 import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.dto.post.response.PagePostDto;
 import ru.skillbox.exception.AccessDeniedException;
+import ru.skillbox.exception.ErrorMessage;
 import ru.skillbox.exception.PostNotFoundException;
 import ru.skillbox.mapper.PostMapper;
 import ru.skillbox.model.LikePost;
@@ -41,6 +42,7 @@ public class PostService {
     private final CurrentUsers currentUsers;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final AccountFeignClient accountFeignClient;
+    private static final String POSTED = "POSTED";
 
     @Autowired
     public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers, KafkaTemplate<String, Object> kafkaTemplate, AccountFeignClient accountFeignClient) {
@@ -51,6 +53,7 @@ public class PostService {
         this.kafkaTemplate = kafkaTemplate;
         this.accountFeignClient = accountFeignClient;
     }
+
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
@@ -85,11 +88,11 @@ public class PostService {
                     .collect(Collectors.groupingBy(LikePost::getReactionType, Collectors.counting()))
                     .entrySet().stream()
                     .map(entry -> new ReactionType(entry.getKey(), entry.getValue()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             // Проверка даты публикации и обновление типа поста, если тип еще не "POSTED"
-            if (!"POSTED".equals(post.getType()) && post.getPublishDate() != null && post.getPublishDate().isBefore(LocalDateTime.now().plusHours(3))) {
-                post.setType("POSTED");
+            if (!POSTED.equals(post.getType()) && post.getPublishDate() != null && post.getPublishDate().isBefore(LocalDateTime.now().plusHours(3))) {
+                post.setType(POSTED);
                 postRepository.save(post);
             }
 
@@ -106,7 +109,7 @@ public class PostService {
                     post.getCommentsCount(),
                     post.getTags().stream()
                             .map(tag -> new TagDto(tag.getName()))
-                            .collect(Collectors.toList()),
+                            .toList(),
                     isMyLike,
                     myReaction,
                     post.getLikeAmount(),
@@ -114,15 +117,16 @@ public class PostService {
                     post.getImagePath(),
                     post.getPublishDate()
             );
-        }).collect(Collectors.toList());
+        }).toList();
 
         pagePostDto.setContent(content);
         return pagePostDto;
     }
-    public PostDto getPostById(Long id) {
+
+    public PostDto getPostById(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("Post with id " + id + " not found"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
         post.updateCommentsCount();
         post.updateLikeAmount();
         boolean isMyLike = post.getLikes().stream()
@@ -130,6 +134,7 @@ public class PostService {
         post.setMyLike(isMyLike);
         return postMapper.convertToDTO(post);
     }
+
     public PostDto createPost(PostDto postDto) {
         Post post = postMapper.convertToEntity(postDto);
         UUID currentUserId = currentUsers.getCurrentUserId();
@@ -146,7 +151,7 @@ public class PostService {
         }
         if (post.getPublishDate() == null) {
             post.setPublishDate(LocalDateTime.now().plusHours(3));
-            post.setType("POSTED");
+            post.setType(POSTED);
         }
         post.setTags(tags);
         Post createdPost = postRepository.save(post);
@@ -161,8 +166,6 @@ public class PostService {
         AccountDto accountDto = accountFeignClient.getAccountById(currentUserId);
         String fullName = accountDto.getFirstName() + " " + accountDto.getLastName();
 
-        System.out.println(fullName);
-
         kafkaTemplate.send("bot-topic", BotPost.builder()
                 .authorName(fullName)
                 .title(post.getTitle())
@@ -174,9 +177,10 @@ public class PostService {
 
     @Transactional
     public PostDto updatePost(PostDto updatePostDto) {
+        Long postId = updatePostDto.getId();
         UUID currentUserId = currentUsers.getCurrentUserId();
-        Post updatedPost = postRepository.findById(updatePostDto.getId())
-                .orElseThrow(() -> new PostNotFoundException("Post with postId " + updatePostDto.getId() + " not found"));
+        Post updatedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
         UUID updatedPostAuthor = updatedPost.getAuthorId();
 
         if (currentUserId.equals(updatedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
@@ -210,13 +214,14 @@ public class PostService {
             throw new AccessDeniedException("У вас нет разрешения на обновление этого поста");
         }
     }
+
     public void deletePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Post deletedPost = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post with postId " + postId + "not found"));
+                .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
         UUID deletedPostAuthor = deletedPost.getAuthorId();
         if (currentUserId.equals(deletedPostAuthor) || currentUsers.hasRole("ADMIN") || currentUsers.hasRole("MODERATOR")) {
-            postRepository.deleteById(postId);
+            postRepository.delete(deletedPost);
         } else {
             throw new AccessDeniedException("У вас нет разрешения на удаление этого поста");
         }

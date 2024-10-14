@@ -3,7 +3,8 @@ package ru.skillbox.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.skillbox.dto.likePost.AddReactionDto;
+import ru.skillbox.dto.like_post.AddReactionDto;
+import ru.skillbox.exception.ErrorMessage;
 import ru.skillbox.exception.PostNotFoundException;
 import ru.skillbox.model.LikePost;
 import ru.skillbox.model.Post;
@@ -34,7 +35,7 @@ public void createLikePost(Long postId, AddReactionDto addReactionDto) {
     UUID currentUserId = currentUsers.getCurrentUserId();
 
     Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
+            .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
 
     Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
 
@@ -63,12 +64,10 @@ public void createLikePost(Long postId, AddReactionDto addReactionDto) {
     public void deleteLikePost(Long postId) {
         UUID currentUserId = currentUsers.getCurrentUserId();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post with id " + postId + " not found"));
-        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(postId, currentUserId);
+                .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
+        Optional<LikePost> existingLike = likePostRepository.findByPostIdAndAuthorId(post.getId(), currentUserId);
         if (existingLike.isPresent()) {
             likePostRepository.deleteById(existingLike.get().getId());
         }
-
     }
-
 }
