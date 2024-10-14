@@ -17,11 +17,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.skillbox.client.OpenFeignClient;
+import ru.skillbox.exception.InvalidTokenException;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -47,7 +47,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 String accountId = getIdFromToken(token);
                 if (accountId != null && !accountId.isEmpty()) {
                     List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);
-                    System.out.println(authorities);
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             new User(accountId, "", authorities),
                             token,
@@ -66,11 +65,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     public String getIdFromToken(String token) {
         try {
-            String sub = SignedJWT.parse(token).getPayload().toJSONObject().get("id").toString();
-            System.out.println(sub);
-            return sub;
+            return SignedJWT.parse(token).getPayload().toJSONObject().get("id").toString();
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new InvalidTokenException("Не удалось проанализировать токен", e);
         }
     }
 
@@ -82,10 +79,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
             List<String> roles = (List<String>) payload.get("roles");
             return roles.stream()
-                    .map(role -> new SimpleGrantedAuthority(role))
-                    .collect(Collectors.toList());
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
         } catch (ParseException e) {
-            throw new RuntimeException("Failed to parse JWT token", e);
+            throw new InvalidTokenException("Не удалось проанализировать токен", e);
         }
     }
 }

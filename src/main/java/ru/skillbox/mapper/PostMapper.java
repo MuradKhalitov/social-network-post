@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 import ru.skillbox.model.Tag;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface PostMapper {
@@ -30,7 +29,7 @@ public interface PostMapper {
                     tagDto.setName(tag.getName());
                     return tagDto;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     default List<Tag> mapTagDtosToTags(List<TagDto> tagDtos) {
@@ -40,7 +39,7 @@ public interface PostMapper {
                     tag.setName(tagDto.getName());
                     return tag;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     default List<String> mapTagsToStrings(List<Tag> tags) {
@@ -48,6 +47,7 @@ public interface PostMapper {
                 .map(Tag::getName)
                 .toList();
     }
+
     default List<Tag> mapStringsToTags(List<String> tagNames) {
         return tagNames.stream()
                 .map(tagName -> {
