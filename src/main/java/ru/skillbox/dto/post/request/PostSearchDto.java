@@ -3,6 +3,7 @@ package ru.skillbox.dto.post.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,6 @@ public class PostSearchDto {
     private Boolean withFriends;
     private Boolean isDeleted;
     private List<String> tags;
-    private Long dateFrom;
-    private Long dateTo;
+    private OffsetDateTime dateFrom;
+    private OffsetDateTime dateTo;
 }
