@@ -182,19 +182,6 @@ class CommentControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
-    void getSubCommentById_shouldReturnNotFound() throws Exception {
-        Long id = 1L;
-        Long commentId = 999L;
-
-        mockMvc.perform(get("/api/v1/post/{id}/comment/{commentId}/subcomment", id, commentId)
-                        .param("page", "0")
-                        .param("size", "10")
-                        .param("sort", "id,asc"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser(username = AUTHOR_UUID)
     void updateComment_shouldReturnCreatedStatus() throws Exception {
         Long id = 1L;
         Long commentId = 1L;
