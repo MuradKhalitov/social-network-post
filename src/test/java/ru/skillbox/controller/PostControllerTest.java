@@ -3,12 +3,15 @@ package ru.skillbox.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.skillbox.client.AccountFeignClient;
 import ru.skillbox.client.FriendsFeignClient;
 import ru.skillbox.dto.AccountDto;
+import ru.skillbox.dto.AccountSearchDto;
 import ru.skillbox.dto.kafka.BotPost;
 import ru.skillbox.dto.kafka.NotificationPost;
 import ru.skillbox.dto.post.request.PostDto;
@@ -186,6 +189,11 @@ class PostControllerTest extends AbstractTest {
 
         when(friendsFeignClient.getFriendsIds(UUID.fromString(AUTHOR_UUID)))
                 .thenReturn(List.of(friendUUID));
+        AccountDto accountDto = new AccountDto();
+        accountDto.setId(UUID.fromString(AUTHOR_UUID));
+
+        when(accountFeignClient.searchAccount(any(AccountSearchDto.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(accountDto)));
 
         mockMvc.perform(get(BASE_URL)
                         .param("page", "0")

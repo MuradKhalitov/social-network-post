@@ -1,11 +1,14 @@
 package ru.skillbox.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.client.AccountFeignClient;
 import ru.skillbox.client.FriendsFeignClient;
 import ru.skillbox.dto.AccountDto;
+import ru.skillbox.dto.AccountSearchDto;
 import ru.skillbox.dto.TagDto;
 import ru.skillbox.dto.kafka.BotPost;
 import ru.skillbox.dto.kafka.NotificationPost;
@@ -60,10 +63,16 @@ public class PostService {
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
 
-        List<UUID> friends = Boolean.TRUE.equals(postSearchDto.getWithFriends()) ? friendsFeignClient.getFriendsIds(currentUserId) : Collections.emptyList();
-        for (UUID friendId : friends){
-            log.info("frienfId: " + friendId.toString());
+        // Если задано имя автора, получаем его UUID через Feign-клиент
+        if (postSearchDto.getAuthor() != null && !postSearchDto.getAuthor().isEmpty()) {
+            List<UUID> authorIds = getAuthorIds(postSearchDto.getAuthor());
+            postSearchDto.setAccountIds(authorIds);
+            log.info(authorIds.toString());
         }
+
+
+        List<UUID> friends = Boolean.TRUE.equals(postSearchDto.getWithFriends()) ? friendsFeignClient.getFriendsIds(currentUserId) : Collections.emptyList();
+
         Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto, friends), pageable);
 
         //Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
@@ -236,6 +245,19 @@ public class PostService {
         } else {
             throw new AccessDeniedException("У вас нет разрешения на удаление этого поста");
         }
+    }
+
+    public List<UUID> getAuthorIds(String author) {
+        AccountSearchDto searchDto = new AccountSearchDto();
+        searchDto.setAuthor(author);
+
+        Pageable pageable = PageRequest.of(0, 30, Sort.by("firstName").ascending()); // Настройки пагинации
+
+        Page<AccountDto> accounts = accountFeignClient.searchAccount(searchDto, pageable);
+
+        return accounts.getContent().stream()
+                .map(AccountDto::getId)
+                .collect(Collectors.toList());
     }
 }
 

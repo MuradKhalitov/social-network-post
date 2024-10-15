@@ -32,10 +32,14 @@ public class PostSpecification {
                 predicates.add(cb.not(root.get("id").in(postSearchDto.getBlockedIds())));
             }
 
-            // Фильтрация по автору (authorId как строка)
-            if (postSearchDto.getAuthor() != null && !postSearchDto.getAuthor().isEmpty()) {
-                predicates.add(cb.like(cb.lower(root.get("author").as(String.class)), "%" + postSearchDto.getAuthor().toLowerCase() + "%"));
-            }
+//            // Фильтрация по автору (authorId как строка)
+//            if (postSearchDto.getAuthor() != null && !postSearchDto.getAuthor().isEmpty()) {
+//                predicates.add(cb.like(cb.lower(root.get("author").as(String.class)), "%" + postSearchDto.getAuthor().toLowerCase() + "%"));
+//            }
+//            // Фильтрация по id авторов
+//            if (postSearchDto.getAccountIds() != null && !postSearchDto.getAccountIds().isEmpty()) {
+//                predicates.add(root.get("authorId").in(postSearchDto.getAccountIds()));
+//            }
 
             // Фильтрация по заголовку
             if (postSearchDto.getTitle() != null && !postSearchDto.getTitle().isEmpty()) {
