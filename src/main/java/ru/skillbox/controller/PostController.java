@@ -48,8 +48,12 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id,asc") String sort,
             @RequestParam(required = false) Boolean withFriends,
-            @RequestParam(defaultValue = "false") Boolean isDeleted
+            @RequestParam(defaultValue = "false") Boolean isDeleted,
+            @RequestParam(required = false) String text
     ) {
+        if (text != null) {
+            postSearchDto.setPostText(text);
+        }
         postSearchDto.setWithFriends(withFriends);
         postSearchDto.setIsDeleted(isDeleted);
 
