@@ -8,10 +8,12 @@ import jakarta.persistence.criteria.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class PostSpecification {
 
-    public static Specification<Post> filterBySearchDto(PostSearchDto postSearchDto) {
+    public static Specification<Post> filterBySearchDto(PostSearchDto postSearchDto, List<UUID> friends) {
+        //public static Specification<Post> filterBySearchDto(PostSearchDto postSearchDto) {
         return (Root<Post> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -62,6 +64,10 @@ public class PostSpecification {
                 predicates.add(cb.equal(root.get("isDeleted"), postSearchDto.getIsDeleted()));
             }
 
+            // Фильтрация по авторам-друзьям
+            if (postSearchDto.getWithFriends() != null && postSearchDto.getWithFriends() && !friends.isEmpty()) {
+                predicates.add(root.get("authorId").in(friends));
+            }
             //Фильтрация по полю "с друзьями" (withFriends)
 //            if (postSearchDto.getWithFriends() != null) {
 //                // Предполагается, что в сущности Post есть поле, отражающее связь с друзьями

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.client.AccountFeignClient;
+import ru.skillbox.client.FriendsFeignClient;
 import ru.skillbox.dto.AccountDto;
 import ru.skillbox.dto.TagDto;
 import ru.skillbox.dto.kafka.BotPost;
@@ -42,21 +43,27 @@ public class PostService {
     private final CurrentUsers currentUsers;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final AccountFeignClient accountFeignClient;
+    private final FriendsFeignClient friendsFeignClient;
     private static final String POSTED = "POSTED";
 
     @Autowired
-    public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers, KafkaTemplate<String, Object> kafkaTemplate, AccountFeignClient accountFeignClient) {
+    public PostService(PostRepository postRepository, TagRepository tagRepository, PostMapper postMapper, CurrentUsers currentUsers, KafkaTemplate<String, Object> kafkaTemplate, AccountFeignClient accountFeignClient, FriendsFeignClient friendsFeignClient) {
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
         this.postMapper = postMapper;
         this.currentUsers = currentUsers;
         this.kafkaTemplate = kafkaTemplate;
         this.accountFeignClient = accountFeignClient;
+        this.friendsFeignClient = friendsFeignClient;
     }
 
     public PagePostDto searchPosts(PostSearchDto postSearchDto, Pageable pageable) {
         UUID currentUserId = currentUsers.getCurrentUserId();
-        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
+
+        List<UUID> friends = postSearchDto.getWithFriends() ? friendsFeignClient.getFriendsIds(currentUserId) : Collections.emptyList();
+        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto, friends), pageable);
+
+        //Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
 
         // Формирование PagePostDto
         PagePostDto pagePostDto = new PagePostDto();
@@ -164,6 +171,7 @@ public class PostService {
                 .build());
 
         AccountDto accountDto = accountFeignClient.getAccountById(currentUserId);
+
         String fullName = accountDto.getFirstName() + " " + accountDto.getLastName();
 
         kafkaTemplate.send("bot-topic", BotPost.builder()
