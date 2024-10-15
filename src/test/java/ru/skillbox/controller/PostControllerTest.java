@@ -7,11 +7,13 @@ import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.skillbox.client.AccountFeignClient;
+import ru.skillbox.client.FriendsFeignClient;
 import ru.skillbox.dto.AccountDto;
 import ru.skillbox.dto.kafka.BotPost;
 import ru.skillbox.dto.kafka.NotificationPost;
 import ru.skillbox.dto.post.request.PostDto;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,6 +25,8 @@ class PostControllerTest extends AbstractTest {
 
     @MockBean
     private AccountFeignClient accountFeignClient;
+    @MockBean
+    private FriendsFeignClient friendsFeignClient;
     @MockBean
     private KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -178,11 +182,17 @@ class PostControllerTest extends AbstractTest {
     @Test
     @WithMockUser(username = AUTHOR_UUID)
     void searchPosts_shouldReturnOkStatus() throws Exception {
+        UUID friendUUID = UUID.fromString("10000000-0000-0000-0000-000000000300");
+
+        when(friendsFeignClient.getFriendsIds(UUID.fromString(AUTHOR_UUID)))
+                .thenReturn(List.of(friendUUID));
+
         mockMvc.perform(get(BASE_URL)
                         .param("page", "0")
                         .param("size", "10")
                         .param("sort", "id,asc")
-                        .param("isDeleted", "false"))
+                        .param("isDeleted", "false")
+                        .param("withFriends", "true"))
                 .andExpect(status().isOk());
     }
 
