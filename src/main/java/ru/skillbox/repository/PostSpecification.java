@@ -14,7 +14,7 @@ public class PostSpecification {
     private PostSpecification() {
     }
 
-    public static Specification<Post> filterBySearchDto(PostSearchDto postSearchDto, List<UUID> friends) {
+    public static Specification<Post> filterBySearchDto(PostSearchDto postSearchDto, UUID currentUserId, List<UUID> friends) {
         return (Root<Post> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -26,7 +26,7 @@ public class PostSpecification {
             addFilterByTags(predicates, root, postSearchDto);
             addFilterByPublishDate(predicates, root, cb, postSearchDto);
             addFilterByIsDeleted(predicates, root, cb, postSearchDto);
-            addFilterByFriends(predicates, root, friends, postSearchDto);
+            addFilterByFriends(predicates, root, currentUserId, friends, postSearchDto);
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -80,9 +80,11 @@ public class PostSpecification {
         }
     }
 
-    private static void addFilterByFriends(List<Predicate> predicates, Root<Post> root, List<UUID> friends, PostSearchDto postSearchDto) {
-        if (postSearchDto.getWithFriends() != null && postSearchDto.getWithFriends() && !friends.isEmpty()) {
-            predicates.add(root.get("authorId").in(friends));
+    private static void addFilterByFriends(List<Predicate> predicates, Root<Post> root, UUID currentUserId, List<UUID> friends, PostSearchDto postSearchDto) {
+        if (postSearchDto.getWithFriends() != null && postSearchDto.getWithFriends()) {
+            List<UUID> allRelevantIds = new ArrayList<>(friends);
+            allRelevantIds.add(currentUserId);
+            predicates.add(root.get("authorId").in(allRelevantIds));
         }
     }
 }

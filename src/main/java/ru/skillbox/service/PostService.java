@@ -72,9 +72,7 @@ public class PostService {
 
         List<UUID> friends = Boolean.TRUE.equals(postSearchDto.getWithFriends()) ? friendsFeignClient.getFriendsIds(currentUserId) : Collections.emptyList();
 
-        friends.add(currentUserId);
-
-        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto, friends), pageable);
+        Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto, currentUserId, friends), pageable);
 
         // Формирование PagePostDto
         PagePostDto pagePostDto = new PagePostDto();
