@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -67,7 +68,6 @@ public class AbstractTest {
     protected static final String BASE_URL = "/api/v1/post";
     protected static final String AUTHOR_UUID = "10000000-0000-0000-0000-000000000200";
 
-
     @BeforeEach
     public void setup() {
         jdbcTemplate.execute("ALTER SEQUENCE post_schema.post_id_seq RESTART WITH 1");
@@ -122,6 +122,5 @@ public class AbstractTest {
         likePostRepository.deleteAll();
         commentRepository.deleteAll();
         postRepository.deleteAll();
-
     }
 }

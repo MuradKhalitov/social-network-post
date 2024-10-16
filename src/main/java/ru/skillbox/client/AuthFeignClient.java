@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "social-network-auth")
-public interface OpenFeignClient {
+public interface AuthFeignClient {
 
     @GetMapping("/api/v1/auth/tokenValidation")
     boolean validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);

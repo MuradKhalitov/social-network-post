@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AccountSearchDto {
-    private String author; // или firstName + lastName, в зависимости от логики
+    private String author;
 }
 

@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import ru.skillbox.client.OpenFeignClient;
+import ru.skillbox.client.AuthFeignClient;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
  class JwtTokenFilterTest {
 
     @Mock
-    private OpenFeignClient openFeignClient;
+    private AuthFeignClient authFeignClient;
 
     @InjectMocks
     private JwtTokenFilter jwtTokenFilter;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.*;
 
         request.addHeader("Authorization", authHeader);
 
-        when(openFeignClient.validateToken(authHeader)).thenReturn(true);
+        when(authFeignClient.validateToken(authHeader)).thenReturn(true);
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
@@ -64,7 +64,7 @@ import static org.mockito.Mockito.*;
         String authHeader = "Bearer " + token;
         request.addHeader("Authorization", authHeader);
 
-        when(openFeignClient.validateToken(authHeader)).thenReturn(false);
+        when(authFeignClient.validateToken(authHeader)).thenReturn(false);
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 

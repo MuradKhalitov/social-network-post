@@ -17,7 +17,7 @@ public class CurrentUsers {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
-            if (principal instanceof User user) { // Используем pattern matching
+            if (principal instanceof User user) {
                 String userId = user.getUsername();
                 try {
                     return UUID.fromString(userId);

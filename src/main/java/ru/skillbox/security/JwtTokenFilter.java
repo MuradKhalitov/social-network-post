@@ -16,7 +16,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.skillbox.client.OpenFeignClient;
+import ru.skillbox.client.AuthFeignClient;
 import ru.skillbox.exception.InvalidTokenException;
 
 import java.io.IOException;
@@ -27,11 +27,11 @@ import java.util.List;
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final OpenFeignClient openFeignClient;
+    private final AuthFeignClient authFeignClient;
 
     @Autowired
-    public JwtTokenFilter(OpenFeignClient openFeignClient) {
-        this.openFeignClient = openFeignClient;
+    public JwtTokenFilter(AuthFeignClient authFeignClient) {
+        this.authFeignClient = authFeignClient;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
                 token = headerAuth.substring(7);
             }
-            if (token != null && openFeignClient.validateToken(headerAuth)) {
+            if (token != null && authFeignClient.validateToken(headerAuth)) {
                 String accountId = getIdFromToken(token);
                 if (accountId != null && !accountId.isEmpty()) {
                     List<SimpleGrantedAuthority> authorities = getRolesFromToken(token);

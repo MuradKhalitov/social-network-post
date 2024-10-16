@@ -70,12 +70,9 @@ public class PostService {
             log.info(authorIds.toString());
         }
 
-
         List<UUID> friends = Boolean.TRUE.equals(postSearchDto.getWithFriends()) ? friendsFeignClient.getFriendsIds(currentUserId) : Collections.emptyList();
 
         Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto, friends), pageable);
-
-        //Page<Post> postPage = postRepository.findAll(PostSpecification.filterBySearchDto(postSearchDto), pageable);
 
         // Формирование PagePostDto
         PagePostDto pagePostDto = new PagePostDto();
@@ -257,7 +254,7 @@ public class PostService {
 
         return accounts.getContent().stream()
                 .map(AccountDto::getId)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
 

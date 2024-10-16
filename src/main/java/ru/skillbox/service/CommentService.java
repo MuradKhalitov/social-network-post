@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -123,8 +122,8 @@ public class CommentService {
 
         List<PageCommentDto.CommentContent> subComments = commentPage.getContent().stream()
                 .filter(comment -> comment.getParent() != null)
-                .map(comment -> convertToCommentContent(comment))
-                .collect(Collectors.toList());
+                .map(this::convertToCommentContent)
+                .toList();
 
         // Собираем итоговый список комментариев
         List<PageCommentDto.CommentContent> allComments = new ArrayList<>(subComments);
@@ -133,38 +132,6 @@ public class CommentService {
 
         return pageCommentDto;
     }
-//public PageCommentDto getSubComments(Long postId, Long commentId, Pageable pageable) {
-//    Post post = postRepository.findById(postId)
-//            .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
-//
-//    Comment existingComment = commentRepository.findById(commentId)
-//            .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND.format(commentId)));
-//    // Получаем страницу комментариев для данного поста
-//    Page<Comment> commentPage = commentRepository.findByPostId(post.getId(), pageable);
-//
-//    // Формируем объект PageCommentDto
-//    PageCommentDto pageCommentDto = new PageCommentDto();
-//    pageCommentDto.setTotalElements(commentPage.getTotalElements());
-//    pageCommentDto.setTotalPages(commentPage.getTotalPages());
-//    pageCommentDto.setNumber(commentPage.getNumber());
-//    pageCommentDto.setSize(commentPage.getSize());
-//    pageCommentDto.setFirst(commentPage.isFirst());
-//    pageCommentDto.setLast(commentPage.isLast());
-//    pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
-//    pageCommentDto.setPageable(pageable);
-//    pageCommentDto.setEmpty(commentPage.isEmpty());
-//
-//    // Фильтруем комментарии, чтобы оставить только подкомментарии к указанному commentId
-//    List<PageCommentDto.CommentContent> subComments = commentPage.getContent().stream()
-//            .filter(comment -> existingComment.getId().equals(comment.getParentId())) // Используем commentId для фильтрации
-//            .map(this::convertToCommentContent)
-//            .toList();
-//
-//    // Собираем итоговый список комментариев
-//    pageCommentDto.setContent(subComments);
-//
-//    return pageCommentDto;
-//}
 
     private PageCommentDto.CommentContent convertToCommentContent(Comment comment) {
         UUID currentUserId = currentUsers.getCurrentUserId();

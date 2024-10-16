@@ -31,8 +31,4 @@ public class PostDto {
     private boolean myLike;
     private String imagePath;
     private LocalDateTime publishDate;
-
-    public PostDto(Long id, String title) {
-
-    }
 }

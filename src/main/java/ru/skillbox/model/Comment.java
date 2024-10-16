@@ -58,8 +58,4 @@ public class Comment {
     public void updateLikeAmount() {
         this.likeAmount = likes.size();
     }
-
-    public Long getParentId() {
-        return parent.getId();
-    }
 }
