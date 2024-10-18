@@ -1,4 +1,4 @@
-package ru.skillbox.controller;
+package ru.skillbox;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;

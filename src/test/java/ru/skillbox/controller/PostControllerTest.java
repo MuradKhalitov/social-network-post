@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
+import ru.skillbox.AbstractTest;
 import ru.skillbox.client.AccountFeignClient;
 import ru.skillbox.client.FriendsFeignClient;
 import ru.skillbox.dto.AccountDto;
