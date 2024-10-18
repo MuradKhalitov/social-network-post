@@ -8,7 +8,7 @@ import ru.skillbox.dto.like_post.AddReactionDto;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-class LikePostControllerTestClass extends BaseTestClass {
+class LikePostControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)
