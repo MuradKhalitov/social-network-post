@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -34,7 +33,7 @@ import java.util.UUID;
 @AutoConfigureMockMvc
 @Transactional
 @Testcontainers
-public class AbstractTest {
+public class BaseTestClass {
 
     protected static PostgreSQLContainer<?> postgreSQLContainer;
 

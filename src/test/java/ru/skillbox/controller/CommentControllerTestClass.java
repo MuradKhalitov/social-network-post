@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-class CommentControllerTest extends AbstractTest {
+class CommentControllerTestClass extends BaseTestClass {
 
     @Test
     @WithMockUser(username = AUTHOR_UUID)

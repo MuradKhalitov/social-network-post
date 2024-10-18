@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class PostControllerTest extends AbstractTest {
+class PostControllerTestClass extends BaseTestClass {
 
     @MockBean
     private AccountFeignClient accountFeignClient;
