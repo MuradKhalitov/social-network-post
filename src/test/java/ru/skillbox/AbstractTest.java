@@ -33,7 +33,7 @@ import java.util.UUID;
 @AutoConfigureMockMvc
 @Transactional
 @Testcontainers
-public class AbstractTest {
+public abstract class AbstractTest {
 
     protected static PostgreSQLContainer<?> postgreSQLContainer;
 
