@@ -19,5 +19,4 @@ public interface AccountFeignClient {
     AccountDto getAccountById(@PathVariable("id") UUID accountId);
     @GetMapping("/api/v1/account/search")
     Page<AccountDto> searchAccount(@SpringQueryMap AccountSearchDto dto, Pageable pageable);
-
 }

@@ -66,6 +66,7 @@ public class PostService {
         // Если задано имя автора, получаем его UUID через Feign-клиент
         if (postSearchDto.getAuthor() != null && !postSearchDto.getAuthor().isEmpty()) {
             List<UUID> authorIds = getAuthorIds(postSearchDto.getAuthor());
+            authorIds.add(currentUserId);
             postSearchDto.setAccountIds(authorIds);
             log.info(authorIds.toString());
         }
