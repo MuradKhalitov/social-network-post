@@ -66,7 +66,6 @@ public class PostService {
         // Если задано имя автора, получаем его UUID через Feign-клиент
         if (postSearchDto.getAuthor() != null && !postSearchDto.getAuthor().isEmpty()) {
             List<UUID> authorIds = getAuthorIds(postSearchDto.getAuthor());
-            authorIds.add(currentUserId);
             postSearchDto.setAccountIds(authorIds);
             log.info(authorIds.toString());
         }
@@ -246,14 +245,10 @@ public class PostService {
     }
 
     public List<UUID> getAuthorIds(String author) {
-        AccountSearchDto searchDto = new AccountSearchDto();
-        searchDto.setAuthor(author);
 
-        Pageable pageable = PageRequest.of(0, 30, Sort.by("firstName").ascending()); // Настройки пагинации
+        List<AccountDto> accounts = accountFeignClient.searchAccountsByAuthor(author);
 
-        Page<AccountDto> accounts = accountFeignClient.searchAccount(searchDto, pageable);
-
-        return accounts.getContent().stream()
+        return accounts.stream()
                 .map(AccountDto::getId)
                 .toList();
     }

@@ -195,8 +195,8 @@ class PostControllerTest extends AbstractTest {
         AccountDto accountDto1 = new AccountDto();
         accountDto1.setId(friendUUID);
 
-        when(accountFeignClient.searchAccount(any(AccountSearchDto.class), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(accountDto, accountDto1)));
+        when(accountFeignClient.searchAccountsByAuthor(anyString()))
+                .thenReturn(List.of(accountDto, accountDto1));
 
         mockMvc.perform(get(BASE_URL)
                         .param("page", "0")
