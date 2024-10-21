@@ -57,7 +57,7 @@ public class PostController {
         postSearchDto.setWithFriends(withFriends);
         postSearchDto.setIsDeleted(isDeleted);
 
-        String[] sortParams = sort.split("\\s*,\\s*");
+        String[] sortParams = sort.split(",\\s*");
         String field = sortParams[0];
         String direction = (sortParams.length > 1) ? sortParams[1] : "asc";
 

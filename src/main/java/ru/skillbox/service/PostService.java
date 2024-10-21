@@ -1,14 +1,11 @@
 package ru.skillbox.service;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.client.AccountFeignClient;
 import ru.skillbox.client.FriendsFeignClient;
 import ru.skillbox.dto.AccountDto;
-import ru.skillbox.dto.AccountSearchDto;
 import ru.skillbox.dto.TagDto;
 import ru.skillbox.dto.kafka.BotPost;
 import ru.skillbox.dto.kafka.NotificationPost;

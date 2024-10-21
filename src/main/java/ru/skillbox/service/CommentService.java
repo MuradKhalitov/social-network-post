@@ -55,7 +55,7 @@ public class CommentService {
 
     public CommentDto createSubComment(Long postId, CommentDto commentDTO, Long parentCommentId) {
         if (commentDTO.getCommentText() == null || commentDTO.getCommentText().trim().isEmpty()) {
-            throw new IllegalArgumentException("Текст комментария не может быть пустым");
+            throw new IllegalArgumentException(ErrorMessage.EMPTY_COMMENT_TEXT.getMessage());
         }
         UUID currentUserId = currentUsers.getCurrentUserId();
         Comment comment = commentMapper.convertToEntity(commentDTO);

@@ -42,7 +42,7 @@ public class CommentController {
                                               @RequestParam(required = false, defaultValue = "10") int size,
                                               @RequestParam(defaultValue = "id,asc") String sort) {
 
-        String[] sortParams = sort.split("\\s*,\\s*");
+        String[] sortParams = sort.split(",\\s*");
         String field = sortParams[0];
         String direction = (sortParams.length > 1) ? sortParams[1] : "asc";
 
@@ -60,7 +60,7 @@ public class CommentController {
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size,
                                         @RequestParam(defaultValue = "id,asc") String sort) {
-        String[] sortParams = sort.split("\\s*,\\s*");
+        String[] sortParams = sort.split(",\\s*");
         String field = sortParams[0];
         String direction = (sortParams.length > 1) ? sortParams[1] : "asc";
 

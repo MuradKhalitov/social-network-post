@@ -3,8 +3,6 @@ package ru.skillbox.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -12,7 +10,6 @@ import ru.skillbox.AbstractTest;
 import ru.skillbox.client.AccountFeignClient;
 import ru.skillbox.client.FriendsFeignClient;
 import ru.skillbox.dto.AccountDto;
-import ru.skillbox.dto.AccountSearchDto;
 import ru.skillbox.dto.kafka.BotPost;
 import ru.skillbox.dto.kafka.NotificationPost;
 import ru.skillbox.dto.post.request.PostDto;
@@ -206,7 +203,6 @@ class PostControllerTest extends AbstractTest {
                         .param("withFriends", "true"))
                 .andExpect(status().isOk());
     }
-
 
     @Test
     void searchPosts_shouldReturnUnauthorized() throws Exception {
