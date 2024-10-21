@@ -5,6 +5,7 @@ import ru.skillbox.dto.post.request.PostSearchDto;
 import ru.skillbox.model.Post;
 
 import jakarta.persistence.criteria.*;
+import ru.skillbox.model.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,8 @@ public class PostSpecification {
 
     private static void addFilterByTags(List<Predicate> predicates, Root<Post> root, PostSearchDto postSearchDto) {
         if (postSearchDto.getTags() != null && !postSearchDto.getTags().isEmpty()) {
-            predicates.add(root.get("tags").in(postSearchDto.getTags()));
+            Join<Post, Tag> tagsJoin = root.join("tags", JoinType.INNER);
+            predicates.add(tagsJoin.get("name").in(postSearchDto.getTags()));
         }
     }
 
