@@ -74,41 +74,17 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
         Page<Comment> commentPage = commentRepository.findByPostId(post.getId(), pageable);
-
-        // Формируем объект PageCommentDto
-        PageCommentDto pageCommentDto = new PageCommentDto();
-        pageCommentDto.setTotalElements(commentPage.getTotalElements());
-        pageCommentDto.setTotalPages(commentPage.getTotalPages());
-        pageCommentDto.setNumber(commentPage.getNumber());
-        pageCommentDto.setSize(commentPage.getSize());
-        pageCommentDto.setFirst(commentPage.isFirst());
-        pageCommentDto.setLast(commentPage.isLast());
-        pageCommentDto.setNumberOfElements(commentPage.getNumberOfElements());
-        pageCommentDto.setPageable(pageable);
-        pageCommentDto.setEmpty(commentPage.isEmpty());
-
-        // Отделяем родительские комментарии от субкомментариев
-        List<PageCommentDto.CommentContent> parentComments = commentPage.getContent().stream()
-                .filter(comment -> comment.getParent() == null)  // только родительские
-                .map(this::convertToCommentContent)
-                .toList();
-
-        // Собираем итоговый список комментариев
-        List<PageCommentDto.CommentContent> allComments = new ArrayList<>(parentComments);
-
-        pageCommentDto.setContent(allComments);
-
-        return pageCommentDto;
+        return buildPageCommentDto(commentPage, pageable, true);
     }
-
 
     public PageCommentDto getSubComments(Long postId, Pageable pageable) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(ErrorMessage.POST_NOT_FOUND.format(postId)));
-
         Page<Comment> commentPage = commentRepository.findByPostId(post.getId(), pageable);
+        return buildPageCommentDto(commentPage, pageable, false);
+    }
 
-        // Формируем объект PageCommentDto
+    private PageCommentDto buildPageCommentDto(Page<Comment> commentPage, Pageable pageable, boolean isParent) {
         PageCommentDto pageCommentDto = new PageCommentDto();
         pageCommentDto.setTotalElements(commentPage.getTotalElements());
         pageCommentDto.setTotalPages(commentPage.getTotalPages());
@@ -120,19 +96,15 @@ public class CommentService {
         pageCommentDto.setPageable(pageable);
         pageCommentDto.setEmpty(commentPage.isEmpty());
 
-        List<PageCommentDto.CommentContent> subComments = commentPage.getContent().stream()
-                .filter(comment -> comment.getParent() != null)
+        List<PageCommentDto.CommentContent> comments = commentPage.getContent().stream()
+                .filter(comment -> isParent ? comment.getParent() == null : comment.getParent() != null)
                 .map(this::convertToCommentContent)
                 .toList();
 
-        // Собираем итоговый список комментариев
-        List<PageCommentDto.CommentContent> allComments = new ArrayList<>(subComments);
-
-        pageCommentDto.setContent(allComments);
-
+        pageCommentDto.setContent(new ArrayList<>(comments));
         return pageCommentDto;
     }
-
+    
     private PageCommentDto.CommentContent convertToCommentContent(Comment comment) {
         UUID currentUserId = currentUsers.getCurrentUserId();
 
