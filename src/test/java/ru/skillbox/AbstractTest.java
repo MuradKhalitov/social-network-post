@@ -16,14 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import ru.skillbox.model.Comment;
-import ru.skillbox.model.LikeComment;
-import ru.skillbox.model.LikePost;
-import ru.skillbox.model.Post;
-import ru.skillbox.repository.CommentRepository;
-import ru.skillbox.repository.LikeCommentRepository;
-import ru.skillbox.repository.LikePostRepository;
-import ru.skillbox.repository.PostRepository;
+import ru.skillbox.model.*;
+import ru.skillbox.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
